@@ -63,7 +63,9 @@ jobs:
         id: NPM
         run: |
           deno task npm:build ${{ steps.version.outputs.version }}
-          deno task npm:publish //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+          deno task npm:publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
