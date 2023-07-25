@@ -31,12 +31,12 @@ jobs:
       - name: Set main version format
         id: mainFormat
         if: steps.vars.outputs.currentBranch == env.MainBranch
-        run: echo 'format=${{ env.MainFormat }}.${increment}' >> $GITHUB_OUTPUT\
+        run: echo 'format=${{ env.MainFormat }}' >> $GITHUB_OUTPUT\
 
       - name: Set prerelease version format
         id: prereleaseFormat
         if: steps.vars.outputs.currentBranch != env.MainBranch
-        run: echo 'format=${{ env.MainFormat }}.${increment}-${{ steps.vars.outputs.currentBranch }}' >> $GITHUB_OUTPUT\
+        run: echo 'format=${{ env.MainFormat }}-${{ steps.vars.outputs.currentBranch }}' >> $GITHUB_OUTPUT\
 
       - name: Deno Setup
         uses: denoland/setup-deno@v1.1.0
@@ -56,6 +56,7 @@ jobs:
           version_format: ${{ steps.mainFormat.outputs.format || steps.prereleaseFormat.outputs.format }}
           # namespace: ${{ steps.vars.outputs.currentBranch == env.MainBranch && null || steps.vars.outputs.currentBranch }}
           # search_commit_body: false
+          bump_each_commit: true
           user_format_type: "json"
           enable_prerelease_mode: ${{ steps.vars.outputs.currentBranch != env.MainBranch }}
 
