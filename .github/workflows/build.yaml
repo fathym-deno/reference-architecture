@@ -8,7 +8,8 @@ on: push
 env:
   MainBranch: main
   MainFormat: "${major}.${minor}.${patch}"
-  
+  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -69,4 +70,6 @@ jobs:
         run: |
           git tag v${{ steps.version.outputs.version }} ${{ steps.commit.outputs.commit }}
           git push origin v${{ steps.version.outputs.version }}
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
           
