@@ -8,7 +8,6 @@ on: push
 env:
   MainBranch: main
   MainFormat: "${major}.${minor}.${patch}"
-  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
 jobs:
   build:
@@ -66,7 +65,7 @@ jobs:
           deno task npm:build ${{ steps.version.outputs.version }}
           deno task npm:publish
         env:
-          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
