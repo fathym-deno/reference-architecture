@@ -71,6 +71,7 @@ jobs:
           npm publish ./build --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
