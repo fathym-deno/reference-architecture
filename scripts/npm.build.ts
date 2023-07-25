@@ -5,7 +5,7 @@ await emptyDir("./build");
 await build({
   entryPoints: ["mod.ts", {
     name: "./eac",
-    path: "src/eac/mod.ts",
+    path: "src/eac.ts",
   }],
   outDir: "./build",
   shims: {
