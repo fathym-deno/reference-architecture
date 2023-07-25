@@ -63,7 +63,7 @@ jobs:
       - name: NPM Package Support
         id: NPM
         run: |
-          deno task npm:build -- ${{ steps.version.outputs.version }}
+          deno task npm:build ${{ steps.version.outputs.version }}
           deno task npm:publish
 
       - name: Tag commit ${{ steps.version.outputs.version }}
