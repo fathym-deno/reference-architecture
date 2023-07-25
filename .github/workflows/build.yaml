@@ -68,7 +68,9 @@ jobs:
         run: deno task npm:build ${{ steps.version.outputs.version }}
 
       - name: NPM Package Publish
-        run: npm publish ./build --access public
+        run: |
+          npm set //registry.npmjs.org/:_authToken ${{ steps.version.outputs.version }}
+          npm publish ./build --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
