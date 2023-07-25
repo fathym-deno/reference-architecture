@@ -59,6 +59,11 @@ jobs:
           user_format_type: "json"
           enable_prerelease_mode: ${{ steps.vars.outputs.currentBranch != env.MainBranch }}
 
+      # run npm commands
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - name: NPM Package Support
         id: NPM
         run: |
