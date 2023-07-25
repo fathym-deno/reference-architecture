@@ -5,7 +5,7 @@
     "build:lint": "deno lint",
     "deploy": "deno task build && ftm git",
     "npm:build": "deno run -A scripts/npm.build.ts",
-    "npm:publish": "npm publish ./build --access public --registry ",
+    "npm:publish": "npm publish ./build --access public --registry",
     "test": "deno test -A ./tests/tests.ts --coverage=cov"
   },
   "compilerOptions": {
