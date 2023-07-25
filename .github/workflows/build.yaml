@@ -59,6 +59,10 @@ jobs:
           user_format_type: "json"
           enable_prerelease_mode: ${{ steps.vars.outputs.currentBranch != env.MainBranch }}
 
+      - name: NPM Package Support
+        id: NPM
+        run: deno task npm:build ${{ steps.version.outputs.version }}
+
       # run npm commands
       - uses: actions/setup-node@v2
         with:
@@ -66,12 +70,10 @@ jobs:
 
       - name: NPM Package Support
         id: NPM
-        run: |
-          deno task npm:build ${{ steps.version.outputs.version }}
-          npm publish ./build --access public
+        run: npm publish ./build --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
