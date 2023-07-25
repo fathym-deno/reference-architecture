@@ -3,7 +3,10 @@ import { build, emptyDir } from "$dnt";
 await emptyDir("./build");
 
 await build({
-  entryPoints: ["./mod.ts"],
+  entryPoints: ["./mod.ts", {
+    name: "./eac",
+    path: "eac/mod.ts",
+  }],
   outDir: "./build",
   shims: {
     // see JS docs for overview and more options
