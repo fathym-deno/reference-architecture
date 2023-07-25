@@ -59,21 +59,11 @@ jobs:
           user_format_type: "json"
           enable_prerelease_mode: ${{ steps.vars.outputs.currentBranch != env.MainBranch }}
 
-      - name: Node Setup
-        uses: actions/setup-node@v2
-        with:
-          node-version: 16
-
-      - name: Deno NPM Build
-        run: deno task npm:build ${{ steps.version.outputs.version }}
-
       - name: NPM Package Publish
         run: |
+          deno task npm:build ${{ steps.version.outputs.version }}
           npm set //registry.npmjs.org/:_authToken ${{ secrets.NPM_TOKEN }}
-          npm publish ./build --access public
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          deno task npm:publish
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
