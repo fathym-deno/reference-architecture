@@ -63,7 +63,7 @@ jobs:
         id: NPM
         run: |
           deno task npm:build ${{ steps.version.outputs.version }}
-          deno task npm:publish
+          npm publish ./build --access public
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
