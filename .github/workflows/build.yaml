@@ -65,11 +65,11 @@ jobs:
         run: |
           deno task npm:build ${{ steps.version.outputs.version }}
           deno task npm:publish
+        env:
+          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
 
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
           git tag v${{ steps.version.outputs.version }} ${{ steps.commit.outputs.commit }}
           git push origin v${{ steps.version.outputs.version }}
-        env:
-          NODE_AUTH_TOKEN: ${{ env.NPM_TOKEN }}
           
