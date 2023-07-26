@@ -1,5 +1,6 @@
 /**
  * Determine if a path exists.
+ *
  * @param path The path to check for existence.
  * @returns If the path exists.
  */
