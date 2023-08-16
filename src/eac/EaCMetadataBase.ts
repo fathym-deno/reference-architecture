@@ -1,1 +1,1 @@
-export type EaCMetadataBase = {};
+export type EaCMetadataBase = Record<string | number | symbol, never>;
