@@ -6,7 +6,8 @@ import { EaCDevOpsActionAsCode } from "./EaCDevOpsActionAsCode.ts";
 import { EaCSecretAsCode } from "./EaCSecretAsCode.ts";
 import { EaCSourceControlAsCode } from "./EaCSourceControlAsCode.ts";
 
-export interface EaCEnvironmentAsCode extends EaCDetails<EaCEnvironmentDetails> {
+export interface EaCEnvironmentAsCode
+  extends EaCDetails<EaCEnvironmentDetails> {
   Artifacts?: { [key: string]: EaCArtifactAsCode } | null;
   Clouds?: { [key: string]: EaCCloudAsCode } | null;
   DevOpsActions?: { [key: string]: EaCDevOpsActionAsCode } | null;
