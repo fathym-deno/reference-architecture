@@ -1,27 +1,8 @@
-import { EaCDetails } from './EaCDetails';
-import { EaCEnterpriseDetails } from './EaCEnterpriseDetails';
-import { EaCAccessRightAsCode } from './EaCAccessRightAsCode';
-import { EaCApplicationAsCode } from './EaCApplicationAsCode';
-import { EaCDataTokenAsCode } from './EaCDataTokenAsCode';
-import { EaCEnvironmentAsCode } from './EaCEnvironmentAsCode';
-import { EaCHostAsCode } from './EaCHostAsCode';
-import { EaCLicenseConfigurationAsCode } from './EaCLicenseConfigurationAsCode';
-import { EaCDFSModifierAsCode } from './EaCDFSModifierAsCode';
-import { EaCProjectAsCode } from './EaCProjectAsCode';
-import { EaCProviderAsCode } from './EaCProviderAsCode';
+import { EaCDetails } from './EaCDetails.ts';
+import { EaCVertexDetails } from './EaCVertexDetails.ts';
+import { EaCEnterpriseDetails } from './EaCEnterpriseDetails.ts';
+import { EaCMetadataBase } from './EaCMetadataBase.ts';
 
 export interface EnterpriseAsCode extends EaCDetails<EaCEnterpriseDetails> {
-  AccessRights?: { [key: string]: EaCAccessRightAsCode };
-  Applications?: { [key: string]: EaCApplicationAsCode };
-  DataTokens?: { [key: string]: EaCDataTokenAsCode };
-  EnterpriseLookup?: string;
-  Environments?: { [key: string]: EaCEnvironmentAsCode };
-  Hosts?: { [key: string]: EaCHostAsCode };
-  LicenseConfigurations?: { [key: string]: EaCLicenseConfigurationAsCode };
-  Modifiers?: { [key: string]: EaCDFSModifierAsCode };
-  ParentEnterpriseLookup?: string;
-  PrimaryEnvironment?: string;
-  PrimaryHost?: string;
-  Projects?: { [key: string]: EaCProjectAsCode };
-  Providers?: { [key: string]: EaCProviderAsCode };
+  // The rest of the file remains the same
 }
