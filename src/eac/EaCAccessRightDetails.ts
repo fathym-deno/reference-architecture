@@ -9,3 +9,11 @@ export interface IEaCAccessRightAsCode extends IEaCDetails<IEaCAccessRightDetail
 export interface NewInterface {
 
 }
+
+export interface IDataContract {
+
+}
+
+export interface IEaCAccessRightDetailsUpdate extends IEaCVertexDetails {
+
+}
