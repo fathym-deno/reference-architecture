@@ -1,4 +1,4 @@
-import { EaCDetails } from "../EaCDetails.ts";
+import { EaCDetails } from "./EaCDetails.ts";
 import { EaCPlanDetails } from "./EaCPlanDetails.ts";
 import { EaCPriceAsCode } from "./EaCPriceAsCode.ts";
 

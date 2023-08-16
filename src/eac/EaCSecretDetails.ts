@@ -1,4 +1,4 @@
-import { EaCVertexDetails } from "../EaCVertexDetails.ts";
+import { EaCVertexDetails } from "./EaCVertexDetails.ts";
 
 export interface EaCSecretDetails extends EaCVertexDetails {
   DataTokenLookup?: string | null;
