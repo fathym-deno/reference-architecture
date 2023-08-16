@@ -1,5 +1,3 @@
-import { EaCDetails } from './EaCDetails';
-import { EaCEnterpriseDetails } from './EaCEnterpriseDetails';
 import { EaCAccessRightAsCode } from './EaCAccessRightAsCode';
 import { EaCApplicationAsCode } from './EaCApplicationAsCode';
 import { EaCDataTokenAsCode } from './EaCDataTokenAsCode';
@@ -10,7 +8,7 @@ import { EaCDFSModifierAsCode } from './EaCDFSModifierAsCode';
 import { EaCProjectAsCode } from './EaCProjectAsCode';
 import { EaCProviderAsCode } from './EaCProviderAsCode';
 
-export interface EnterpriseAsCode extends EaCDetails<EaCEnterpriseDetails> {
+export interface EaCEnterpriseDetails {
   AccessRights?: { [key: string]: EaCAccessRightAsCode };
   Applications?: { [key: string]: EaCApplicationAsCode };
   DataTokens?: { [key: string]: EaCDataTokenAsCode };
