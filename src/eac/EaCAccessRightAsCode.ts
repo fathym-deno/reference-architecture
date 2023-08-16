@@ -6,6 +6,10 @@ export interface IEaCAccessRightDetails {
 
 }
 
+export interface IEaCAccessRightAsCodeClass {
+
+}
+
 // Existing code...
 
 [DataContract]
