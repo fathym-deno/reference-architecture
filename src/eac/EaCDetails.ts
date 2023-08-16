@@ -1,5 +1,3 @@
-import { EaCEnterpriseDetails } from './EaCEnterpriseDetails';
-
-export abstract class EaCDetails<TDetails> {
-  Details?: TDetails;
+export interface EaCDetails<TDetails> {
+  Details?: TDetails | null;
 }
