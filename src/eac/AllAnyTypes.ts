@@ -1,4 +1,4 @@
 export enum AllAnyTypes {
   All,
-  Any
+  Any,
 }

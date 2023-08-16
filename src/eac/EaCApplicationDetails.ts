@@ -1,4 +1,4 @@
-import { EaCVertexDetails } from './EaCVertexDetails';
+import { EaCVertexDetails } from "./EaCVertexDetails.ts";
 
 export interface EaCApplicationDetails extends EaCVertexDetails {
   Priority?: number;
