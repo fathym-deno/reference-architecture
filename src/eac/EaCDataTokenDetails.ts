@@ -1,4 +1,3 @@
 import { EaCVertexDetails } from './EaCVertexDetails.ts';
 
-export interface EaCDataTokenDetails extends EaCVertexDetails {
-}
+export type EaCDataTokenDetails = EaCVertexDetails;

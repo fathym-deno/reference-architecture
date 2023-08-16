@@ -1,3 +1,1 @@
-export interface EaCMetadataBase {
-
-}
+export type EaCMetadataBase = {};
