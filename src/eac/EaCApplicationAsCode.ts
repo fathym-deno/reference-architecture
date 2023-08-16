@@ -1,6 +1,8 @@
 import { EaCDetails } from './EaCDetails.ts';
 import { EaCDataTokenAsCode } from './EaCDataTokenAsCode.ts';
 import { EaCApplicationLookupConfiguration } from './EaCApplicationLookupConfiguration.ts';
+import { EaCPackage } from './EaCPackage.ts';
+import { EaCProcessor } from './EaCProcessor.ts';
 
 export interface EaCApplicationAsCode extends EaCDetails<EaCApplicationDetails> {
   AccessRightLookups?: string[] | null;
