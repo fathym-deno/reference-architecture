@@ -1,3 +1,3 @@
 import { EaCVertexDetails } from './EaCVertexDetails.ts';
 
-export interface EaCProviderDetails extends EaCVertexDetails {}
+export type EaCProviderDetails = EaCVertexDetails;
