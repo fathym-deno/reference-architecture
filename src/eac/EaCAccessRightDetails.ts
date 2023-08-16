@@ -1,1 +1,0 @@
-export interface EaCAccessRightDetails extends EaCVertexDetails {  }
