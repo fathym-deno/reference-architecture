@@ -38,9 +38,9 @@ export abstract class StateContext<T> extends ObservableContextService<T> {
   //  Constructors
   constructor(
     protected entLookup: string,
+    protected apiRoot: string,
     protected stateRoot: string,
     protected stateActionRoot: string,
-    protected apiRoot: string,
     protected env?: string,
     protected usernameMock?: string,
   ) {

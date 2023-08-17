@@ -9,13 +9,13 @@ describe("StateContext Tests", () => {
   class TestStateContext extends StateContext<TestState> {
     constructor(
       protected entLookup: string,
+      protected apiRoot: string,
       protected stateRoot: string,
       protected stateActionRoot: string,
-      protected apiRoot: string,
       protected env?: string,
       protected usernameMock?: string,
     ) {
-      super(entLookup, stateRoot, stateActionRoot, apiRoot, env, usernameMock);
+      super(entLookup, apiRoot, stateRoot, stateActionRoot, env, usernameMock);
     }
 
     protected loadStateKey(): string {
@@ -30,9 +30,9 @@ describe("StateContext Tests", () => {
   describe("StateContext Test", () => {
     const sc = new TestStateContext(
       "xxx",
-      "/api/state",
-      "/api/state",
       "http://localhost/",
+      "/api/state",
+      "/api/state",
       "local",
       "",
     );
