@@ -54,3 +54,7 @@ export * from "./EaCRelyingPartyAsCode.ts";
 export * from "./EaCSecretDetails.ts";
 export * from "./EaCSourceControlAsCode.ts";
 export * from "./EaCSourceControlDetails.ts";
+export * from "./EaCIoTAsCode.ts";
+export * from "./EaCIoTDetails.ts";
+export * from "./EaCIoTDeviceTypeAsCode.ts";
+export * from "./EaCIoTDeviceTypeDetails.ts";
