@@ -30,4 +30,4 @@ export * from "./EaCProviderDetails.ts";
 export * from "./EaCRelyingPartyDetails.ts";
 export * from "./EaCSecretAsCode.ts";
 export * from "./EaCVertexDetails.ts";
-export * from "./EnterpriseAsCode.ts";
+export * from "./EverythingAsCode.ts";

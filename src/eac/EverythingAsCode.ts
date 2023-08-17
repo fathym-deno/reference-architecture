@@ -10,7 +10,7 @@ import { EaCDFSModifierAsCode } from "./EaCDFSModifierAsCode.ts";
 import { EaCProjectAsCode } from "./EaCProjectAsCode.ts";
 import { EaCProviderAsCode } from "./EaCProviderAsCode.ts";
 
-export interface EnterpriseAsCode extends EaCDetails<EaCEnterpriseDetails> {
+export interface EverythingAsCode extends EaCDetails<EaCEnterpriseDetails> {
   AccessRights?: { [key: string]: EaCAccessRightAsCode };
   Applications?: { [key: string]: EaCApplicationAsCode };
   DataTokens?: { [key: string]: EaCDataTokenAsCode };
