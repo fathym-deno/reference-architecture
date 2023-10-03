@@ -14,7 +14,6 @@
   },
   "imports": {
     "$dnt": "https://deno.land/x/dnt/mod.ts",
-    "$std/": "https://deno.land/std@0.198.0/"
   },
   "lock": false,
   "fmt": {

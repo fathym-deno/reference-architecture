@@ -1,5 +1,4 @@
-import { assert, describe } from "./test.deps.ts";
-import { assertEquals } from "$std/testing/asserts.ts";
+import { assert, assertEquals, describe } from "./test.deps.ts";
 import { isStatusSuccess, Status } from "../src/status.ts";
 
 describe("Status Tests", () => {

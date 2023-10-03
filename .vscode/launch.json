@@ -14,7 +14,7 @@
       "runtimeArgs": [
         "test",
         "--config",
-        "./deno.json",
+        "./deno.jsonc",
         "--inspect-wait",
         "--allow-all"
       ],
