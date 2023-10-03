@@ -18,3 +18,22 @@ export async function exists(path: string): Promise<boolean> {
   }
 }
 
+/**
+ * Determine if a path exists sync.
+ *
+ * @param path The path to check for existence.
+ * @returns If the path exists.
+ */
+export function existsSync(path: string): Promise<boolean> {
+  try {
+    Deno.statSync(path);
+
+    return true;
+  } catch (error) {
+    if (error instanceof Deno.errors.NotFound) {
+      return false;
+    } else {
+      throw error;
+    }
+  }
+}
