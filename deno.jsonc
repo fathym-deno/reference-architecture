@@ -13,7 +13,7 @@
     "jsxImportSource": "preact"
   },
   "imports": {
-    "$dnt": "https://deno.land/x/dnt/mod.ts",
+    "$dnt": "https://deno.land/x/dnt@0.38.0/mod.ts",
   },
   "lock": false,
   "fmt": {

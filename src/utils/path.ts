@@ -24,7 +24,7 @@ export async function exists(path: string): Promise<boolean> {
  * @param path The path to check for existence.
  * @returns If the path exists.
  */
-export function existsSync(path: string): Promise<boolean> {
+export function existsSync(path: string): boolean {
   try {
     Deno.statSync(path);
 
