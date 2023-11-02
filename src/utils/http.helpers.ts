@@ -18,6 +18,7 @@ export function respond(
   }
 
   return new Response(body, {
-    ...init,
+    ...{ status: 200 },
+    ...(init || {}),
   });
 }
