@@ -1,3 +1,5 @@
+import { Status } from "$std/http/http_status.ts";
+
 export function redirectRequest(location: string, status = 303) {
   const headers = new Headers();
 
