@@ -11,7 +11,7 @@ export function redirectRequest(location: string, status = 303) {
 
 export function respond(
   body: string | Record<string, unknown>,
-  init: RequestInit | undefined
+  init?: RequestInit
 ) {
   if (typeof body !== 'string') {
     body = JSON.stringify(body);
