@@ -3,17 +3,17 @@ export function redirectRequest(location: string, status = 303) {
 
   headers.set('location', location);
 
-  return new Response(null, {
+  return respond(null, {
     status: status,
     headers,
   });
 }
 
 export function respond(
-  body: string | Record<string, unknown>,
-  init?: RequestInit
+  body: string | Record<string, unknown> | null,
+  init?: ResponseInit
 ) {
-  if (typeof body !== 'string') {
+  if (body && typeof body !== 'string') {
     body = JSON.stringify(body);
   }
 
