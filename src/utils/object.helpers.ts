@@ -1,7 +1,7 @@
 import deepmerge from "npm:ts-deepmerge";
 
 export function merge<T>(
-  ...inputs: Record<string | number | symbol, unknown>[]
+  ...inputs: object[]
 ): T {
   return deepmerge.withOptions(
     {
@@ -12,7 +12,7 @@ export function merge<T>(
 }
 
 export function mergeWithArrays<T>(
-  ...inputs: Record<string | number | symbol, unknown>[]
+  ...inputs: object[]
 ): T {
   return deepmerge.withOptions(
     {
