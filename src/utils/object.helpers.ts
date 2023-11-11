@@ -1,29 +1,23 @@
-// // // deno-lint-ignore-file no-explicit-any
-// // export function merge(
-// //   input: Record<string | number | symbol, unknown>,
-// //   update: Record<string | number | symbol, unknown>,
-// // ): Record<string | number | symbol, unknown> {
-// //   return Object.entries(input).reduce((acc, [key, value]) => {
-// //     if (!(key in update)) return { ...acc, [key]: value };
+import deepmerge from "npm:ts-deepmerge";
 
-// //     // TODO: How to handle arrays?  Currently overwrites with new array values
+export function merge<T>(
+  ...inputs: Record<string | number | symbol, unknown>[]
+): T {
+  return deepmerge.withOptions(
+    {
+      mergeArrays: false,
+    },
+    ...inputs,
+  ) as T;
+}
 
-// //     if (
-// //       typeof update[key] === "object" &&
-// //       update[key] !== null &&
-// //       update[key] !== undefined &&
-// //       !Array.isArray(update[key])
-// //     ) {
-// //       return { ...acc, [key]: merge((input as any)[key], update[key] as any) };
-// //     } else {
-// //       return { ...acc, [key]: update[key] };
-// //     }
-// //   }, {});
-// // }
-// import deepmerge from "npm:ts-deepmerge";
-
-// export const merge: {
-//   <T extends IObject[]>(...objects: T): TMerged<T[number]>;
-//   options: IOptions;
-//   withOptions<T_1 extends IObject[]>(options: Partial<IOptions>, ...objects: T_1): TMerged<T_1[number]>;
-// } = deepmerge;
+export function mergeWithArrays<T>(
+  ...inputs: Record<string | number | symbol, unknown>[]
+): T {
+  return deepmerge.withOptions(
+    {
+      mergeArrays: true,
+    },
+    ...inputs,
+  ) as T;
+}
