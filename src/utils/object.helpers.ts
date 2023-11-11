@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 export function merge(
-  input: Record<string | number | symbol, any>,
-  update: Record<string | number | symbol, any>,
-): Record<string | number | symbol, any> {
+  input: Record<string | number | symbol, unknown>,
+  update: Record<string | number | symbol, unknown>,
+): Record<string | number | symbol, unknown> {
   return Object.entries(input).reduce((acc, [key, value]) => {
     if (!(key in update)) return { ...acc, [key]: value };
 
@@ -14,7 +14,7 @@ export function merge(
       update[key] !== undefined &&
       !Array.isArray(update[key])
     ) {
-      return { ...acc, [key]: merge(input[key], update[key]) };
+      return { ...acc, [key]: merge((input as any)[key], update[key] as any) };
     } else {
       return { ...acc, [key]: update[key] };
     }
