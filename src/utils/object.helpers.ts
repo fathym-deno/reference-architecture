@@ -20,5 +20,6 @@
 //     }
 //   }, {});
 // }
+import deepmerge from "ts-deepmerge";
 
-export * from "npm:ts-deepmerge";
+export const merge = deepmerge;
