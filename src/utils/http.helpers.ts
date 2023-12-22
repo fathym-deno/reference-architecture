@@ -12,7 +12,7 @@ export function redirectRequest(location: string, status = 303) {
 }
 
 export function respond(
-  body: string | Record<string, unknown> | null,
+  body: string | Record<string, unknown> | unknown[] | null,
   init?: ResponseInit,
 ) {
   if (body && typeof body !== "string") {
