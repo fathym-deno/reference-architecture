@@ -1,4 +1,4 @@
-import { Status } from "$std/http/http_status.ts";
+import { STATUS_CODE } from "$std/http/status.ts";
 
 export function redirectRequest(location: string, status = 303) {
   const headers = new Headers();
@@ -20,7 +20,7 @@ export function respond(
   }
 
   return new Response(body, {
-    ...{ status: Status.OK },
+    ...{ status: STATUS_CODE.OK },
     ...(init || {}),
   });
 }
