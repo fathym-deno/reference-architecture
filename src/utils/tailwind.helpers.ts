@@ -84,13 +84,13 @@ export async function constructTailwindComponentsConfig(
 
   const builtConfigs = toBuildConfigs.map(
     (tbc) =>
-      `\t{
+      `{
 \t\tRoot: ${tbc.Root},
 \t\tComponents: [\n\t\t\t"${tbc.Components.join('",\n\t\t\t"')}",\n\t\t],
-\t},`,
+\t}`,
   );
 
-  const config = `export default [\n\t${builtConfigs.join(",\n\t")}];`;
+  const config = `export default [\n\t${builtConfigs.join(",\n\t")},\n];`;
 
   await Deno.writeTextFile(fileName, config, {
     create: true,
