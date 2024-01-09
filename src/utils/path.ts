@@ -5,11 +5,12 @@ export type FileListInput = {
 };
 
 export async function getFilesList(
+  meta: ImportMeta,
   input: FileListInput,
 ): Promise<string[]> {
   const foundFiles: string[] = [];
 
-  let dirPath = import.meta.resolve(input.Directory).replace("file:///", "");
+  let dirPath = meta.resolve(input.Directory).replace("file:///", "");
 
   // Fix for builds on GitHub Actions
   if (dirPath.startsWith("home")) {
@@ -19,7 +20,7 @@ export async function getFilesList(
   for await (const fileOrFolder of Deno.readDir(dirPath)) {
     if (fileOrFolder.isDirectory) {
       // If it's not ignored, recurse and search this folder for files.
-      const nestedFiles = await getFilesList({
+      const nestedFiles = await getFilesList(meta, {
         Directory: `${input.Directory}/${fileOrFolder.name}`,
         Extensions: input.Extensions,
       });

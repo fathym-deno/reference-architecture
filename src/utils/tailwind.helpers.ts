@@ -46,20 +46,23 @@ export async function buildTailwindComponentsConfigs(
 }
 
 export async function constructTailwindComponentsConfig(
+  meta: ImportMeta,
   fileSrcs: FileListInput[],
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
+  meta: ImportMeta,
   fileSrcs: FileListInput[],
   fileName: string,
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
+  meta: ImportMeta,
   fileSrcs: FileListInput[],
   fileName = "./tailwind.components.ts",
 ): Promise<void> {
   const fileCalls = fileSrcs!.map((fs) => {
-    return getFilesList(fs);
+    return getFilesList(meta, fs);
   });
 
   const files = (await Promise.all(fileCalls)).flatMap((f) => f);
