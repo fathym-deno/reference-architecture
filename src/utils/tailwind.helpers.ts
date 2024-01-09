@@ -79,7 +79,10 @@ export async function constructTailwindComponentsConfig(
       Root: 'import.meta.resolve("./")',
       Components: files,
     },
-    ...(configs || []),
+    ...(configs || []).map((cfg) => ({
+      Root: `'${cfg.Root}'`,
+      Components: files,
+    })),
   ];
 
   const builtConfigs = toBuildConfigs.map(
