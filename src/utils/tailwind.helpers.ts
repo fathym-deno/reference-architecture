@@ -81,7 +81,7 @@ export async function constructTailwindComponentsConfig(
     },
     ...(configs || []).map((cfg) => ({
       Root: `'${cfg.Root}'`,
-      Components: files,
+      Components: cfg.Components,
     })),
   ];
 
