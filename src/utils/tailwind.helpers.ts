@@ -1,4 +1,5 @@
 import * as path from "$std/path/mod.ts";
+import { Language, minify } from "../src.deps.ts";
 import { FileListInput, getFilesList } from "./path.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
@@ -34,9 +35,11 @@ export async function buildTailwindComponentsConfigs(
 
   const fileContents = await Promise.all(fileContentCalls);
 
+  const minFileContents = minify(Language.JS, fileContents.join("\n\n"));
+
   await Deno.writeTextFile(
     "./build/tailwind-components.config",
-    fileContents.join("\n\n"),
+    minFileContents,
     {
       create: true,
     },
