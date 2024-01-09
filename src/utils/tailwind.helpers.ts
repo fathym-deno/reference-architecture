@@ -34,8 +34,6 @@ export async function buildTailwindComponentsConfigs(
 
   const fileContents = await Promise.all(fileContentCalls);
 
-  console.log(fileContents.join("\n\n"));
-
   await Deno.writeTextFile(
     "./build/tailwind-components.config",
     fileContents.join("\n\n"),
