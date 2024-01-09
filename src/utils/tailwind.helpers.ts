@@ -48,31 +48,51 @@ export async function buildTailwindComponentsConfigs(
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
   fileSrcs: FileListInput[],
+  configs?: TailwindComponentsConfig[],
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
   fileSrcs: FileListInput[],
-  fileName: string,
+  configs?: TailwindComponentsConfig[],
+  fileName?: string,
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
   fileSrcs: FileListInput[],
-  fileName = "./tailwind.components.ts",
+  configs?: TailwindComponentsConfig[],
+  fileName?: string,
 ): Promise<void> {
+  if (!fileName) {
+    fileName = "./tailwind.components.ts";
+  }
+
   const fileCalls = fileSrcs!.map((fs) => {
     return getFilesList(meta, fs);
   });
 
   const files = (await Promise.all(fileCalls)).flatMap((f) => f);
 
-  const tailwindComponentsConfig = `export default {
-  \tRoot: import.meta.resolve("./"),
-  \tComponents: [\n\t\t"${files.join('",\n\t\t"')}"\n\t],
-  };`;
+  const toBuildConfigs: TailwindComponentsConfig[] = [
+    {
+      Root: 'import.meta.resolve("./")',
+      Components: files,
+    },
+    ...(configs || []),
+  ];
 
-  await Deno.writeTextFile(fileName, tailwindComponentsConfig, {
+  const builtConfigs = toBuildConfigs.map(
+    (tbc) =>
+      `\t{
+\t\tRoot: ${tbc.Root},
+\t\tComponents: [\n\t\t\t"${tbc.Components.join('",\n\t\t\t"')}",\n\t\t],
+\t},`,
+  );
+
+  const config = `export default [\n\t${builtConfigs.join(",\n\t")}];`;
+
+  await Deno.writeTextFile(fileName, config, {
     create: true,
   });
 }
