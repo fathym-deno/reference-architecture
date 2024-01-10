@@ -1,4 +1,4 @@
-import deepmerge from "npm:ts-deepmerge";
+import deepmerge from "https://esm.sh/ts-deepmerge@6.2.0";
 
 export function merge<T>(
   ...inputs: object[]
