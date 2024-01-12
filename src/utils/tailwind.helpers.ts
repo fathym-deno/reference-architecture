@@ -17,10 +17,8 @@ export async function buildTailwindComponentsConfigs(
       );
     } else {
       prev.push(
-        ...cc.Components.map(async (comp) => {
+        ...cc.Components.map(async (comp: string) => {
           const fileUrl = new URL(comp, cc.Root);
-
-          console.log(fileUrl);
 
           const fileFetch = await fetch(fileUrl);
 
