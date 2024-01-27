@@ -3,6 +3,18 @@ import { FileListInput, getFilesList } from "./path.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
 
+export async function appendTailwindComponentsConfig(
+  classes: string,
+): Promise<void> {
+  await Deno.writeTextFileSync(
+    "./build/tailwind-components.config",
+    `\n\n${classes}`,
+    {
+      append: true,
+    },
+  );
+}
+
 export async function buildTailwindComponentsConfigs(
   compConfigs: TailwindComponentsConfig[],
 ): Promise<void> {
