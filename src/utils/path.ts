@@ -1,8 +1,20 @@
+import { dirname } from "$std/path/mod.ts";
+
 export type FileListInput = {
   Directory: string;
 
   Extensions?: string[];
 };
+
+export function createIfNotExists(path: string): void {
+  const dir = dirname(path);
+
+  if (dir && !existsSync(dir)) {
+    console.log(`Ensuring directory ${dir}`);
+
+    Deno.mkdirSync(dir);
+  }
+}
 
 export async function getFilesList(
   meta: ImportMeta,

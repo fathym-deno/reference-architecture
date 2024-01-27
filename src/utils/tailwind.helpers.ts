@@ -1,11 +1,13 @@
 import * as path from "$std/path/mod.ts";
-import { FileListInput, getFilesList } from "./path.ts";
+import { createIfNotExists, FileListInput, getFilesList } from "./path.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
 
 export async function appendTailwindComponentsConfig(
   classes: string,
 ): Promise<void> {
+  createIfNotExists("./build/tailwind-components.config");
+
   await Deno.writeTextFileSync(
     "./build/tailwind-components.config",
     `\n\n${classes}`,
@@ -44,6 +46,8 @@ export async function buildTailwindComponentsConfigs(
   }, [] as Promise<string>[]);
 
   const fileContents = await Promise.all(fileContentCalls);
+
+  createIfNotExists("./build/tailwind-components.config");
 
   await Deno.writeTextFile(
     "./build/tailwind-components.config",
