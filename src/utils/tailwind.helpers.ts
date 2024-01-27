@@ -11,6 +11,7 @@ export async function appendTailwindComponentsConfig(
     `\n\n${classes}`,
     {
       append: true,
+      create: true,
     },
   );
 }
