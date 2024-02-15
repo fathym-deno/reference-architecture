@@ -1,4 +1,4 @@
-import { dirname } from "$std/path/mod.ts";
+import { dirname } from "../src.deps.ts";
 
 export type FileListInput = {
   Directory: string;

@@ -1,4 +1,4 @@
-import * as path from "$std/path/mod.ts";
+import { fromFileUrl } from "../src.deps.ts";
 import { createIfNotExists, FileListInput, getFilesList } from "./path.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
@@ -25,7 +25,7 @@ export async function buildTailwindComponentsConfigs(
     if (cc.Root.startsWith("file:///")) {
       prev.push(
         ...cc.Components.map((comp) => {
-          const fileUrl = path.fromFileUrl(`${cc.Root}${comp}`);
+          const fileUrl = fromFileUrl(`${cc.Root}${comp}`);
 
           return Deno.readTextFile(fileUrl);
         }),

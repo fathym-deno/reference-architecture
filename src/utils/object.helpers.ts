@@ -1,4 +1,4 @@
-import { deepMerge } from "$std/collections/mod.ts";
+import { deepMerge } from "../src.deps.ts";
 
 export function merge<T>(...inputs: object[]): T {
   return inputs.reduce((prev, cur) => {

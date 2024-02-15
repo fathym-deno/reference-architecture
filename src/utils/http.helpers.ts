@@ -1,4 +1,4 @@
-import { STATUS_CODE } from "$std/http/status.ts";
+import { STATUS_CODE } from "../src.deps.ts";
 
 export function redirectRequest(location: string, status = 303) {
   const headers = new Headers();
