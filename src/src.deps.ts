@@ -1,3 +1,28 @@
 export * from "https://deno.land/std@0.216.0/collections/mod.ts";
+export {
+  type ServerSentEventMessage,
+  ServerSentEventStream,
+} from "https://deno.land/std@0.216.0/http/server_sent_event_stream.ts";
 export * from "https://deno.land/std@0.216.0/http/status.ts";
 export * from "https://deno.land/std@0.216.0/path/mod.ts";
+// export * from "https://deno.land/x/deno_kv_oauth@v0.10.0/mod.ts";
+export * as DenoKVOAuth from "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts";
+import * as _parse from "npm:pdf-parse";
+import * as _azureSearch from "npm:@azure/search-documents";
+export {
+  AzureChatOpenAI,
+  AzureOpenAIEmbeddings,
+  type OpenAIBaseInput,
+} from "npm:@langchain/azure-openai";
+export { createStuffDocumentsChain } from "npm:langchain/chains/combine_documents";
+export { createRetrievalChain } from "npm:langchain/chains/retrieval";
+export {
+  AzureAISearchQueryType,
+  AzureAISearchVectorStore,
+} from "npm:@langchain/community/vectorstores/azure_aisearch";
+export { BaseMessage, BaseMessageChunk } from "npm:@langchain/core/messages";
+export {
+  type BaseMessagePromptTemplateLike,
+  ChatPromptTemplate,
+  MessagesPlaceholder,
+} from "npm:@langchain/core/prompts";
