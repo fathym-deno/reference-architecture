@@ -1,6 +1,32 @@
 import { STATUS_CODE } from "../src.deps.ts";
 
-export function redirectRequest(location: string, status = 303) {
+export function redirectRequest(location: string, status: number): Response;
+
+export function redirectRequest(
+  location: string,
+  preserve?: boolean,
+  permanent?: boolean,
+): Response;
+
+export function redirectRequest(
+  location: string,
+  statusPreserve?: number | boolean,
+  permanent?: boolean,
+): Response {
+  let status: number;
+
+  if (typeof statusPreserve === "number") {
+    status = statusPreserve;
+  } else {
+    if (statusPreserve) {
+      status = permanent
+        ? STATUS_CODE.PermanentRedirect
+        : STATUS_CODE.TemporaryRedirect;
+    } else {
+      status = permanent ? STATUS_CODE.MovedPermanently : STATUS_CODE.Found;
+    }
+  }
+
   const headers = new Headers();
 
   headers.set("location", location);
