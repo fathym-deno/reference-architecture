@@ -1,3 +1,4 @@
+// deno-lint-ignore-file no-explicit-any
 import { Runnable } from "npm:@langchain/core/runnables";
 import {
   AzureAISearchQueryType,
@@ -14,6 +15,23 @@ import {
   ServerSentEventStream,
   STATUS_CODE,
 } from "../src.deps.ts";
+
+export type OAuthHelpers = {
+  signIn(
+    request: Request,
+    options?: DenoKVOAuth.SignInOptions,
+  ): Promise<Response>;
+
+  handleCallback(request: Request): Promise<{
+    response: Response;
+    sessionId: string;
+    tokens: DenoKVOAuth.Tokens;
+  }>;
+
+  signOut(request: Request): Promise<Response>;
+
+  getSessionId(request: Request): Promise<string | undefined>;
+};
 
 export async function aiRAGChatRequest(
   req: Request,
@@ -44,7 +62,7 @@ export async function aiRAGChatRequest(
 
   let chain: Runnable;
 
-  let input = await req.json();
+  let input = req.bodyUsed ? await req.json() : undefined;
 
   if (searchEndpoint) {
     const combineDocsChain = await createStuffDocumentsChain({
@@ -239,24 +257,74 @@ export async function proxyRequest(
     });
   }
 
+  const headers = new Headers();
+
+  for (const header of req.headers.keys()) {
+    headers.set(header, req.headers.get(header)!);
+  }
+
+  // headers.set('x-forwarded-for', remoteAddr);
+
+  headers.set("x-forwarded-host", originalUrl.host);
+
+  headers.set("x-forwarded-proto", originalUrl.protocol);
+
+  headers.set("eac-forwarded-host", originalUrl.host);
+
+  headers.set("eac-forwarded-proto", originalUrl.protocol);
+
+  const proxyReqOptions = ["body", "bodyUsed", "method", "redirect", "signal"];
+
+  const reqInit: Record<string, unknown> = proxyReqOptions.reduce((ri, key) => {
+    ri[key] = (req as any)[key];
+
+    return ri;
+  }, {} as Record<string, unknown>);
+
   const proxyReq = new Request(proxyUrl, {
-    ...req,
-    headers: {
-      ...req.headers,
-      // 'x-forwarded-for': remoteAddr,
-      "x-forwarded-host": originalUrl.host,
-      "x-forwarded-proto": originalUrl.protocol,
-    },
+    ...reqInit,
+    headers,
   });
 
   let resp = await fetch(proxyReq, {
+    // method: proxyReq.method,
     redirect: "manual",
+    credentials: "include",
   });
 
   const redirectLocation = resp.headers.get("location");
 
   if (redirectLocation) {
-    resp = redirectRequest(redirectLocation, resp.status);
+    resp = redirectRequest(redirectLocation, resp.status, undefined, resp);
+  } else if (
+    resp.status === STATUS_CODE.SwitchingProtocols &&
+    resp.headers.get("upgrade") === "websocket"
+  ) {
+    const { socket, response } = Deno.upgradeWebSocket(req);
+
+    const wsProxy = new WebSocket(proxyUrl);
+
+    wsProxy.addEventListener("open", (_e) => {});
+
+    wsProxy.addEventListener("close", (_e) => {
+      socket.close();
+    });
+
+    wsProxy.addEventListener("message", (proxyMsg) => {
+      socket.send(proxyMsg.data);
+    });
+
+    socket.addEventListener("open", () => {});
+
+    socket.addEventListener("close", (_e) => {
+      wsProxy.close();
+    });
+
+    socket.addEventListener("message", (clientMsg) => {
+      wsProxy.send(clientMsg.data);
+    });
+
+    resp = response;
   }
 
   return resp;
@@ -266,36 +334,43 @@ export function redirectRequest(
   location: string,
   status: number,
   req?: Request,
+  resp?: Response,
 ): Response;
 
 export function redirectRequest(
   location: string,
-  preserve?: boolean,
-  permanent?: boolean,
-  req?: Request,
+  preserve: boolean,
+  permanent: boolean,
+  reqResp?: Request,
+  resp?: Response,
 ): Response;
 
 export function redirectRequest(
   location: string,
-  statusPreserve?: number | boolean,
-  permanentReq?: Request | boolean,
-  req?: Request,
+  statusPreserve: number | boolean,
+  reqPermanent?: Request | boolean,
+  respReq?: Response | Request,
+  resp?: Response,
 ): Response {
-  let permanent: boolean | undefined;
+  let preserve: boolean;
+  let permanent: boolean;
   let status: number;
-
-  if (typeof permanentReq === "object") {
-    req = permanentReq;
-
-    permanent = undefined;
-  } else {
-    permanent = permanentReq;
-  }
+  let req: Request;
 
   if (typeof statusPreserve === "number") {
     status = statusPreserve;
+
+    req = reqPermanent as Request;
+
+    resp = respReq as Response;
   } else {
-    if (statusPreserve) {
+    preserve = statusPreserve;
+
+    permanent = reqPermanent as boolean;
+
+    req = respReq as Request;
+
+    if (preserve) {
       status = permanent
         ? STATUS_CODE.PermanentRedirect
         : STATUS_CODE.TemporaryRedirect;
@@ -309,6 +384,12 @@ export function redirectRequest(
   }
 
   const headers = new Headers();
+
+  if (resp) {
+    for (const header of resp.headers.keys()) {
+      headers.set(header, resp.headers.get(header)!);
+    }
+  }
 
   headers.set("location", location);
 
