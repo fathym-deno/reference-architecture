@@ -10,28 +10,12 @@ import {
   createRetrievalChain,
   createStuffDocumentsChain,
   DenoKVOAuth,
+  OAuthHelpers,
   OpenAIBaseInput,
   ServerSentEventMessage,
   ServerSentEventStream,
   STATUS_CODE,
 } from "../src.deps.ts";
-
-export type OAuthHelpers = {
-  signIn(
-    request: Request,
-    options?: DenoKVOAuth.SignInOptions,
-  ): Promise<Response>;
-
-  handleCallback(request: Request): Promise<{
-    response: Response;
-    sessionId: string;
-    tokens: DenoKVOAuth.Tokens;
-  }>;
-
-  signOut(request: Request): Promise<Response>;
-
-  getSessionId(request: Request): Promise<string | undefined>;
-};
 
 export async function aiRAGChatRequest(
   req: Request,
@@ -143,13 +127,60 @@ export async function aiRAGChatRequest(
   return resp;
 }
 
-export async function oAuthRequest(
-  req: Request,
+export function createOAuthHelpers(
+  oAuthConfig: DenoKVOAuth.OAuth2ClientConfig,
+): OAuthHelpers {
+  const helpers = DenoKVOAuth.createHelpers(oAuthConfig);
+
+  return helpers;
+}
+
+export function creatAzureADB2COAuthConfig(
+  clientId: string,
+  clientSecret: string,
+  domain: string,
+  policyName: string,
+  tenantId: string,
+  scope: string[],
+): DenoKVOAuth.OAuth2ClientConfig {
+  const authEndpointUri =
+    `https://${domain}/${tenantId}/${policyName}/oauth2/v2.0/authorize`;
+
+  const tokenUri =
+    `https://${domain}/${tenantId}/${policyName}/oauth2/v2.0/token`;
+
+  const oAuthConfig: DenoKVOAuth.OAuth2ClientConfig = {
+    clientId,
+    clientSecret,
+    authorizationEndpointUri: authEndpointUri,
+    tokenUri,
+    defaults: { scope: scope },
+  };
+
+  return oAuthConfig;
+}
+
+export function creatOAuthConfig(
   clientId: string,
   clientSecret: string,
   authorizationEndpointUri: string,
   tokenUri: string,
   scope: string[],
+): DenoKVOAuth.OAuth2ClientConfig {
+  const oAuthConfig: DenoKVOAuth.OAuth2ClientConfig = {
+    clientId,
+    clientSecret,
+    authorizationEndpointUri,
+    tokenUri,
+    defaults: { scope: scope },
+  };
+
+  return oAuthConfig;
+}
+
+export async function oAuthRequest(
+  req: Request,
+  oAuthConfig: DenoKVOAuth.OAuth2ClientConfig,
   completeCallback: (
     tokens: DenoKVOAuth.Tokens,
     newSessionId: string,
@@ -167,15 +198,7 @@ export async function oAuthRequest(
     oAuthPath = `/${oAuthPath}`;
   }
 
-  const oAuthConfig: DenoKVOAuth.OAuth2ClientConfig = {
-    clientId,
-    clientSecret,
-    authorizationEndpointUri,
-    tokenUri,
-    defaults: { scope: scope },
-  };
-
-  const helpers = DenoKVOAuth.createHelpers(oAuthConfig);
+  const helpers = createOAuthHelpers(oAuthConfig);
 
   let resp: Response;
 

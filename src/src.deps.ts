@@ -7,6 +7,7 @@ export * from "https://deno.land/std@0.216.0/http/status.ts";
 export * from "https://deno.land/std@0.216.0/path/mod.ts";
 // export * from "https://deno.land/x/deno_kv_oauth@v0.10.0/mod.ts";
 export * as DenoKVOAuth from "https://raw.githubusercontent.com/fathym-deno/deno_kv_oauth/main/mod.ts";
+export * from "https://deno.land/x/fathym_common@v0.0.142/mod.ts";
 import * as _parse from "npm:pdf-parse";
 import * as _azureSearch from "npm:@azure/search-documents";
 export {
