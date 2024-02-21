@@ -46,7 +46,9 @@ export async function aiRAGChatRequest(
 
   let chain: Runnable;
 
-  let input = req.bodyUsed ? await req.json() : undefined;
+  let input = req.method.toLowerCase() === "post"
+    ? await req.json()
+    : undefined;
 
   if (searchEndpoint) {
     const combineDocsChain = await createStuffDocumentsChain({
