@@ -254,6 +254,7 @@ export async function proxyRequest(
   req: Request,
   proxyRoot: string,
   basePattern?: string,
+  redirectMode?: "error" | "follow" | "manual",
   // remoteAddr?: string,
 ): Promise<Response> {
   const originalUrl = new URL(req.url);
@@ -265,7 +266,7 @@ export async function proxyRequest(
 
     const patternResult = pattern.exec(req.url);
 
-    proxyUrl.pathname += patternResult!.pathname.groups[0]!;
+    proxyUrl.pathname += patternResult!.pathname.groups[0] || "";
   }
 
   for (const queryParam of originalUrl.searchParams.keys()) {
@@ -311,7 +312,7 @@ export async function proxyRequest(
 
   let resp = await fetch(proxyReq, {
     // method: proxyReq.method,
-    redirect: "manual",
+    redirect: redirectMode || "manual",
     credentials: "include",
   });
 
