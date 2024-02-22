@@ -312,8 +312,6 @@ export async function proxyRequest(
     headers,
   });
 
-  console.log(proxyReq.headers);
-
   let resp = await fetch(proxyReq, {
     // method: proxyReq.method,
     redirect: redirectMode || "manual",
