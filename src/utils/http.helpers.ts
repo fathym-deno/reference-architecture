@@ -295,9 +295,9 @@ export async function proxyRequest(
 
   headers.set("x-forwarded-proto", originalUrl.protocol);
 
-  headers.set("eac-forwarded-host", originalUrl.host);
+  headers.set("x-eac-forwarded-host", originalUrl.host);
 
-  headers.set("eac-forwarded-proto", originalUrl.protocol);
+  headers.set("x-eac-forwarded-proto", originalUrl.protocol);
 
   const proxyReqOptions = ["body", "bodyUsed", "method", "redirect", "signal"];
 
