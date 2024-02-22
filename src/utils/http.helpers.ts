@@ -353,6 +353,8 @@ export async function proxyRequest(
     });
 
     resp = response;
+  } else if (!resp.headers.has("access-control-allow-origin")) {
+    resp.headers.set("access-control-allow-origin", originalUrl.host);
   }
 
   return resp;
