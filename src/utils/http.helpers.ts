@@ -180,6 +180,23 @@ export function creatOAuthConfig(
   return oAuthConfig;
 }
 
+export function establishHeaders(
+  headers: Headers,
+  headersInit: Record<string, string>,
+): Headers {
+  const newHeaders = new Headers();
+
+  for (const hdr of headers.keys()) {
+    newHeaders.set(hdr, headers.get(hdr)!);
+  }
+
+  Object.keys(headersInit).forEach((hdr) => {
+    newHeaders.set(hdr, headersInit[hdr]);
+  });
+
+  return newHeaders;
+}
+
 export async function oAuthRequest(
   req: Request,
   oAuthConfig: DenoKVOAuth.OAuth2ClientConfig,
@@ -252,11 +269,46 @@ export async function oAuthRequest(
   return resp;
 }
 
+export function processCacheControlHeaders(
+  resp: Response,
+  cacheControl?: Record<string, string>,
+  forceCache?: boolean,
+): Response {
+  if (cacheControl) {
+    const cacheControlRegexs = Object.keys(cacheControl);
+
+    if (
+      forceCache ||
+      cacheControlRegexs.some((ccr) =>
+        new RegExp(ccr, "i").test(resp.headers.get("content-type") || "")
+      )
+    ) {
+      const cacheControlKey = cacheControlRegexs.find((ccr) =>
+        new RegExp(ccr, "i").test(resp.headers.get("content-type")!)
+      );
+
+      if (cacheControlKey) {
+        resp = new Response(resp.body, {
+          headers: establishHeaders(resp.headers, {
+            "cache-control": cacheControl[cacheControlKey],
+          }),
+          status: resp.status,
+          statusText: resp.statusText,
+        });
+      }
+    }
+  }
+
+  return resp;
+}
+
 export async function proxyRequest(
   req: Request,
   proxyRoot: string,
   basePattern?: string,
   redirectMode?: "error" | "follow" | "manual",
+  cacheControl?: Record<string, string>,
+  forceCache?: boolean,
   // remoteAddr?: string,
 ): Promise<Response> {
   const originalUrl = new URL(req.url);
@@ -283,21 +335,13 @@ export async function proxyRequest(
     });
   }
 
-  const headers = new Headers();
-
-  for (const header of req.headers.keys()) {
-    headers.set(header, req.headers.get(header)!);
-  }
-
-  // headers.set('x-forwarded-for', remoteAddr);
-
-  headers.set("x-forwarded-host", originalUrl.host);
-
-  headers.set("x-forwarded-proto", originalUrl.protocol);
-
-  headers.set("x-eac-forwarded-host", originalUrl.host);
-
-  headers.set("x-eac-forwarded-proto", originalUrl.protocol);
+  const headers = establishHeaders(req.headers, {
+    // 'x-forwarded-for': remoteAddr,
+    "x-forwarded-host": originalUrl.host,
+    "x-forwarded-proto": originalUrl.protocol,
+    "x-eac-forwarded-host": originalUrl.host,
+    "x-eac-forwarded-proto": originalUrl.protocol,
+  });
 
   const proxyReqOptions = ["body", "bodyUsed", "method", "redirect", "signal"];
 
@@ -351,6 +395,8 @@ export async function proxyRequest(
     });
 
     resp = response;
+  } else if (cacheControl) {
+    resp = processCacheControlHeaders(resp, cacheControl, forceCache);
   }
 
   return resp;
@@ -409,15 +455,9 @@ export function redirectRequest(
     // TODO(mcgear): Add basePattern to call, and if req provided, run basePattern and append to the location
   }
 
-  const headers = new Headers();
-
-  if (resp) {
-    for (const header of resp.headers.keys()) {
-      headers.set(header, resp.headers.get(header)!);
-    }
-  }
-
-  headers.set("location", location);
+  const headers = establishHeaders(resp?.headers || new Headers(), {
+    location: location,
+  });
 
   return respond(null, {
     status: status,
