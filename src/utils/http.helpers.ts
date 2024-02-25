@@ -1,48 +1,31 @@
 // deno-lint-ignore-file no-explicit-any
 import { Runnable } from "npm:@langchain/core/runnables";
 import {
-  AzureAISearchQueryType,
-  AzureAISearchVectorStore,
-  AzureChatOpenAI,
-  AzureOpenAIEmbeddings,
+  BaseLanguageModel,
   BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   createRetrievalChain,
   createStuffDocumentsChain,
   DenoKVOAuth,
   OAuthHelpers,
-  OpenAIBaseInput,
   ServerSentEventMessage,
   ServerSentEventStream,
   STATUS_CODE,
+  VectorStore,
 } from "../src.deps.ts";
 
-export async function aiRAGChatRequest(
+export async function aiChatRequest(
   req: Request,
-  endpoint: string,
-  apiKey: string,
-  deploymentName: string,
-  modelName: string,
-  messages: BaseMessagePromptTemplateLike[],
-  useSSEFormat: boolean,
-  inputParams?: Partial<OpenAIBaseInput>,
-  embeddingDeploymentName?: string,
-  searchEndpoint?: string,
-  searchApiKey?: string,
+  llm: BaseLanguageModel,
+  messages?: BaseMessagePromptTemplateLike[],
+  useSSEFormat?: boolean,
+  defaultInput?: any,
+  vectorStore?: VectorStore,
+  defaultRAGInput?: any,
 ): Promise<Response> {
-  const model = new AzureChatOpenAI({
-    azureOpenAIEndpoint: endpoint,
-    azureOpenAIApiKey: apiKey,
-    azureOpenAIEmbeddingsApiDeploymentName: deploymentName,
-    modelName: modelName,
-    temperature: 0.7,
-    // maxTokens: 1000,
-    maxRetries: 5,
-    verbose: true,
-    ...(inputParams || {}),
-  });
-
-  const questionAnsweringPrompt = ChatPromptTemplate.fromMessages(messages);
+  const questionAnsweringPrompt = ChatPromptTemplate.fromMessages(
+    messages || [],
+  );
 
   let chain: Runnable;
 
@@ -50,24 +33,10 @@ export async function aiRAGChatRequest(
     ? await req.json()
     : undefined;
 
-  if (searchEndpoint) {
+  if (vectorStore) {
     const combineDocsChain = await createStuffDocumentsChain({
-      llm: model,
+      llm: llm,
       prompt: questionAnsweringPrompt,
-    });
-
-    const embeddings = new AzureOpenAIEmbeddings({
-      azureOpenAIEndpoint: endpoint,
-      azureOpenAIApiKey: apiKey,
-      azureOpenAIEmbeddingsApiDeploymentName: embeddingDeploymentName,
-    });
-
-    const vectorStore = new AzureAISearchVectorStore(embeddings, {
-      endpoint: searchEndpoint,
-      key: searchApiKey,
-      search: {
-        type: AzureAISearchQueryType.SimilarityHybrid,
-      },
     });
 
     chain = await createRetrievalChain({
@@ -75,16 +44,11 @@ export async function aiRAGChatRequest(
       combineDocsChain,
     });
 
-    input ??= {
-      input: "Tell me about Fathym Inc",
-    };
+    input ??= defaultRAGInput || {};
   } else {
-    chain = questionAnsweringPrompt.pipe(model);
+    chain = questionAnsweringPrompt.pipe(llm);
 
-    input ??= {
-      input: "Tell me about Fathym Inc",
-      context: "",
-    };
+    input ??= defaultInput || {};
   }
 
   // TODO(mcgear): Add support for chat history

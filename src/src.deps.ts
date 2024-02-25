@@ -21,9 +21,16 @@ export {
   AzureAISearchQueryType,
   AzureAISearchVectorStore,
 } from "npm:@langchain/community/vectorstores/azure_aisearch";
+export { Embeddings } from "npm:@langchain/core/embeddings";
+export {
+  BaseLanguageModel,
+  type BaseLanguageModelCallOptions,
+} from "npm:@langchain/core/language_models/base";
+export { BaseChatModel } from "npm:@langchain/core/language_models/chat_models";
 export { BaseMessage, BaseMessageChunk } from "npm:@langchain/core/messages";
 export {
   type BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   MessagesPlaceholder,
 } from "npm:@langchain/core/prompts";
+export { VectorStore } from "npm:@langchain/core/vectorstores";
