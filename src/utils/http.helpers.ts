@@ -7,12 +7,28 @@ import {
   createRetrievalChain,
   createStuffDocumentsChain,
   DenoKVOAuth,
-  OAuthHelpers,
   ServerSentEventMessage,
   ServerSentEventStream,
   STATUS_CODE,
   VectorStore,
 } from "../src.deps.ts";
+
+export type OAuthHelpers = {
+  signIn(
+    request: Request,
+    options?: DenoKVOAuth.SignInOptions,
+  ): Promise<Response>;
+
+  handleCallback(request: Request): Promise<{
+    response: Response;
+    sessionId: string;
+    tokens: DenoKVOAuth.Tokens;
+  }>;
+
+  signOut(request: Request): Promise<Response>;
+
+  getSessionId(request: Request): Promise<string | undefined>;
+};
 
 export async function aiChatRequest(
   req: Request,
