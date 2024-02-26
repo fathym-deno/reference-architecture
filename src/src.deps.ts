@@ -1,4 +1,4 @@
-export * from "https://deno.land/std@0.216.0/collections/mod.ts";
+export * from "../deps.ts";
 export {
   type ServerSentEventMessage,
   ServerSentEventStream,

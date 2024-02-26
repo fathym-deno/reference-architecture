@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { assertEquals, describe } from "../test.deps.ts";
-import { merge } from "../../src/utils/object.helpers.ts";
+import { merge } from "../../src/utils/merge.helpers.ts";
 
 describe("Object Helpers Tests", () => {
   describe("Merge Test - 2 Objects", () => {

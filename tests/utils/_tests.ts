@@ -1,1 +1,1 @@
-import "./object.helpers.tests.ts";
+import "./merge.helpers.tests.ts";
