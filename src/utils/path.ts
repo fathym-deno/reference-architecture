@@ -18,12 +18,13 @@ export function createIfNotExists(path: string): void {
 }
 
 export async function getFilesList(
-  meta: ImportMeta,
   input: FileListInput,
+  meta?: ImportMeta,
 ): Promise<string[]> {
   const foundFiles: string[] = [];
 
-  let dirPath = meta.resolve(input.Directory).replace("file:///", "");
+  let dirPath = meta?.resolve(input.Directory).replace("file:///", "") ||
+    input.Directory;
 
   // Fix for builds on GitHub Actions
   if (dirPath.startsWith("home")) {
@@ -33,10 +34,14 @@ export async function getFilesList(
   for await (const fileOrFolder of Deno.readDir(dirPath)) {
     if (fileOrFolder.isDirectory) {
       // If it's not ignored, recurse and search this folder for files.
-      const nestedFiles = await getFilesList(meta, {
-        Directory: `${input.Directory}/${fileOrFolder.name}`,
-        Extensions: input.Extensions,
-      });
+      const nestedFiles = await getFilesList(
+        {
+          Directory: `${input.Directory}/${fileOrFolder.name}`,
+          Extensions: input.Extensions,
+        },
+        meta,
+      );
+
       foundFiles.push(...nestedFiles);
     } else {
       // We found a file, so store it.
