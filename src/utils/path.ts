@@ -36,7 +36,7 @@ export async function getFilesList(
       // If it's not ignored, recurse and search this folder for files.
       const nestedFiles = await getFilesList(
         {
-          Directory: `${input.Directory}/${fileOrFolder.name}`,
+          Directory: `${input.Directory}${fileOrFolder.name}/`,
           Extensions: input.Extensions,
         },
         meta,
@@ -45,7 +45,7 @@ export async function getFilesList(
       foundFiles.push(...nestedFiles);
     } else {
       // We found a file, so store it.
-      foundFiles.push(`${input.Directory}/${fileOrFolder.name}`);
+      foundFiles.push(`${input.Directory}${fileOrFolder.name}`);
     }
   }
 
