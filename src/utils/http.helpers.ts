@@ -257,12 +257,7 @@ export function processCacheControlHeaders(
   if (cacheControl) {
     const cacheControlRegexs = Object.keys(cacheControl);
 
-    if (
-      forceCache ||
-      cacheControlRegexs.some((ccr) =>
-        new RegExp(ccr, "i").test(resp.headers.get("content-type") || "")
-      )
-    ) {
+    if (forceCache || !resp.headers.has("cache-control")) {
       const cacheControlKey = cacheControlRegexs.find((ccr) =>
         new RegExp(ccr, "i").test(resp.headers.get("content-type")!)
       );
