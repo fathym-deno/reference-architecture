@@ -4,4 +4,5 @@ export * from "./library.helpers.ts";
 export * from "./merge.helpers.ts";
 export * from "./path.ts";
 export * from "./path/exists.ts";
+export * from "./stream.helpers.ts";
 export * from "./tailwind.helpers.ts";
