@@ -10,12 +10,13 @@ export async function exists(path: string): Promise<boolean> {
     await Deno.stat(path);
 
     return true;
-  } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
-      return false;
-    } else {
-      throw error;
-    }
+  } catch {
+    return false;
+    //   if (error instanceof Deno.errors.NotFound) {
+    //   return false;
+    // } else {
+    //   throw error;
+    // }
   }
 }
 
@@ -30,11 +31,12 @@ export function existsSync(path: string): boolean {
     Deno.statSync(path);
 
     return true;
-  } catch (error) {
-    if (error instanceof Deno.errors.NotFound) {
-      return false;
-    } else {
-      throw error;
-    }
+  } catch {
+    return false;
+    //   if (error instanceof Deno.errors.NotFound) {
+    //   return false;
+    // } else {
+    //   throw error;
+    // }
   }
 }
