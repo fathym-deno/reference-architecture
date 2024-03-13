@@ -185,13 +185,9 @@ export async function oAuthRequest(
     newSessionId: string,
     oldSessionId?: string,
   ) => Promise<void>,
-  basePattern?: string,
+  path: string,
 ): Promise<Response> {
-  const pattern = new URLPattern({ pathname: basePattern || "/*" });
-
-  const patternResult = pattern.exec(req.url);
-
-  let oAuthPath = patternResult!.pathname.groups[0]!;
+  let oAuthPath = path;
 
   if (!oAuthPath.startsWith("/")) {
     oAuthPath = `/${oAuthPath}`;
@@ -209,10 +205,7 @@ export async function oAuthRequest(
 
       const proto = req.headers.get("x-forwarded-proto") || url.protocol;
 
-      const callbackPath = patternResult!.pathname.input.replace(
-        oAuthPath,
-        "/callback",
-      );
+      const callbackPath = path.replace(oAuthPath, "/callback");
 
       resp = await helpers.signIn(req, {
         urlParams: {
@@ -280,23 +273,22 @@ export function processCacheControlHeaders(
 export async function proxyRequest(
   req: Request,
   proxyRoot: string,
-  basePattern?: string,
+  base: string,
+  path: string,
+  search?: string,
+  hash?: string,
   redirectMode?: "error" | "follow" | "manual",
   cacheControl?: Record<string, string>,
   forceCache?: boolean,
   // remoteAddr?: string,
 ): Promise<Response> {
-  const originalUrl = new URL(req.url);
+  const originalUrl = new URL(path, base);
 
-  const proxyUrl = new URL(proxyRoot);
+  originalUrl.hash = hash || "";
 
-  if (basePattern) {
-    const pattern = new URLPattern({ pathname: basePattern });
+  originalUrl.search = search || "";
 
-    const patternResult = pattern.exec(req.url);
-
-    proxyUrl.pathname += patternResult!.pathname.groups[0] || "";
-  }
+  const proxyUrl = new URL(path, proxyRoot);
 
   for (const queryParam of originalUrl.searchParams.keys()) {
     const queryValues = originalUrl.searchParams.getAll(queryParam);
@@ -310,6 +302,8 @@ export async function proxyRequest(
     });
   }
 
+  proxyUrl.hash = originalUrl.hash ?? proxyUrl.hash;
+
   const headers = establishHeaders(req.headers, {
     // 'x-forwarded-for': remoteAddr,
     "x-forwarded-host": originalUrl.host,
@@ -318,7 +312,7 @@ export async function proxyRequest(
     "x-eac-forwarded-proto": originalUrl.protocol,
   });
 
-  const proxyReqOptions = ["body", "bodyUsed", "method", "redirect", "signal"];
+  const proxyReqOptions = ["body", "method", "redirect", "signal"];
 
   const reqInit: Record<string, unknown> = proxyReqOptions.reduce((ri, key) => {
     ri[key] = (req as any)[key];
