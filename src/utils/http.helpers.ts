@@ -282,15 +282,13 @@ export async function proxyRequest(
   forceCache?: boolean,
   // remoteAddr?: string,
 ): Promise<Response> {
-  path = path.startsWith(`/`) ? `.${path}` : path;
-
-  const originalUrl = new URL(path, base);
+  const originalUrl = new URL(`${base}${path}`);
 
   originalUrl.hash = hash || "";
 
   originalUrl.search = search || "";
 
-  const proxyUrl = new URL(path, proxyRoot);
+  const proxyUrl = new URL(`${proxyRoot}${path}`);
 
   for (const queryParam of originalUrl.searchParams.keys()) {
     const queryValues = originalUrl.searchParams.getAll(queryParam);
