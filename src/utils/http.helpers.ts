@@ -185,12 +185,13 @@ export async function oAuthRequest(
     newSessionId: string,
     oldSessionId?: string,
   ) => Promise<void>,
+  root: string,
   path: string,
 ): Promise<Response> {
   let oAuthPath = path;
 
-  if (!oAuthPath.startsWith("/")) {
-    oAuthPath = `/${oAuthPath}`;
+  if (oAuthPath.startsWith("/")) {
+    oAuthPath = oAuthPath.substring(1);
   }
 
   const helpers = createOAuthHelpers(oAuthConfig);
@@ -198,25 +199,21 @@ export async function oAuthRequest(
   let resp: Response;
 
   switch (oAuthPath) {
-    case "/signin": {
-      const url = new URL(req.url);
+    case "signin": {
+      let callbackPath = oAuthPath.replace(oAuthPath, "callback");
 
-      const host = req.headers.get("x-forwarded-host") || url.host;
-
-      const proto = req.headers.get("x-forwarded-proto") || url.protocol;
-
-      const callbackPath = path.replace(oAuthPath, "/callback");
+      callbackPath = `${root}${callbackPath}`;
 
       resp = await helpers.signIn(req, {
         urlParams: {
-          redirect_uri: `${proto}//${host}${callbackPath}`,
+          redirect_uri: callbackPath,
         },
       });
 
       break;
     }
 
-    case "/callback": {
+    case "callback": {
       const oldSessionId = await helpers.getSessionId(req);
 
       const { response, tokens, sessionId } = await helpers.handleCallback(req);
@@ -228,7 +225,7 @@ export async function oAuthRequest(
       break;
     }
 
-    case "/signout": {
+    case "signout": {
       resp = await helpers.signOut(req);
 
       break;
