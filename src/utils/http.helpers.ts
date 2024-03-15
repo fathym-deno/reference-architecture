@@ -282,6 +282,8 @@ export async function proxyRequest(
   forceCache?: boolean,
   // remoteAddr?: string,
 ): Promise<Response> {
+  path = path.startsWith(`/`) ? `.${path}` : path;
+
   const originalUrl = new URL(path, base);
 
   originalUrl.hash = hash || "";
