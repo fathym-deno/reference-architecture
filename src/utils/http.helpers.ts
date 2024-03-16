@@ -142,7 +142,7 @@ export function creatAzureADB2COAuthConfig(
   return oAuthConfig;
 }
 
-export function creatGitHubOAuthConfig(
+export function createGitHubOAuthConfig(
   clientId: string,
   clientSecret: string,
   scope: string[],
