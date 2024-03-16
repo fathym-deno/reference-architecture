@@ -142,6 +142,22 @@ export function creatAzureADB2COAuthConfig(
   return oAuthConfig;
 }
 
+export function creatGitHubAppOAuthConfig(
+  clientId: string,
+  clientSecret: string,
+  scope: string[],
+): DenoKVOAuth.OAuth2ClientConfig {
+  const oAuthConfig: DenoKVOAuth.OAuth2ClientConfig = {
+    clientId,
+    clientSecret,
+    authorizationEndpointUri: "https://github.com/login/oauth/authorize",
+    tokenUri: "https://github.com/login/oauth/access_token",
+    defaults: { scope: scope },
+  };
+
+  return oAuthConfig;
+}
+
 export function creatOAuthConfig(
   clientId: string,
   clientSecret: string,
