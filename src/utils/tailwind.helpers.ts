@@ -82,7 +82,7 @@ export async function constructTailwindComponentsConfig(
   }
 
   const fileCalls = fileSrcs!.map((fs) => {
-    return getFilesList(meta, fs);
+    return getFilesList(fs, meta);
   });
 
   const files = (await Promise.all(fileCalls)).flatMap((f) => f);
