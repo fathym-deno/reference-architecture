@@ -1,4 +1,4 @@
-import { DenoKVOAuth } from "../src.deps.ts";
+import { DenoKVOAuth } from "../deno.deps.ts";
 
 export type OAuthHelpers = {
   signIn(
