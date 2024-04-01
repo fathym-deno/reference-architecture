@@ -125,7 +125,7 @@ export async function oAuthRequest(
 
       const { response, tokens, sessionId } = await helpers.handleCallback(req);
 
-      completeCallback(tokens, sessionId, oldSessionId);
+      await completeCallback(tokens, sessionId, oldSessionId);
 
       resp = response;
 
