@@ -129,6 +129,8 @@ export async function oAuthRequest(
 
       resp = response;
 
+      response.headers.set("OAUTH_SESSION_ID", sessionId);
+
       break;
     }
 
