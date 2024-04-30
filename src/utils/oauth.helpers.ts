@@ -50,6 +50,25 @@ export function creatAzureADB2COAuthConfig(
   return oAuthConfig;
 }
 
+export function creatAzureADOAuthConfig(
+  clientId: string,
+  clientSecret: string,
+  tenantId: string,
+  scope: string[],
+): DenoKVOAuth.OAuth2ClientConfig {
+  const baseUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0`;
+
+  const oAuthConfig: DenoKVOAuth.OAuth2ClientConfig = {
+    clientId,
+    clientSecret,
+    authorizationEndpointUri: `${baseUrl}/authorize`,
+    tokenUri: `${baseUrl}/token`,
+    defaults: { scope: scope },
+  };
+
+  return oAuthConfig;
+}
+
 export function createGitHubOAuthConfig(
   clientId: string,
   clientSecret: string,
