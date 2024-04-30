@@ -50,7 +50,7 @@ export function creatAzureADB2COAuthConfig(
   return oAuthConfig;
 }
 
-export function creatAzureADOAuthConfig(
+export function createAzureADOAuthConfig(
   clientId: string,
   clientSecret: string,
   tenantId: string,
