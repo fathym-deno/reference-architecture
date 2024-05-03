@@ -63,7 +63,9 @@ export function createAzureADOAuthConfig(
     clientSecret,
     authorizationEndpointUri: `${baseUrl}/authorize`,
     tokenUri: `${baseUrl}/token`,
-    defaults: { scope: scope },
+    defaults: {
+      scope: scope,
+    },
   };
 
   return oAuthConfig;
