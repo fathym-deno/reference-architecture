@@ -1,4 +1,5 @@
 import { DenoKVOAuth } from "../deno.deps.ts";
+import { redirectRequest } from "./http.helpers.ts";
 
 export type OAuthHelpers = {
   signIn(
@@ -142,15 +143,23 @@ export async function oAuthRequest(
     }
 
     case "callback": {
-      const oldSessionId = await helpers.getSessionId(req);
+      try {
+        const oldSessionId = await helpers.getSessionId(req);
 
-      const { response, tokens, sessionId } = await helpers.handleCallback(req);
+        const { response, tokens, sessionId } = await helpers.handleCallback(
+          req,
+        );
 
-      await completeCallback(tokens, sessionId, oldSessionId);
+        await completeCallback(tokens, sessionId, oldSessionId);
 
-      resp = response;
+        resp = response;
 
-      response.headers.set("OAUTH_SESSION_ID", sessionId);
+        resp.headers.set("OAUTH_SESSION_ID", sessionId);
+      } catch {
+        const signInPath = oAuthPath.replace(oAuthPath, "signin");
+
+        resp = redirectRequest(`${root}${signInPath}`, false, false);
+      }
 
       break;
     }
