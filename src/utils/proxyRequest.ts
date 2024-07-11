@@ -11,6 +11,7 @@ export async function proxyRequest(
   proxyRoot: string,
   base: string,
   path: string,
+  headers?: Record<string, string>,
   search?: string,
   hash?: string,
   redirectMode?: "error" | "follow" | "manual",
@@ -39,12 +40,15 @@ export async function proxyRequest(
 
   proxyUrl.hash = originalUrl.hash ?? proxyUrl.hash;
 
-  const headers = establishHeaders(req.headers, {
+  let reqHeaders = establishHeaders(req.headers, headers || {});
+
+  reqHeaders = establishHeaders(reqHeaders, {
     // 'x-forwarded-for': remoteAddr,
     "x-forwarded-host": originalUrl.host,
     "x-forwarded-proto": originalUrl.protocol,
     "x-eac-forwarded-host": originalUrl.host,
     "x-eac-forwarded-proto": originalUrl.protocol,
+    "x-eac-forwarded-path": originalUrl.pathname,
   });
 
   const proxyReqOptions = ["body", "method", "redirect", "signal"];
@@ -57,7 +61,7 @@ export async function proxyRequest(
 
   const proxyReq = new Request(proxyUrl, {
     ...reqInit,
-    headers,
+    headers: reqHeaders,
   });
 
   let resp = await fetch(proxyReq, {
