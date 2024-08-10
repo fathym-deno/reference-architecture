@@ -5,3 +5,4 @@ export {
 } from "jsr:@std/http@^1.0.2/server-sent-event-stream";
 export * from "jsr:@std/http@^1.0.2/status";
 export * from "jsr:@std/path@^1.0.2";
+export { BehaviorSubject, type Observable } from "npm:rxjs@7.8.1";

@@ -2,7 +2,7 @@
 // import * as signalR from "npm:@aspnet/signalr";
 // import { EventEmitter } from "node:events";
 
-// import { Observable } from "npm:rxjs";
+// import { Observable } from "../src.deps.ts";
 
 // export class RealTimeConnection extends EventEmitter {
 //   //  Fields

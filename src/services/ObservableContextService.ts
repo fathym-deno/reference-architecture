@@ -1,4 +1,4 @@
-import { BehaviorSubject, type Observable } from "npm:rxjs";
+import { BehaviorSubject, type Observable } from "../src.deps.ts";
 
 export abstract class ObservableContextService<T> {
   // 	Fields

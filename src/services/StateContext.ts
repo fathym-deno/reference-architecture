@@ -1,4 +1,4 @@
-// import { BehaviorSubject, Observable, Subject } from "npm:rxjs";
+// import { BehaviorSubject, Observable, Subject } from "../src.deps.ts";
 // import { Status } from "../status.ts";
 // import { RealTimeConnection } from "./RealTimeConnection.ts";
 // import { ObservableContextService } from "./ObservableContextService.ts";
