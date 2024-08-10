@@ -1,9 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
-import { assertEquals, describe } from "../test.deps.ts";
+import { assertEquals } from "../test.deps.ts";
 import { merge } from "../../src/utils/merge.helpers.ts";
 
-describe("Object Helpers Tests", () => {
-  describe("Merge Test - 2 Objects", () => {
+Deno.test("Object Helpers Tests", async (t) => {
+  await t.step("Merge Test - 2 Objects", () => {
     const a = {
       Code: 0,
       Message: "Failure",
@@ -28,7 +28,7 @@ describe("Object Helpers Tests", () => {
     assertEquals(result.Complex.Goodbye, "Noone");
   });
 
-  describe("Merge Test - 3 Objects", () => {
+  await t.step("Merge Test - 3 Objects", () => {
     const a = {
       Code: 0,
       Message: "Failure",

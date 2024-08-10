@@ -1,8 +1,8 @@
-import { assert, assertEquals, describe } from "./test.deps.ts";
+import { assert, assertEquals } from "./test.deps.ts";
 import { isStatusSuccess, type Status } from "../src/status.ts";
 
-describe("Status Tests", () => {
-  describe("Success Test", () => {
+Deno.test("Status Tests", async (t) => {
+  await t.step("Success Test", () => {
     const status: Status = {
       Code: 0,
       Message: "Success",
@@ -14,7 +14,7 @@ describe("Status Tests", () => {
     assert(isStatusSuccess(status));
   });
 
-  describe("Non Success Test", () => {
+  await t.step("Non Success Test", () => {
     const status: Status = {
       Code: 1,
       Message: "General Error",

@@ -1,7 +1,7 @@
-import { assert, describe } from "../test.deps.ts";
+import { assert } from "../test.deps.ts";
 import { ObservableContextService } from "../../src/services/ObservableContextService.ts";
 
-describe("ObservableContextService Tests", () => {
+Deno.test("ObservableContextService Tests", async (t) => {
   class TestObservableContextService
     extends ObservableContextService<string | undefined> {
     constructor() {
@@ -17,7 +17,7 @@ describe("ObservableContextService Tests", () => {
     }
   }
 
-  describe("ObservableContextService Test", () => {
+  await t.step("ObservableContextService Test", () => {
     const svc = new TestObservableContextService();
 
     const subd: (string | undefined)[] = [];
