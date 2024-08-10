@@ -1,4 +1,4 @@
-import { Status } from "../status.ts";
+import type { Status } from "../status.ts";
 
 export type BaseResponse = Record<string | number | symbol, unknown> & {
   Status: Status;

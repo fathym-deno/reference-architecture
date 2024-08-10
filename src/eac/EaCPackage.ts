@@ -1,5 +1,5 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCPackageDetails } from "./EaCPackageDetails.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCPackageDetails } from "./EaCPackageDetails.ts";
 
 export interface EaCPackage extends EaCDetails<EaCPackageDetails> {
   SourceControlLookup?: string | null;

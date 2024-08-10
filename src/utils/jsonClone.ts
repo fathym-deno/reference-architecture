@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-export function jsonCloneReplacer(_key: any, value: any) {
+export function jsonCloneReplacer(_key: any, value: any): any {
   if (value && value instanceof Map) {
     return {
       __map__: Array.from(value.entries()),
@@ -13,7 +13,7 @@ export function jsonCloneReplacer(_key: any, value: any) {
   return value;
 }
 
-export function jsonCloneReviver(_key: any, value: any) {
+export function jsonCloneReviver(_key: any, value: any): any {
   if (value && typeof value === "object" && "__map__" in value) {
     return new Map(value["__map__"]);
   }
@@ -35,7 +35,7 @@ export function jsonParse<T>(value: string): T {
   return value ? JSON.parse(value, jsonCloneReviver) : value;
 }
 
-export function jsonStringify<T>(value: T) {
+export function jsonStringify<T>(value: T): string {
   if (value && "$target" in (value as any)) {
     value = (value as any).$target;
   }

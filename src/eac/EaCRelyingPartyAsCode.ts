@@ -1,6 +1,6 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCRelyingPartyDetails } from "./EaCRelyingPartyDetails.ts";
-import { EaCAccessConfigurationAsCode } from "./EaCAccessConfigurationAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCRelyingPartyDetails } from "./EaCRelyingPartyDetails.ts";
+import type { EaCAccessConfigurationAsCode } from "./EaCAccessConfigurationAsCode.ts";
 
 export interface EaCRelyingPartyAsCode
   extends EaCDetails<EaCRelyingPartyDetails> {

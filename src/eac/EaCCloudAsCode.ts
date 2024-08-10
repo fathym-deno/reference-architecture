@@ -1,7 +1,7 @@
-import { EaCCloudDetails } from "./EaCCloudDetails.ts";
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCLandingZoneAsCode } from "./EaCLandingZoneAsCode.ts";
-import { EaCCloudResourceGroupAsCode } from "./EaCCloudResourceGroupAsCode.ts";
+import type { EaCCloudDetails } from "./EaCCloudDetails.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCLandingZoneAsCode } from "./EaCLandingZoneAsCode.ts";
+import type { EaCCloudResourceGroupAsCode } from "./EaCCloudResourceGroupAsCode.ts";
 
 export interface EaCCloudAsCode extends EaCDetails<EaCCloudDetails> {
   LandingZones?: Record<string, EaCLandingZoneAsCode>;

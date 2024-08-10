@@ -1,4 +1,4 @@
-import { EaCVertexDetails } from "./EaCVertexDetails.ts";
+import type { EaCVertexDetails } from "./EaCVertexDetails.ts";
 
 export interface EaCCloudDetails extends EaCVertexDetails {
   ApplicationID?: string | null;

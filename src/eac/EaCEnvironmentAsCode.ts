@@ -1,11 +1,11 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCEnvironmentDetails } from "./EaCEnvironmentDetails.ts";
-import { EaCArtifactAsCode } from "./EaCArtifactAsCode.ts";
-import { EaCCloudAsCode } from "./EaCCloudAsCode.ts";
-import { EaCDevOpsActionAsCode } from "./EaCDevOpsActionAsCode.ts";
-import { EaCSecretAsCode } from "./EaCSecretAsCode.ts";
-import { EaCSourceControlAsCode } from "./EaCSourceControlAsCode.ts";
-import { EaCIoTAsCode } from "./EaCIoTAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCEnvironmentDetails } from "./EaCEnvironmentDetails.ts";
+import type { EaCArtifactAsCode } from "./EaCArtifactAsCode.ts";
+import type { EaCCloudAsCode } from "./EaCCloudAsCode.ts";
+import type { EaCDevOpsActionAsCode } from "./EaCDevOpsActionAsCode.ts";
+import type { EaCSecretAsCode } from "./EaCSecretAsCode.ts";
+import type { EaCSourceControlAsCode } from "./EaCSourceControlAsCode.ts";
+import type { EaCIoTAsCode } from "./EaCIoTAsCode.ts";
 
 export interface EaCEnvironmentAsCode
   extends EaCDetails<EaCEnvironmentDetails> {

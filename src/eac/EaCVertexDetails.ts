@@ -1,4 +1,4 @@
-import { EaCMetadataBase } from "./EaCMetadataBase.ts";
+import type { EaCMetadataBase } from "./EaCMetadataBase.ts";
 
 export interface EaCVertexDetails extends EaCMetadataBase {
   Description?: string | null;

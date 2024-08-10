@@ -1,6 +1,6 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCLicenseConfigurationDetails } from "./EaCLicenseConfigurationDetails.ts";
-import { EaCPlanAsCode } from "./EaCPlanAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCLicenseConfigurationDetails } from "./EaCLicenseConfigurationDetails.ts";
+import type { EaCPlanAsCode } from "./EaCPlanAsCode.ts";
 
 export interface EaCLicenseConfigurationAsCode
   extends EaCDetails<EaCLicenseConfigurationDetails> {

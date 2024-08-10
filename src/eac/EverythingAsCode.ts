@@ -1,14 +1,14 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCEnterpriseDetails } from "./EaCEnterpriseDetails.ts";
-import { EaCAccessRightAsCode } from "./EaCAccessRightAsCode.ts";
-import { EaCApplicationAsCode } from "./EaCApplicationAsCode.ts";
-import { EaCDataTokenAsCode } from "./EaCDataTokenAsCode.ts";
-import { EaCEnvironmentAsCode } from "./EaCEnvironmentAsCode.ts";
-import { EaCHostAsCode } from "./EaCHostAsCode.ts";
-import { EaCLicenseConfigurationAsCode } from "./EaCLicenseConfigurationAsCode.ts";
-import { EaCDFSModifierAsCode } from "./EaCDFSModifierAsCode.ts";
-import { EaCProjectAsCode } from "./EaCProjectAsCode.ts";
-import { EaCProviderAsCode } from "./EaCProviderAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCEnterpriseDetails } from "./EaCEnterpriseDetails.ts";
+import type { EaCAccessRightAsCode } from "./EaCAccessRightAsCode.ts";
+import type { EaCApplicationAsCode } from "./EaCApplicationAsCode.ts";
+import type { EaCDataTokenAsCode } from "./EaCDataTokenAsCode.ts";
+import type { EaCEnvironmentAsCode } from "./EaCEnvironmentAsCode.ts";
+import type { EaCHostAsCode } from "./EaCHostAsCode.ts";
+import type { EaCLicenseConfigurationAsCode } from "./EaCLicenseConfigurationAsCode.ts";
+import type { EaCDFSModifierAsCode } from "./EaCDFSModifierAsCode.ts";
+import type { EaCProjectAsCode } from "./EaCProjectAsCode.ts";
+import type { EaCProviderAsCode } from "./EaCProviderAsCode.ts";
 
 export interface EverythingAsCode extends EaCDetails<EaCEnterpriseDetails> {
   AccessRights?: { [key: string]: EaCAccessRightAsCode };

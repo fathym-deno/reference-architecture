@@ -1,13 +1,16 @@
 // deno-lint-ignore-file no-explicit-any
-import { Runnable } from "npm:@langchain/core/runnables";
-import { ServerSentEventMessage, ServerSentEventStream } from "../src.deps.ts";
+import type { Runnable } from "npm:@langchain/core/runnables";
 import {
-  BaseLanguageModel,
-  BaseMessagePromptTemplateLike,
+  type ServerSentEventMessage,
+  ServerSentEventStream,
+} from "../src.deps.ts";
+import {
+  type BaseLanguageModel,
+  type BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   createRetrievalChain,
   createStuffDocumentsChain,
-  VectorStore,
+  type VectorStore,
 } from "../langchain.deps.ts";
 
 export async function aiChatRequest(

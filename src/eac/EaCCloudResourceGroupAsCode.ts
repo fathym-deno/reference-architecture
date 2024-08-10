@@ -1,6 +1,6 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCCloudResourceGroupDetails } from "./EaCCloudResourceGroupDetails.ts";
-import { EaCCloudResourceAsCode } from "./EaCCloudResourceAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCCloudResourceGroupDetails } from "./EaCCloudResourceGroupDetails.ts";
+import type { EaCCloudResourceAsCode } from "./EaCCloudResourceAsCode.ts";
 
 export interface EaCCloudResourceGroupAsCode
   extends EaCDetails<EaCCloudResourceGroupDetails> {

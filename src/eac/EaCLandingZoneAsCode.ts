@@ -1,6 +1,6 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCLandingZoneDetails } from "./EaCLandingZoneDetails.ts";
-import { EaCLaunchPadAsCode } from "./EaCLaunchPadAsCode.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCLandingZoneDetails } from "./EaCLandingZoneDetails.ts";
+import type { EaCLaunchPadAsCode } from "./EaCLaunchPadAsCode.ts";
 
 export interface EaCLandingZoneAsCode
   extends EaCDetails<EaCLandingZoneDetails> {

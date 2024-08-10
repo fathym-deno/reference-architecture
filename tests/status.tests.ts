@@ -1,5 +1,5 @@
 import { assert, assertEquals, describe } from "./test.deps.ts";
-import { isStatusSuccess, Status } from "../src/status.ts";
+import { isStatusSuccess, type Status } from "../src/status.ts";
 
 describe("Status Tests", () => {
   describe("Success Test", () => {

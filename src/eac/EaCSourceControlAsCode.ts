@@ -1,5 +1,5 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCSourceControlDetails } from "./EaCSourceControlDetails.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCSourceControlDetails } from "./EaCSourceControlDetails.ts";
 
 export interface EaCSourceControlAsCode
   extends EaCDetails<EaCSourceControlDetails> {

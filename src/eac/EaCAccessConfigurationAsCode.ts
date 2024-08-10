@@ -1,5 +1,5 @@
-import { EaCDetails } from "./EaCDetails.ts";
-import { EaCAccessConfigurationDetails } from "./EaCAccessConfigurationDetails.ts";
+import type { EaCDetails } from "./EaCDetails.ts";
+import type { EaCAccessConfigurationDetails } from "./EaCAccessConfigurationDetails.ts";
 
 export interface EaCAccessConfigurationAsCode
   extends EaCDetails<EaCAccessConfigurationDetails> {

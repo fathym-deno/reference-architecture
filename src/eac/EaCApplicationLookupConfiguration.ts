@@ -1,4 +1,4 @@
-import { AllAnyTypes } from "./AllAnyTypes.ts";
+import type { AllAnyTypes } from "./AllAnyTypes.ts";
 
 export interface EaCApplicationLookupConfiguration {
   AccessRightsAllAny: AllAnyTypes;
