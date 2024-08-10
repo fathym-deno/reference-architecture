@@ -77,10 +77,11 @@ jobs:
       #   if: steps.vars.outputs.currentBranch != env.MainBranch
       #   run: deno task npm:publish --tag ${{ steps.vars.outputs.currentBranch }}
 
-      - name: Publish package
-        run: deno publish
-
       - name: Tag commit ${{ steps.version.outputs.version }}
         run: |
           git tag v${{ steps.version.outputs.version }} ${{ steps.commit.outputs.commit }}
           git push origin v${{ steps.version.outputs.version }}
+
+      - name: Publish package
+        run: deno publish
+  
