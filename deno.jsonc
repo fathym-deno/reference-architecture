@@ -1,7 +1,10 @@
 {
   "name": "@fathym/common",
   "version": "0.0.0",
-  "exports": "./mod.ts",
+  "exports": {
+    ".": "./mod.ts",
+    "./version": "./src/build/SetVersion.ts"
+  },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task test",
     "build:fmt": "deno fmt",
