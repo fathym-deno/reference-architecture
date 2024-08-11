@@ -4,18 +4,18 @@ import {
   ServerSentEventStream,
 } from "../src.deps.ts";
 import {
-  type BaseLanguageModel,
   type BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
   createRetrievalChain,
   createStuffDocumentsChain,
+  type LanguageModelLike,
   type Runnable,
   type VectorStore,
 } from "../langchain.deps.ts";
 
 export async function aiChatRequest(
   req: Request,
-  llm: BaseLanguageModel,
+  llm: LanguageModelLike,
   messages?: BaseMessagePromptTemplateLike[],
   useSSEFormat?: boolean,
   defaultInput?: any,
@@ -34,14 +34,14 @@ export async function aiChatRequest(
 
   if (vectorStore) {
     const combineDocsChain = await createStuffDocumentsChain({
-      llm: llm,
-      prompt: questionAnsweringPrompt,
+      llm: llm as any,
+      prompt: questionAnsweringPrompt as any,
     });
 
     chain = await createRetrievalChain({
-      retriever: vectorStore.asRetriever(),
+      retriever: vectorStore.asRetriever() as any,
       combineDocsChain,
-    });
+    }) as unknown as Runnable;
 
     input ??= defaultRAGInput || {};
   } else {
