@@ -6,7 +6,9 @@
     "./ai": "./ai.ts",
     "./deno": "./deno.ts",
     "./oauth": "./oauth.ts",
-    "./version": "./src/build/SetVersion.ts"
+    "./version": "./src/build/SetVersion.ts",
+    "./utils/path/exists": "./src/utils/path/exists.ts",
+    "./utils/merge": "./src/utils/merge.helpers.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task test",
