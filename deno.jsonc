@@ -21,26 +21,18 @@
     "$dnt": "https://deno.land/x/dnt@0.38.0/mod.ts"
   },
   "fmt": {
-    "include": [
-      "./**/*.ts",
-      "./**/*.tsx"
-    ],
+    "include": ["./**/*.ts", "./**/*.tsx"],
     "exclude": [],
     "options": {}
   },
   "lint": {
-    "include": [
-      "./**/*.ts",
-      "./**/*.tsx"
-    ],
+    "include": ["./**/*.ts", "./**/*.tsx"],
     "exclude": [],
     "rules": {
       "include": [],
       "exclude": []
     }
   },
-  "unstable": [
-    "kv"
-  ],
+  "unstable": ["kv"],
   "lock": false
 }

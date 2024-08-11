@@ -1,6 +1,7 @@
 .env
 cov/
 build/
+!src/build/
 coverage/
 lcov/
 target/
