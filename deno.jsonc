@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "exports": {
     ".": "./mod.ts",
+    "./ai": "./ai.ts",
+    "./deno": "./deno.ts",
+    "./oauth": "./oauth.ts",
     "./version": "./src/build/SetVersion.ts"
   },
   "tasks": {
