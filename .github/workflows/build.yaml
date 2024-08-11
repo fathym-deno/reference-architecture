@@ -1,7 +1,7 @@
 name: Build & Publish
 
-# permissions:
-#   contents: write
+permissions:
+  contents: write
 
 on: push
 
@@ -17,9 +17,9 @@ jobs:
         os:
           - ubuntu-22.04
 
-    permissions:
-      contents: read
-      id-token: write
+#     permissions:
+#       contents: read
+#       id-token: write
 
     steps:
       - name: Checkout Repository
