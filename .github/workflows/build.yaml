@@ -18,9 +18,9 @@ jobs:
         os:
           - ubuntu-22.04
 
-#     permissions:
-#       contents: read
-#       id-token: write
+    #     permissions:
+    #       contents: read
+    #       id-token: write
 
     steps:
       - name: Checkout Repository
@@ -87,5 +87,4 @@ jobs:
         run: deno task version -- "${{ steps.version.outputs.version }}"
 
       - name: Publish package
-        run: deno publish
-  
+        run: deno publish --allow-dirty
