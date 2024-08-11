@@ -11,7 +11,7 @@
     "npm:build": "deno run -A scripts/npm.build.ts",
     "npm:publish": "npm publish ./build --access public",
     "test": "deno test -A ./tests/tests.ts --coverage=cov",
-    "version": "deno run -A ../src/build/SetVersion.ts"
+    "version": "deno run -A ./src/build/SetVersion.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
