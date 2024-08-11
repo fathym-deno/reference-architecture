@@ -83,5 +83,8 @@ jobs:
           git push origin v${{ steps.version.outputs.version }}
 
       - name: Publish package
+        run: deno task version -- "${{ steps.version.outputs.version }}"
+
+      - name: Publish package
         run: deno publish
   

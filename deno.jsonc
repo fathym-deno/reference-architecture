@@ -10,7 +10,8 @@
     "deploy": "deno task build && ftm git",
     "npm:build": "deno run -A scripts/npm.build.ts",
     "npm:publish": "npm publish ./build --access public",
-    "test": "deno test -A ./tests/tests.ts --coverage=cov"
+    "test": "deno test -A ./tests/tests.ts --coverage=cov",
+    "version": "deno run -A ./src/build/SetVersion.ts"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
@@ -20,18 +21,26 @@
     "$dnt": "https://deno.land/x/dnt@0.38.0/mod.ts"
   },
   "fmt": {
-    "include": ["./**/*.ts", "./**/*.tsx"],
+    "include": [
+      "./**/*.ts",
+      "./**/*.tsx"
+    ],
     "exclude": [],
     "options": {}
   },
   "lint": {
-    "include": ["./**/*.ts", "./**/*.tsx"],
+    "include": [
+      "./**/*.ts",
+      "./**/*.tsx"
+    ],
     "exclude": [],
     "rules": {
       "include": [],
       "exclude": []
     }
   },
-  "unstable": ["kv"],
+  "unstable": [
+    "kv"
+  ],
   "lock": false
 }

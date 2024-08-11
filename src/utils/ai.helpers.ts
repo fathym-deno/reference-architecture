@@ -1,5 +1,4 @@
 // deno-lint-ignore-file no-explicit-any
-import type { Runnable } from "npm:@langchain/core/runnables";
 import {
   type ServerSentEventMessage,
   ServerSentEventStream,
@@ -10,6 +9,7 @@ import {
   ChatPromptTemplate,
   createRetrievalChain,
   createStuffDocumentsChain,
+  type Runnable,
   type VectorStore,
 } from "../langchain.deps.ts";
 

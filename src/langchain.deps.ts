@@ -18,6 +18,7 @@ export {
 } from "npm:@langchain/core/language_models/base";
 export { BaseChatModel } from "npm:@langchain/core/language_models/chat_models";
 export { BaseMessage, BaseMessageChunk } from "npm:@langchain/core/messages";
+export type { Runnable } from "npm:@langchain/core/runnables";
 export {
   type BaseMessagePromptTemplateLike,
   ChatPromptTemplate,
