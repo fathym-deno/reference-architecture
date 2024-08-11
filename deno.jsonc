@@ -22,10 +22,6 @@
     "test": "deno test -A ./tests/tests.ts --coverage=cov",
     "version": "deno run -A ./src/build/SetVersion.ts"
   },
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact"
-  },
   "imports": {
     "$dnt": "https://deno.land/x/dnt@0.38.0/mod.ts"
   },
