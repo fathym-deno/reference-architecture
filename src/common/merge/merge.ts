@@ -7,7 +7,7 @@ import { deepMerge } from "./.deps.ts";
  * @returns The merged objects.
  *
  * @example
- * @name from-direct-import
+ * @name "From direct import"
  * ```typescript
  * import { merge } from '@fathym/common/merge';
  *
