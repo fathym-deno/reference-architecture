@@ -1,7 +1,7 @@
 import { fromFileUrl } from "../src.deps.ts";
 import { getFilesList } from "../common/path/getFilesList.ts";
 import { createIfNotExists } from "../common/path/createIfNotExists.ts";
-import type { FileListInput } from "../common/path/FileListInput.ts";
+import type { FileListRequest } from "../common/path/FileListRequest.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
 
@@ -62,20 +62,20 @@ export async function buildTailwindComponentsConfigs(
 
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
-  fileSrcs: FileListInput[],
+  fileSrcs: FileListRequest[],
   configs?: TailwindComponentsConfig[],
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
-  fileSrcs: FileListInput[],
+  fileSrcs: FileListRequest[],
   configs?: TailwindComponentsConfig[],
   fileName?: string,
 ): Promise<void>;
 
 export async function constructTailwindComponentsConfig(
   meta: ImportMeta,
-  fileSrcs: FileListInput[],
+  fileSrcs: FileListRequest[],
   configs?: TailwindComponentsConfig[],
   fileName?: string,
 ): Promise<void> {
