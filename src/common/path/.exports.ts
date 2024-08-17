@@ -1,5 +1,5 @@
 /**
-//  * A series of helper functions to assist with file paths and directories.
+ * A series of helper functions to assist with file paths and directories.
  * @module
  *
  * @example
