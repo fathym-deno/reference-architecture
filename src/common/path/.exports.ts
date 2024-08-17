@@ -21,10 +21,10 @@
 //  * }
 //  * ```
 //  */
-
-// export * from './exists.ts';
 /**
  * Lower level `transform` functionality that's used by the CLI
  * to convert Deno code to Node code.
  * @module
  */
+
+export * from './exists.ts';
