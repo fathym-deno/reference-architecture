@@ -11,8 +11,7 @@
 
     "./deno": "./deno.ts",
     "./oauth": "./oauth.ts",
-    "./version": "./src/build/SetVersion.ts",
-    "./utils/merge": "./src/utils/merge.helpers.ts"
+    "./version": "./src/build/SetVersion.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",
