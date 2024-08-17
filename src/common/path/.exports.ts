@@ -1,21 +1,7 @@
 /**
  * Helper functions to assist with file paths and directories.
  * @module
- */
-
-/**
- * @example Exists from path import
- * ```typescript
- * import { exists } from '@fathym/common';
- *
- * if (await exists('/path/to/file.txt')) {
- *  console.log('File exists');
- * }
- * ```
- */
-export * from './createIfNotExists.ts';
-
-/**
+ * 
  * @example Exists from path import
  * ```typescript
  * import { exists } from '@fathym/common/path';
@@ -23,6 +9,13 @@ export * from './createIfNotExists.ts';
  * if (await exists('/path/to/file.txt')) {
  *  console.log('File exists');
  * }
+ * ```
+ * 
+ * @example Create if not exists from common import
+ * ```typescript
+ * import { exists } from '@fathym/common';
+ *
+ * await createIfNotExists('C:\\temp\\my-directory');
  * ```
  *
  * @example Sync exists from common import
@@ -34,6 +27,7 @@ export * from './createIfNotExists.ts';
  * }
  * ```
  */
+export * from './createIfNotExists.ts';
 export * from './exists.ts';
 export * from './FileListInput.ts';
 export * from './getFilesList.ts';
