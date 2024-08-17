@@ -2,7 +2,7 @@
  * Helper functions for deep merging objects.
  * @module
  *
- * @example Exists from path import
+ * @example Merge from direct import
  * ```typescript
  * import { merge } from '@fathym/common/merge';
  *
@@ -11,7 +11,7 @@
  * console.log(merged); // { a: 1, b: 2, c: 4, d: [4, 5, 6] }
  * ```
  *
- * @example Sync exists from common import
+ * @example Merge with arrays from common import
  * import { mergeWithArrays } from '@fathym/common';
  *
  * const merged = mergeWithArrays({ a: 1 }, { b: 2, c: 3 }, { c: 4, d: [1, 2, 3]}, { d: [4, 5, 6] });

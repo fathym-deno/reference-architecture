@@ -6,7 +6,7 @@ import { deepMerge } from "./.deps.ts";
  * @param inputs The objects to merge. If there are multiple objects, they will be merged in the order they appear in the array.
  * @returns The merged objects.
  *
- * @example From Direct import
+ * @example From direct import
  * ```typescript
  * import { merge } from '@fathym/common/merge';
  *

@@ -5,9 +5,16 @@ import { exists, existsSync } from "./exists.ts";
  *
  * @param path The path to create the directory
  *
+ * @example From path import
+ * ```typescript
+ * import { createIfNotExists } from '@fathym/common/path';
+ *
+ * await createIfNotExists('C:\\temp\\my-directory');
+ * ```
+ *
  * @example From common import
  * ```typescript
- * import { exists } from '@fathym/common';
+ * import { createIfNotExists } from '@fathym/common';
  *
  * await createIfNotExists('C:\\temp\\my-directory');
  * ```
@@ -26,6 +33,13 @@ export async function createIfNotExists(path: string): Promise<void> {
  * Creates a directory if it doesn't exist (sync). If the directory already exists, no action is taken.
  *
  * @param path The path to create the directory
+ *
+ * @example From path import
+ * ```typescript
+ * import { createIfNotExistsSync } from '@fathym/common/path';
+ *
+ * createIfNotExistsSync('C:\\temp\\my-directory');
+ * ```
  *
  * @example From common import
  * ```typescript
