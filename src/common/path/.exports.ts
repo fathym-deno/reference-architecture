@@ -1,7 +1,21 @@
 /**
- * A series of helper functions to assist with file paths and directories.
+ * Helper functions to assist with file paths and directories.
  * @module
+ */
+
+/**
+ * @example Exists from path import
+ * ```typescript
+ * import { exists } from '@fathym/common';
  *
+ * if (await exists('/path/to/file.txt')) {
+ *  console.log('File exists');
+ * }
+ * ```
+ */
+export * from './createIfNotExists.ts';
+
+/**
  * @example Exists from path import
  * ```typescript
  * import { exists } from '@fathym/common/path';
@@ -20,5 +34,6 @@
  * }
  * ```
  */
-
 export * from './exists.ts';
+export * from './FileListInput.ts';
+export * from './getFilesList.ts';

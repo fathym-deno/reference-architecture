@@ -1,21 +1,4 @@
-import { dirname } from "../src.deps.ts";
-import { existsSync } from "../common/path/exists.ts";
-
-export type FileListInput = {
-  Directory: string;
-
-  Extensions?: string[];
-};
-
-export function createIfNotExists(path: string): void {
-  const dir = dirname(path);
-
-  if (dir && !existsSync(dir)) {
-    console.log(`Ensuring directory ${dir}`);
-
-    Deno.mkdirSync(dir);
-  }
-}
+import { FileListInput } from "./FileListInput.ts";
 
 export async function getFilesList(
   input: FileListInput,
