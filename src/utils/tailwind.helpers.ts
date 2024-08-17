@@ -1,7 +1,7 @@
 import { fromFileUrl } from "../src.deps.ts";
 import { getFilesList } from "../common/path/getFilesList.ts";
 import { createIfNotExists } from "../common/path/createIfNotExists.ts";
-import { type FileListInput } from "../common/path/FileListInput.ts";
+import type { FileListInput } from "../common/path/FileListInput.ts";
 
 export type TailwindComponentsConfig = { Root: string; Components: string[] };
 

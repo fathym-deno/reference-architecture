@@ -1,4 +1,4 @@
-import { FileListInput } from "./FileListInput.ts";
+import type { FileListInput } from "./FileListInput.ts";
 
 export async function getFilesList(
   input: FileListInput,
