@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { assertEquals } from "../test.deps.ts";
-import { merge } from "../../src/utils/merge.helpers.ts";
+import { merge } from "../../src/common/merge/merge.ts";
 
 Deno.test("Object Helpers Tests", async (t) => {
   await t.step("Merge Test - 2 Objects", () => {

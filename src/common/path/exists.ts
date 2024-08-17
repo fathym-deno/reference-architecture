@@ -4,7 +4,7 @@
  * @param path The path to check for existence.
  * @returns Return true if the path exists.
  *
- * @example
+ * @example From direct import
  * ```typescript
  * import { exists } from '@fathym/common/path';
  *
@@ -13,7 +13,7 @@
  * }
  * ```
  *
- * @example
+ * @example From common import
  * ```typescript
  * import { exists } from '@fathym/common';
  *
@@ -43,7 +43,7 @@ export async function exists(path: string): Promise<boolean> {
  * @param path The path to check for existence.
  * @returns Return true if the path exists.
  *
- * @example
+ * @example From direct import
  * ```typescript
  * import { existsSync } from '@fathym/common/path';
  *
@@ -52,7 +52,7 @@ export async function exists(path: string): Promise<boolean> {
  * }
  * ```
  *
- * @example
+ * @example From common import
  * ```typescript
  * import { existsSync } from '@fathym/common';
  *
