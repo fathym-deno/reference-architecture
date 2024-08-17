@@ -2,7 +2,7 @@
  * A series of helper functions to assist with file paths and directories.
  * @module
  *
- * @example
+ * @example Exists from path import
  * ```typescript
  * import { exists } from '@fathym/common/path';
  *
@@ -11,7 +11,7 @@
  * }
  * ```
  *
- * @example
+ * @example Sync exists from common import
  * ```typescript
  * import { existsSync } from '@fathym/common';
  *
