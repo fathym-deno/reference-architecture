@@ -1,1 +1,1 @@
-export * from "./src/utils/ai.helpers.ts";
+export * from "./src/ai/ai.helpers.ts";

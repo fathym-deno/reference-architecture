@@ -2,13 +2,17 @@
   "name": "@fathym/common",
   "version": "0.0.0",
   "exports": {
-    ".": "./mod.ts",
-    "./ai": "./ai.ts",
+    ".": "./src/common/.exports.ts",
+    "./path": "./src/common/path/.exports.ts",
+    "./iterables": "./src/common/iterables/.exports.ts",
+
+
+
     "./deno": "./deno.ts",
     "./oauth": "./oauth.ts",
     "./version": "./src/build/SetVersion.ts",
-    "./utils/path/exists": "./src/utils/path/exists.ts",
-    "./utils/merge": "./src/utils/merge.helpers.ts"
+    "./utils/merge": "./src/utils/merge.helpers.ts",
+    "./module": "./mod.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",

@@ -1,5 +1,5 @@
-import { parseArgs } from "jsr:@std/cli@^1.0.3";
-import { exists } from "../utils/path/exists.ts";
+import { parseArgs } from "./.deps.ts";
+import { exists } from "../common/path/exists.ts";
 import { loadDenoConfig } from "../utils/deno/loadDenoConfig.ts";
 
 const { args } = Deno;

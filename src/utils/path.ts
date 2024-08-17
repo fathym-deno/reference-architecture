@@ -1,5 +1,5 @@
 import { dirname } from "../src.deps.ts";
-import { existsSync } from "./path/exists.ts";
+import { existsSync } from "../common/path/exists.ts";
 
 export type FileListInput = {
   Directory: string;
