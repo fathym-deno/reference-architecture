@@ -1,3 +1,7 @@
+/**
+ * This is the schema for the Deno configuration file.
+ * @module
+ */
 export interface DenoConfig {
   name?: string;
   version?: string;
