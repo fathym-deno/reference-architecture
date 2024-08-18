@@ -8,4 +8,4 @@ const setVersion: SetVersion = new SetVersion();
 
 await setVersion.Configure();
 
-export { setVersion };
+export {};
