@@ -1,4 +1,4 @@
-import type { Status } from "../common/_status.ts";
+import type { Status } from "./Status.ts";
 
 /**
  * The base response object for API requests.
