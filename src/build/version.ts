@@ -1,6 +1,8 @@
 /**
  * Entry point for the version management script.
  * @module
+ *
+ * @example Deno task script
  * ```command prompt
  * deno run -A jsr:@fathym/common/build/version -- 0.0.0
  * ```
