@@ -9,12 +9,8 @@
     "./iterables": "./src/common/iterables/.exports.ts",
     "./iterables/json-map-set": "./src/common/iterables/json-map-set/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
+    "./oauth": "./src/oauth/.exports.ts",
     "./path": "./src/common/path/.exports.ts"
-
-
-
-    // "./deno": "./deno.ts",
-    // "./oauth": "./oauth.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",

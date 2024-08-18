@@ -1,31 +1,31 @@
-import { BehaviorSubject, type Observable } from "../src.deps.ts";
+// import { BehaviorSubject, type Observable } from "../src.deps.ts";
 
-export abstract class ObservableContextService<T> {
-  // 	Fields
-  protected loader: BehaviorSubject<boolean>;
+// export abstract class ObservableContextService<T> {
+//   // 	Fields
+//   protected loader: BehaviorSubject<boolean>;
 
-  protected subject: BehaviorSubject<T>;
+//   protected subject: BehaviorSubject<T>;
 
-  // 	Properties
-  public readonly Context: Observable<T>;
+//   // 	Properties
+//   public readonly Context: Observable<T>;
 
-  public readonly Loading: Observable<boolean>;
+//   public readonly Loading: Observable<boolean>;
 
-  //  Constructors
-  constructor() {
-    this.loader = new BehaviorSubject<boolean>(false);
+//   //  Constructors
+//   constructor() {
+//     this.loader = new BehaviorSubject<boolean>(false);
 
-    this.subject = new BehaviorSubject<T>(this.defaultValue());
+//     this.subject = new BehaviorSubject<T>(this.defaultValue());
 
-    this.Context = this.subject.asObservable();
+//     this.Context = this.subject.asObservable();
 
-    this.Loading = this.loader.asObservable();
-  }
+//     this.Loading = this.loader.asObservable();
+//   }
 
-  //  Helpers
-  protected loading(loading: boolean) {
-    this.loader.next(loading);
-  }
+//   //  Helpers
+//   protected loading(loading: boolean) {
+//     this.loader.next(loading);
+//   }
 
-  protected abstract defaultValue(): T;
-}
+//   protected abstract defaultValue(): T;
+// }
