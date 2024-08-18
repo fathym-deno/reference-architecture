@@ -2,6 +2,11 @@
  * Common reference architecture and cross cutting concerns.
  * @module
  *
+ * @example Version Deno task script
+ * ```command prompt
+ * deno run -A jsr:@fathym/common/build/version -- 0.0.0
+ * ```
+ *
  * @example Queue from direct import
  * ```typescript
  * import { Queue } from "@fathym/common/iterables";
