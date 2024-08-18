@@ -18,7 +18,7 @@ try {
   console.log(error);
 }
 
-export { version };
+// export { version };
 
 if (version) {
   Deno.exit(0);
