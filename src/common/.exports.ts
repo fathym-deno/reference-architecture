@@ -2,7 +2,7 @@
  * Common reference architecture and cross cutting concerns.
  * @module
  *
- * @example From direct import
+ * @example Queue from direct import
  * ```typescript
  * import { Queue } from "@fathym/common/iterables";
  *
