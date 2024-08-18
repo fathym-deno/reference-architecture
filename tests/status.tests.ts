@@ -1,5 +1,5 @@
 import { assert, assertEquals } from "./test.deps.ts";
-import { isStatusSuccess, type Status } from "../src/common/status.ts";
+import { isStatusSuccess, type Status } from "../src/common/_status.ts";
 
 Deno.test("Status Tests", async (t) => {
   await t.step("Success Test", () => {

@@ -51,4 +51,4 @@ export * from './path/.exports.ts';
 export * from "./BaseRequest.ts";
 export * from "./BaseResponse.ts";
 export * from "./Pageable.ts";
-export * from './status.ts';
+export * from './_status.ts';
