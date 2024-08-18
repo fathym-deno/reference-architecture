@@ -1,7 +1,7 @@
 /**
  * Helpers to assist with iterable operations and management.
  * @module
- * 
+ *
  * @example Concat Uint8Arrays from direct import
  * ```typescript
  * import { Uint8Array } from '@fathym/common/iterables';
@@ -78,6 +78,7 @@
  * ```
  */
 
+export * from './jsonMapSet/.exports.ts';
 export * from './concatUint8Arrays.ts';
 export * from './convertAsyncIterable.ts';
 export * from './Stack.ts';

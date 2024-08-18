@@ -1,3 +1,3 @@
-import type { EaCVertexDetails } from "./EaCVertexDetails.ts";
+// import type { EaCVertexDetails } from "./EaCVertexDetails.ts";
 
-export type EaCRelyingPartyDetails = EaCVertexDetails;
+// export type EaCRelyingPartyDetails = EaCVertexDetails;

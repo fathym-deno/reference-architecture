@@ -1,4 +1,4 @@
-export interface EaCHostDetails {
-  IsApex?: boolean;
-  Verified?: boolean;
-}
+// export interface EaCHostDetails {
+//   IsApex?: boolean;
+//   Verified?: boolean;
+// }

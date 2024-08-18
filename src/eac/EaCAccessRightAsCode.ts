@@ -1,4 +1,4 @@
-import type { EaCDetails } from "./EaCDetails.ts";
-import type { EaCAccessRightDetails } from "./EaCAccessRightDetails.ts";
+// import type { EaCDetails } from "./EaCDetails.ts";
+// import type { EaCAccessRightDetails } from "./EaCAccessRightDetails.ts";
 
-export type EaCAccessRightAsCode = EaCDetails<EaCAccessRightDetails>;
+// export type EaCAccessRightAsCode = EaCDetails<EaCAccessRightDetails>;
