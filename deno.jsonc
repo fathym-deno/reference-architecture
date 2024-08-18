@@ -26,7 +26,7 @@
     "npm:publish": "npm publish ./build --access public",
     "publish:check": "deno publish --dry-run --allow-dirty",
     "test": "deno test -A ./tests/tests.ts --coverage=cov",
-    "version": "deno run -A ./src/build/SetVersion.ts"
+    "version": "deno run -A ./src/build/version.ts"
   },
   "imports": {
     "$dnt": "https://deno.land/x/dnt@0.38.0/mod.ts"
