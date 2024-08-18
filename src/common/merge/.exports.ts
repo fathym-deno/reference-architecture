@@ -12,6 +12,7 @@
  * ```
  *
  * @example Merge with arrays from common import
+ * ```typescript
  * import { mergeWithArrays } from '@fathym/common';
  *
  * const merged = mergeWithArrays({ a: 1 }, { b: 2, c: 3 }, { c: 4, d: [1, 2, 3]}, { d: [4, 5, 6] });

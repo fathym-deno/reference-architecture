@@ -6,6 +6,7 @@
  * @returns The async iterable of converted items.
  *
  * @example From direct import
+ * ```typescript
  * import { convertAsyncIterable } from '@fathym/common/iterables';
  *
  * const asyncIterable = {
@@ -27,13 +28,16 @@
  * const ai = await convertAsyncIterable(asyncIterable, async (i) => i * 2);
  *
  * console.log(Array.from(ai)); // [0, 2, 4, 6]
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { convertAsyncIterable } from '@fathym/common';
  *
  * const ai = await convertAsyncIterable(asyncIterable, async (i) => i * 2);
  *
  * console.log(Array.from(ai)); // [0, 2, 4, 6]
+ * ```
  */
 export async function* convertAsyncIterable<T, R>(
   source: AsyncIterable<T>,

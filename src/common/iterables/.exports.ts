@@ -3,6 +3,7 @@
  * @module
  * 
  * @example Concat Uint8Arrays from direct import
+ * ```typescript
  * import { Uint8Array } from '@fathym/common/iterables';
  *
  * const a = new Uint8Array([1, 2, 3]);
@@ -11,8 +12,10 @@
  * const concatenated = concatUint8Arrays(a, b);
  *
  * console.log(concatenated); // [1, 2, 3, 4, 5, 6]
+ * ```
  *
  * @example Convert Async Iterable fsrom direct import
+ * ```typescript
  * import { convertAsyncIterable } from '@fathym/common/iterables';
  *
  * const asyncIterable = {
@@ -34,8 +37,10 @@
  * const ai = await convertAsyncIterable(asyncIterable, async (i) => i * 2);
  *
  * console.log(Array.from(ai)); // [0, 2, 4, 6]
+ * ```
  *
  * @example Queue from direct import
+ * ```typescript
  * import { Queue } from "@fathym/common/iterables";
  *
  * const queue = new Queue<number>();
@@ -51,8 +56,10 @@
  * queue.Dequeue(); // Output: 2
  *
  * queue.IsEmpty(); // Output: true
+ * ```
  *
  * @example Stack from direct import
+ * ```typescript
  * import { Stack } from "@fathym/common/iterables";
  *
  * const stack = new Stack<number>();
@@ -68,6 +75,7 @@
  * stack.Pop(); // Output: 1
  *
  * stack.IsEmpty(); // Output: true
+ * ```
  */
 
 export * from './concatUint8Arrays.ts';

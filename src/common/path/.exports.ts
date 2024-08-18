@@ -34,6 +34,7 @@
  * const fileList = await getFilesList({
  *   Directory: '/path/to/directory',
  * });
+ * ```
  */
 export * from './createIfNotExists.ts';
 export * from './exists.ts';

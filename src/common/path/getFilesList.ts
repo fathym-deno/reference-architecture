@@ -14,6 +14,7 @@ import type { FileListRequest } from "./FileListRequest.ts";
  * const fileList = await getFilesList({
  *   Directory: '/path/to/directory',
  * });
+ * ```
  *
  * @example From common import - With Meta and Extensions
  * ```typescript

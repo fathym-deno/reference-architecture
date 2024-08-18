@@ -1,8 +1,9 @@
 /**
  * This is a simple implementation of a queue data structure.
- * @class
+ * @module
  *
  * @example From direct import
+ * ```typescript
  * import { Queue } from "@fathym/common/iterables";
  *
  * const queue = new Queue<number>();
@@ -18,8 +19,10 @@
  * queue.Dequeue(); // Output: 2
  *
  * queue.IsEmpty(); // Output: true
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { Queue } from "@fathym/common";
  *
  * const queue = new Queue<number>();
@@ -31,6 +34,7 @@
  * queue.Dequeue(); // Output: 1
  *
  * queue.Dequeue(); // Output: 2
+ * ```
  */
 export class Queue<T> {
   private items: T[];
@@ -45,7 +49,9 @@ export class Queue<T> {
    * @param item The item to add to the queue.
    *
    * @example Enqueue Item
+   * ```typescript
    * queue.enqueue(1);
+   * ```
    */
   public Enqueue(item: T): void {
     this.items.push(item);
@@ -57,7 +63,9 @@ export class Queue<T> {
    * @returns The item at the front of the queue, or undefined if the queue is empty.
    *
    * @example Dequeue Item
+   * ```typescript
    * const item = queue.dequeue();
+   * ```
    */
   public Dequeue(): T | undefined {
     return this.items.shift();
@@ -69,7 +77,9 @@ export class Queue<T> {
    * @returns The item at the front of the queue, or undefined if the queue is empty.
    *
    * @example Peek Item
+   * ```typescript
    * const item = queue.peek();
+   * ```
    */
   public Peek(): T | undefined {
     return this.items[0];
@@ -81,7 +91,9 @@ export class Queue<T> {
    * @returns true if the queue is empty, false otherwise.
    *
    * @example Check if Queue is Empty
+   * ```typescript
    * queue.isEmpty(); // Output: true
+   * ```
    */
   public IsEmpty(): boolean {
     return this.items.length === 0;
@@ -93,7 +105,9 @@ export class Queue<T> {
    * @returns The number of items in the queue.
    *
    * @example Get Queue Size
+   * ```typescript
    * const size = queue.size();
+   * ```
    */
   public Size(): number {
     return this.items.length;

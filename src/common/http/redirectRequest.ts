@@ -11,14 +11,18 @@ import { establishHeaders } from "./establishHeaders.ts";
  * @returns The redirected response.
  *
  * @example From direct import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common/http";
  *
  * const resp = redirectRequest("/new-location", 301);
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common";
  *
  * const resp = redirectRequest("/new-location", 301);
+ * ```
  */
 export function redirectRequest(
   location: string,
@@ -38,14 +42,18 @@ export function redirectRequest(
  * @returns The redirected response.
  *
  * @example From direct import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common/http";
  *
  * const resp = redirectRequest("/new-location", false, true);
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common";
  *
  * const resp = redirectRequest("/new-location", false, true);
+ * ```
  */
 export function redirectRequest(
   location: string,
@@ -66,14 +74,18 @@ export function redirectRequest(
  * @returns The redirected response.
  *
  * @example From direct import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common/http";
  *
  * const resp = redirectRequest("/new-location", 301);
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { redirectRequest } from "@fathym/common";
  *
  * const resp = redirectRequest("/new-location", false, true);
+ * ```
  */
 export function redirectRequest(
   location: string,

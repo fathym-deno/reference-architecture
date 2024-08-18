@@ -9,17 +9,21 @@ import { establishHeaders } from "./establishHeaders.ts";
  * @returns The response with updated cache control headers.
  *
  * @example From direct import
+ * ```typescript
  * import { processCacheControlHeaders } from "@fathym/common/http";
  *
  * const resp = processCacheControlHeaders(response, {
  *  'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`
+ * ```
  * });
  *
  * @example From common import
+ * ```typescript
  * import { processCacheControlHeaders } from "@fathym/common";
  *
  * const resp = processCacheControlHeaders(response, {
  *  'text\\/css': `public, max-age=${60 * 60 * 24 * 365}, immutable`
+ * ```
  * });
  */
 export function processCacheControlHeaders(

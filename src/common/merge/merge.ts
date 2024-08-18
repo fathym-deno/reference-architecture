@@ -41,6 +41,7 @@ export function merge<T>(...inputs: object[]): T {
  * @returns The merged objects.
  *
  * @example From direct import
+ * ```typescript
  * import { mergeWithArrays } from '@fathym/common/merge';
  *
  * const merged = mergeWithArrays({ a: 1 }, { b: 2, c: 3 }, { c: 4, d: [1, 2, 3]}, { d: [4, 5, 6] });
@@ -49,6 +50,7 @@ export function merge<T>(...inputs: object[]): T {
  * ```
  *
  * @example From common import
+ * ```typescript
  * import { mergeWithArrays } from '@fathym/common';
  *
  * const merged = mergeWithArrays({ a: 1 }, { b: 2, c: 3 }, { c: 4, d: [1, 2, 3]}, { d: [4, 5, 6] });

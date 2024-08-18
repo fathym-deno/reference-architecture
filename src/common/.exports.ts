@@ -3,6 +3,7 @@
  * @module
  *
  * @example From direct import
+ * ```typescript
  * import { Queue } from "@fathym/common/iterables";
  *
  * const queue = new Queue<number>();
@@ -18,6 +19,7 @@
  * queue.Dequeue(); // Output: 2
  *
  * queue.IsEmpty(); // Output: true
+ * ```
  * 
  * @example Merge from direct import
  * ```typescript

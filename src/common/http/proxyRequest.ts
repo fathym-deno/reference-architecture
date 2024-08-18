@@ -20,16 +20,20 @@ import { establishHeaders } from "./establishHeaders.ts";
  * @returns The proxied response.
  *
  * @example From direct import
+ * ```typescript
  * import { proxyRequest } from '@fathym/common/http';
  *
  * const resp = await proxyRequest(req, 'https://api.example.com', 'https://localhost:8080', '/api',
  *    { 'Authorization': 'Bearer token' });
+ * ```
  *
  * @example From common import
+ * ```typescript
  * import { proxyRequest } from '@fathym/common';
  *
  * const resp = await proxyRequest(req, 'https://api.example.com', 'https://localhost:8080', '/api',
  *    { 'Authorization': 'Bearer token' });
+ * ```
  */
 export async function proxyRequest(
   req: Request,
