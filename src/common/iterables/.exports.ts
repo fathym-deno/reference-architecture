@@ -78,7 +78,7 @@
  * ```
  */
 
-export * from './jsonMapSet/.exports.ts';
+export * from './json-map-set/.exports.ts';
 export * from './concatUint8Arrays.ts';
 export * from './convertAsyncIterable.ts';
 export * from './Stack.ts';

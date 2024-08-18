@@ -7,6 +7,7 @@
     "./build/version": "./src/build/version.ts",
     "./http": "./src/common/http/.exports.ts",
     "./iterables": "./src/common/iterables/.exports.ts",
+    "./iterables/json-map-set": "./src/common/iterables/json-map-set/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
     "./path": "./src/common/path/.exports.ts"
 
