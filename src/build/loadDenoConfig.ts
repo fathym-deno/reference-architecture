@@ -1,5 +1,4 @@
-import { exists, existsSync } from "../common/path/.exports.ts";
-import { parseJsonc, pathJoin } from "./.deps.ts";
+import { exists, existsSync, parseJsonc, pathJoin } from "./.deps.ts";
 import type { DenoConfig } from "./DenoConfig.ts";
 
 /**

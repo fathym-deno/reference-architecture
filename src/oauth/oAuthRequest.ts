@@ -1,5 +1,4 @@
-import { redirectRequest } from "../common/http/.exports.ts";
-import type { DenoKVOAuth } from "./.deps.ts";
+import { type DenoKVOAuth, redirectRequest } from "./.deps.ts";
 import { createOAuthHelpers } from "./createOAuthHelpers.ts";
 
 /**

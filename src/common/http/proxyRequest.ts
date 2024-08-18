@@ -1,8 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { STATUS_CODE } from "./.deps.ts";
-import { redirectRequest } from "./redirectRequest.ts";
-import { processCacheControlHeaders } from "./processCacheControlHeaders.ts";
 import { establishHeaders } from "./establishHeaders.ts";
+import { processCacheControlHeaders } from "./processCacheControlHeaders.ts";
+import { redirectRequest } from "./redirectRequest.ts";
 
 /**
  * Proxies the request to a remote server.
