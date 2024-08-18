@@ -4,7 +4,7 @@
   "exports": {
     ".": "./src/common/.exports.ts",
     "./build": "./src/build/.exports.ts",
-    "./build-version": "./src/build/version.ts",
+    "./build/version": "./src/build/version.ts",
     "./http": "./src/common/http/.exports.ts",
     "./iterables": "./src/common/iterables/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
