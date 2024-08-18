@@ -20,4 +20,8 @@ try {
 
 export { version };
 
-Deno.exit(1);
+if (version) {
+  Deno.exit(0);
+} else {
+  Deno.exit(1);
+}
