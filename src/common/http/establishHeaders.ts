@@ -16,18 +16,18 @@
  * const headers = establishHeaders(req.headers, { 'Content-Type': 'application/json' });
  */
 export function establishHeaders(
-    headers: Headers,
-    headersInit: Record<string, string>,
+  headers: Headers,
+  headersInit: Record<string, string>,
 ): Headers {
-    const newHeaders = new Headers();
+  const newHeaders = new Headers();
 
-    for (const hdr of headers.keys()) {
-        newHeaders.set(hdr, headers.get(hdr)!);
-    }
+  for (const hdr of headers.keys()) {
+    newHeaders.set(hdr, headers.get(hdr)!);
+  }
 
-    Object.keys(headersInit).forEach((hdr) => {
-        newHeaders.set(hdr, headersInit[hdr]);
-    });
+  Object.keys(headersInit).forEach((hdr) => {
+    newHeaders.set(hdr, headersInit[hdr]);
+  });
 
-    return newHeaders;
+  return newHeaders;
 }

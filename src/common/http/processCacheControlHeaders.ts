@@ -23,29 +23,29 @@ import { establishHeaders } from "./establishHeaders.ts";
  * });
  */
 export function processCacheControlHeaders(
-    resp: Response,
-    cacheControl?: Record<string, string>,
-    forceCache?: boolean,
+  resp: Response,
+  cacheControl?: Record<string, string>,
+  forceCache?: boolean,
 ): Response {
-    if (cacheControl) {
-        const cacheControlRegexs = Object.keys(cacheControl);
+  if (cacheControl) {
+    const cacheControlRegexs = Object.keys(cacheControl);
 
-        if (forceCache || !resp.headers.has("cache-control")) {
-            const cacheControlKey = cacheControlRegexs.find((ccr) =>
-                new RegExp(ccr, "i").test(resp.headers.get("content-type")!)
-            );
+    if (forceCache || !resp.headers.has("cache-control")) {
+      const cacheControlKey = cacheControlRegexs.find((ccr) =>
+        new RegExp(ccr, "i").test(resp.headers.get("content-type")!)
+      );
 
-            if (cacheControlKey) {
-                resp = new Response(resp.body, {
-                    headers: establishHeaders(resp.headers, {
-                        "cache-control": cacheControl[cacheControlKey],
-                    }),
-                    status: resp.status,
-                    statusText: resp.statusText,
-                });
-            }
-        }
+      if (cacheControlKey) {
+        resp = new Response(resp.body, {
+          headers: establishHeaders(resp.headers, {
+            "cache-control": cacheControl[cacheControlKey],
+          }),
+          status: resp.status,
+          statusText: resp.statusText,
+        });
+      }
     }
+  }
 
-    return resp;
+  return resp;
 }

@@ -1,5 +1,5 @@
+import { redirectRequest } from "../common/http/.exports.ts";
 import { DenoKVOAuth } from "../deno.deps.ts";
-import { redirectRequest } from "./http.helpers.ts";
 
 export type OAuthHelpers = {
   signIn(
