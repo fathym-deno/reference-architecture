@@ -1,4 +1,4 @@
-import { parseJsonc, pathJoin } from "../../src.deps.ts";
+import { parseJsonc, pathJoin } from "./.deps.ts";
 import type { DenoConfig } from "./DenoConfig.ts";
 
 export async function loadDenoConfig(

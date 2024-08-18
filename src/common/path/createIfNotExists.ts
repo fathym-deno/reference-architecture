@@ -1,5 +1,6 @@
-import { dirname } from "../../src.deps.ts";
+import { dirname } from "./.deps.ts";
 import { exists, existsSync } from "./exists.ts";
+
 /**
  * Creates a directory if it doesn't exist (async). If the directory already exists, no action is taken.
  *

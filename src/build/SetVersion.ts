@@ -1,34 +1,53 @@
 import { parseArgs } from "./.deps.ts";
-import { exists } from "../common/path/exists.ts";
-import { loadDenoConfig } from "../utils/deno/loadDenoConfig.ts";
+import { exists } from "../common/.exports.ts";
+import { loadDenoConfig } from "./loadDenoConfig.ts";
 
-const { args } = Deno;
-const parsedArgs = parseArgs(args);
+export class SetVersion {
+  protected version: string;
 
-// Get the version from the command-line arguments
-const newVersion = parsedArgs._[0];
+  constructor();
+  constructor(version: string);
+  constructor(denoArgsVersion?: string[] | string) {
+    if (typeof denoArgsVersion === "string") {
+      this.version = denoArgsVersion;
+    } else {
+      const { args } = Deno;
+      const parsedArgs = parseArgs(args);
 
-if (!newVersion || typeof newVersion !== "string") {
-  console.error("Please provide a version number.");
-  Deno.exit(1);
-}
+      // Get the version from the command-line arguments
+      this.version = parsedArgs._[0] as string;
+    }
 
-const filePath = await exists("deno.jsonc") ? "deno.jsonc" : "deno.json";
+    if (!this.version || typeof this.version !== "string") {
+      console.error("Please provide a version number.");
+      Deno.exit(1);
+    }
+  }
 
-try {
-  const config = await loadDenoConfig(filePath);
+  public async Configure(denoFilePath?: string): Promise<void> {
+    try {
+      denoFilePath = denoFilePath ||
+        ((await exists("deno.jsonc")) ? "deno.jsonc" : "deno.json");
 
-  // Update the version
-  config.version = newVersion;
+      if (!(await exists(denoFilePath))) {
+        throw new Deno.errors.NotFound(denoFilePath);
+      }
 
-  // Convert the updated config back to JSONC
-  const updatedData = JSON.stringify(config, null, 2);
+      const config = await loadDenoConfig(denoFilePath);
 
-  // Write the updated JSON back to the file
-  await Deno.writeTextFile(filePath, updatedData);
+      // Update the version
+      config.version = this.version;
 
-  console.log(`Version updated to ${newVersion}`);
-} catch (error) {
-  console.error("An error occurred while updating the version:", error);
-  Deno.exit(1);
+      // Convert the updated config back to JSONC
+      const updatedData = JSON.stringify(config, null, 2);
+
+      // Write the updated JSON back to the file
+      await Deno.writeTextFile(denoFilePath, updatedData);
+
+      console.log(`Version updated to ${this.version}`);
+    } catch (error) {
+      console.error("An error occurred while updating the version:", error);
+      Deno.exit(1);
+    }
+  }
 }

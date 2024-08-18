@@ -1,5 +1,5 @@
 /**
- * Helper to assis with iterable operations and management.
+ * Helper to assist with iterable operations and management.
  * @module
  *
  * @example From direct import
