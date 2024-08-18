@@ -8,6 +8,9 @@
 
 import { SetVersion } from "./SetVersion.ts";
 
+/**
+ * The version that was used to configure the deno file.
+ */
 let version: string = "";
 
 try {
@@ -18,7 +21,7 @@ try {
   console.log(error);
 }
 
-// export { version };
+export { version };
 
 if (version) {
   Deno.exit(0);
