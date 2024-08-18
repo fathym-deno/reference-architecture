@@ -1,5 +1,6 @@
 /**
  * This is a simple implementation of a stack data structure.
+ * @class
  *
  * @example From direct import
  * import { Stack } from "@fathym/common/iterables";

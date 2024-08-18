@@ -1,11 +1,36 @@
 // deno-lint-ignore-file no-explicit-any
-import { STATUS_CODE } from "../src.deps.ts";
-import {
-  establishHeaders,
-  processCacheControlHeaders,
-  redirectRequest,
-} from "./http.helpers.ts";
+import { STATUS_CODE } from "./.deps.ts";
+import { redirectRequest } from "./redirectRequest.ts";
+import { processCacheControlHeaders } from "./processCacheControlHeaders.ts";
+import { establishHeaders } from "./establishHeaders.ts";
 
+/**
+ * Proxies the request to a remote server.
+ *
+ * @param req The request to be proxied.
+ * @param proxyRoot The root of the server to be proxied to.
+ * @param base The base URL of the request.
+ * @param path The path to be appended to the proxy root.
+ * @param headers The additional headers to be sent with the request.
+ * @param search The search parameters to be appended to the proxy root.
+ * @param hash The hash to be appended to the proxy root.
+ * @param redirectMode The redirect mode to be used.
+ * @param cacheControl The cache control headers to be sent with the request.
+ * @param forceCache When true, forces the request to use the cache control headers. When false, respects the cache control headers of the proxied response if set, if not set it uses the cache control headers.
+ * @returns The proxied response.
+ *
+ * @example From direct import
+ * import { proxyRequest } from '@fathym/common/http';
+ *
+ * const resp = await proxyRequest(req, 'https://api.example.com', 'https://localhost:8080', '/api',
+ *    { 'Authorization': 'Bearer token' });
+ *
+ * @example From common import
+ * import { proxyRequest } from '@fathym/common';
+ *
+ * const resp = await proxyRequest(req, 'https://api.example.com', 'https://localhost:8080', '/api',
+ *    { 'Authorization': 'Bearer token' });
+ */
 export async function proxyRequest(
   req: Request,
   proxyRoot: string,
@@ -73,7 +98,12 @@ export async function proxyRequest(
   const redirectLocation = resp.headers.get("location");
 
   if (redirectLocation) {
-    resp = redirectRequest(redirectLocation, resp.status, undefined, resp);
+    resp = redirectRequest(
+      redirectLocation,
+      resp.status,
+      undefined,
+      resp.headers,
+    );
   } else if (
     resp.status === STATUS_CODE.SwitchingProtocols &&
     resp.headers.get("upgrade") === "websocket"

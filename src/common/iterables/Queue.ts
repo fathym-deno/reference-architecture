@@ -1,5 +1,6 @@
 /**
  * This is a simple implementation of a queue data structure.
+ * @class
  *
  * @example From direct import
  * import { Queue } from "@fathym/common/iterables";

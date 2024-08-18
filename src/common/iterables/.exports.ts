@@ -1,8 +1,41 @@
 /**
- * Helper to assist with iterable operations and management.
+ * Helpers to assist with iterable operations and management.
  * @module
+ * 
+ * @example Concat Uint8Arrays from direct import
+ * import { Uint8Array } from '@fathym/common/iterables';
  *
- * @example From direct import
+ * const a = new Uint8Array([1, 2, 3]);
+ * const b = new Uint8Array([4, 5, 6]);
+ *
+ * const concatenated = concatUint8Arrays(a, b);
+ *
+ * console.log(concatenated); // [1, 2, 3, 4, 5, 6]
+ *
+ * @example Convert Async Iterable fsrom direct import
+ * import { convertAsyncIterable } from '@fathym/common/iterables';
+ *
+ * const asyncIterable = {
+ *  [Symbol.asyncIterator]() {
+ *    let i = 0;
+ *
+ *    return {
+ *      next() {
+ *        if (i < 3) {
+ *          return Promise.resolve(i);
+ *        }
+ *
+ *        return Promise.resolve(i);
+ *      };
+ *    }
+ *  }
+ * };
+ *
+ * const ai = await convertAsyncIterable(asyncIterable, async (i) => i * 2);
+ *
+ * console.log(Array.from(ai)); // [0, 2, 4, 6]
+ *
+ * @example Queue from direct import
  * import { Queue } from "@fathym/common/iterables";
  *
  * const queue = new Queue<number>();
@@ -18,8 +51,8 @@
  * queue.Dequeue(); // Output: 2
  *
  * queue.IsEmpty(); // Output: true
- * 
- * @example From direct import
+ *
+ * @example Stack from direct import
  * import { Stack } from "@fathym/common/iterables";
  *
  * const stack = new Stack<number>();
@@ -37,5 +70,7 @@
  * stack.IsEmpty(); // Output: true
  */
 
-export * from "./Stack.ts";
-export * from "./Queue.ts";
+export * from './concatUint8Arrays.ts';
+export * from './convertAsyncIterable.ts';
+export * from './Stack.ts';
+export * from './Queue.ts';
