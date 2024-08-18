@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "exports": {
     ".": "./src/common/.exports.ts",
+    "./build": "./src/build/.exports.ts",
+    "./build/version": "./src/build/version.ts",
     "./iterables": "./src/common/iterables/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
     "./path": "./src/common/path/.exports.ts",
