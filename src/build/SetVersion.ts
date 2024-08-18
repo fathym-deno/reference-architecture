@@ -71,7 +71,8 @@ export class SetVersion {
 
     if (!this.version || typeof this.version !== "string") {
       console.error("Please provide a version number.");
-      Deno.exit(1);
+
+      throw new Deno.errors.NotFound("Please provide a version number.");
     }
   }
 
@@ -89,7 +90,7 @@ export class SetVersion {
    * await setVersion.Configure();
    * ```
    */
-  public async Configure(denoCfgPath?: string): Promise<void> {
+  public async Configure(denoCfgPath?: string): Promise<string> {
     try {
       const { Config: config, DenoConfigPath: dcp } = await loadDenoConfig(
         denoCfgPath,
@@ -107,9 +108,10 @@ export class SetVersion {
       await Deno.writeTextFile(denoCfgPath, updatedData);
 
       console.log(`Version updated to ${this.version}`);
+
+      return config.version;
     } catch (error) {
-      console.error("An error occurred while updating the version:", error);
-      Deno.exit(1);
+      throw error;
     }
   }
 }
