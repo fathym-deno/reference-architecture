@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 /**
  * `NullableArrayOrObject` is a utility type that recursively makes all properties
  * of a given type `T` nullable if they are arrays or objects. This type will traverse
@@ -65,6 +67,8 @@
  */
 export type NullableArrayOrObject<T> = {
   [K in keyof T]: T[K] extends (infer U)[] ? U[] | null
+    : T[K] extends Record<string | number | symbol, any>
+      ? NullableArrayOrObject<T[K]> | null
     : T[K] extends object ? NullableArrayOrObject<T[K]> | null
     : T[K];
 };
