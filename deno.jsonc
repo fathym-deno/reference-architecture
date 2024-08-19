@@ -9,6 +9,7 @@
     "./jwt": "./src/common/jwt/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
     "./path": "./src/common/path/.exports.ts",
+    "./types": "./src/common/types/.exports.ts",
     "./build": "./src/build/.exports.ts",
     "./build/version": "./src/build/version.ts",
     "./deno-kv": "./src/deno-kv/.exports.ts",
