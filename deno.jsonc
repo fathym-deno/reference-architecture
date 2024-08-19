@@ -12,7 +12,8 @@
     "./jwt": "./src/common/jwt/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
     "./oauth": "./src/oauth/.exports.ts",
-    "./path": "./src/common/path/.exports.ts"
+    "./path": "./src/common/path/.exports.ts",
+    "./workers": "./src/workers/.exports.ts"
   },
   "tasks": {
     "build": "deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",
