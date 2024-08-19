@@ -12,3 +12,4 @@ export * from './createOAuthHelpers.ts';
 export * from './creatOAuthConfig.ts';
 export * from './OAuthHelpers.ts';
 export * from './oAuthRequest.ts';
+export * from './UserOAuthConnection.ts';
