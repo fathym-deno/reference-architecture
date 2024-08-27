@@ -91,7 +91,7 @@ export class SetVersion {
    * ```
    */
   public async Configure(denoCfgPath?: string): Promise<string> {
-    const logger = await getPackageLogger(import.meta, "build");
+    const logger = await getPackageLogger("build");
 
     try {
       const { Config: config, DenoConfigPath: dcp } = await loadDenoConfig(

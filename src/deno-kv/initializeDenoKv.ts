@@ -7,7 +7,7 @@ import { exists, getPackageLogger, path } from "./.deps.ts";
  * @returns A Deno.Kv instance.
  */
 export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
-  const logger = await getPackageLogger(import.meta, "deno-kv");
+  const logger = await getPackageLogger("deno-kv");
 
   logger.debug(`Initializing DenoKV at ${denoKvPath}`);
 

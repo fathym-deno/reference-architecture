@@ -1,4 +1,4 @@
-import { dirname, getPackageLogger } from "./.deps.ts";
+import { dirname, getPackageLogger, getPackageLoggerSync } from "./.deps.ts";
 import { exists, existsSync } from "./exists.ts";
 
 /**
@@ -21,7 +21,7 @@ import { exists, existsSync } from "./exists.ts";
  * ```
  */
 export async function createIfNotExists(path: string): Promise<void> {
-  const logger = await getPackageLogger(import.meta, "path");
+  const logger = await getPackageLogger("path");
 
   const dir = dirname(path);
 
@@ -52,12 +52,12 @@ export async function createIfNotExists(path: string): Promise<void> {
  * ```
  */
 export function createIfNotExistsSync(path: string): void {
-  // const logger = getPackageLoggerSync(import.meta, "path");
+  const logger = getPackageLoggerSync("path");
 
   const dir = dirname(path);
 
   if (dir && !existsSync(dir)) {
-    // logger.debug(`Ensuring directory ${dir}`);
+    logger.debug(`Ensuring directory ${dir}`);
 
     Deno.mkdirSync(dir);
   }
