@@ -1,4 +1,4 @@
-import { exists, path } from './.deps.ts';
+import { exists, path } from "./.deps.ts";
 
 /**
  * Initialize Deno.Kv instance.
@@ -11,7 +11,7 @@ export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
 
   if (
     denoKvPath &&
-    !denoKvPath.startsWith('https') &&
+    !denoKvPath.startsWith("https") &&
     !(await exists(denoKvPath))
   ) {
     const denoKvDir = path.dirname(denoKvPath);
@@ -30,7 +30,7 @@ export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
 
   const kv = await Deno.openKv(denoKvPath);
 
-  console.log(`Inititialized DenoKV database: ${denoKvPath || '$default'}`);
+  console.log(`Inititialized DenoKV database: ${denoKvPath || "$default"}`);
 
   return kv;
 }
