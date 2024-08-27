@@ -9,28 +9,9 @@ export async function getPackageLogger(
   importMeta: ImportMeta,
   path?: string,
 ): Promise<Logger> {
-  const denoJsoncPath = importMeta.resolve("./deno.jsonc");
+  const denoJsoncPath = importMeta.resolve("/deno.jsonc");
 
   const denoJsoncStr = await Deno.readTextFile(denoJsoncPath);
-
-  const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
-
-  let name = denoConfig?.name;
-
-  if (path) {
-    name = name ? `${name}/${path}` : path;
-  }
-
-  return getLogger(name);
-}
-
-export function getPackageLoggerSync(
-  importMeta: ImportMeta,
-  path?: string,
-): Logger {
-  const denoJsoncPath = importMeta.resolve("./deno.jsonc");
-
-  const denoJsoncStr = Deno.readTextFileSync(denoJsoncPath);
 
   const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
