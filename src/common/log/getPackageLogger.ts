@@ -3,13 +3,14 @@ import {
   getLogger,
   type Logger,
   parseJsonc,
+  pathJoin,
 } from "./.deps.ts";
 
 export async function getPackageLogger(
   importMeta: ImportMeta,
   path?: string,
 ): Promise<Logger> {
-  const denoJsoncPath = importMeta.resolve("/deno.jsonc");
+  const denoJsoncPath = pathJoin(importMeta.url, "./deno.jsonc");
 
   const denoJsoncStr = await Deno.readTextFile(denoJsoncPath);
 
