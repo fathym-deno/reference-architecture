@@ -1,4 +1,4 @@
-import { exists, path } from "./.deps.ts";
+import { exists, getPackageLogger, path } from "./.deps.ts";
 
 /**
  * Initialize Deno.Kv instance.
@@ -7,7 +7,9 @@ import { exists, path } from "./.deps.ts";
  * @returns A Deno.Kv instance.
  */
 export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
-  console.log(`Initializing DenoKV at ${denoKvPath}`);
+  const logger = await getPackageLogger(import.meta);
+
+  logger.debug(`Initializing DenoKV at ${denoKvPath}`);
 
   if (
     denoKvPath &&
@@ -17,20 +19,24 @@ export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
     const denoKvDir = path.dirname(denoKvPath);
 
     if (denoKvDir && !(await exists(denoKvDir))) {
-      console.log(`Ensuring DenoKV directory ${denoKvDir}`);
+      logger.debug(`Ensuring DenoKV directory ${denoKvDir}`);
 
       try {
         await Deno.mkdir(denoKvDir);
-        // deno-lint-ignore no-empty
-      } catch {}
+      } catch (err) {
+        logger.warn(
+          `There was an issure ensuring the directory: ${denoKvDir}`,
+          err,
+        );
+      }
     }
   }
 
-  console.log(`Loading DenoKV instance for ${denoKvPath}`);
+  logger.debug(`Loading DenoKV instance for ${denoKvPath}`);
 
   const kv = await Deno.openKv(denoKvPath);
 
-  console.log(`Inititialized DenoKV database: ${denoKvPath || "$default"}`);
+  logger.debug(`Inititialized DenoKV database: ${denoKvPath || "$default"}`);
 
   return kv;
 }

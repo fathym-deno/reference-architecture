@@ -8,6 +8,7 @@
  * ```
  */
 
+import { getPackageLogger } from "./.deps.ts";
 import { SetVersion } from "./SetVersion.ts";
 
 /**
@@ -15,12 +16,14 @@ import { SetVersion } from "./SetVersion.ts";
  */
 let version: string = "";
 
+const logger = await getPackageLogger(import.meta);
+
 try {
   const setVersion: SetVersion = new SetVersion();
 
   version = await setVersion.Configure();
 } catch (error) {
-  console.log(error);
+  logger.error("There was an error while setting the version.", error);
 }
 
 export { version };

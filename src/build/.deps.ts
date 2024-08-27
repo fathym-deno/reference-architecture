@@ -1,4 +1,5 @@
 export { exists, existsSync } from "../common/path/.exports.ts";
+export { getPackageLogger } from '../common/log/.exports.ts';
 
 export { parseArgs } from "jsr:@std/cli@^1.0.3";
 export { parse as parseJsonc } from "jsr:@std/jsonc@1.0.0";

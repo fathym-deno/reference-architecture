@@ -1,4 +1,4 @@
-import { parseArgs } from "./.deps.ts";
+import { getPackageLogger, parseArgs } from "./.deps.ts";
 import { loadDenoConfig } from "./loadDenoConfig.ts";
 
 /**
@@ -91,6 +91,8 @@ export class SetVersion {
    * ```
    */
   public async Configure(denoCfgPath?: string): Promise<string> {
+    const logger = await getPackageLogger(import.meta);
+
     try {
       const { Config: config, DenoConfigPath: dcp } = await loadDenoConfig(
         denoCfgPath,
@@ -107,7 +109,7 @@ export class SetVersion {
       // Write the updated JSON back to the file
       await Deno.writeTextFile(denoCfgPath, updatedData);
 
-      console.log(`Version updated to ${this.version}`);
+      logger.debug(`Version updated to ${this.version}`);
 
       return config.version;
     } catch (error) {
