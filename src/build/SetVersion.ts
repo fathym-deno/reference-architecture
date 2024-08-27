@@ -1,4 +1,4 @@
-import { getPackageLogger, parseArgs } from "./.deps.ts";
+import { getPackageLogger, getPackageLoggerSync, parseArgs } from "./.deps.ts";
 import { loadDenoConfig } from "./loadDenoConfig.ts";
 
 /**
@@ -56,6 +56,8 @@ export class SetVersion {
    * ```
    */
   constructor(denoArgsVersion?: string[] | string) {
+    const logger = getPackageLoggerSync();
+
     if (typeof denoArgsVersion === "string") {
       this.version = denoArgsVersion;
     } else {
@@ -70,7 +72,7 @@ export class SetVersion {
     }
 
     if (!this.version || typeof this.version !== "string") {
-      console.error("Please provide a version number.");
+      logger.error("Please provide a version number.");
 
       throw new Deno.errors.NotFound("Please provide a version number.");
     }
