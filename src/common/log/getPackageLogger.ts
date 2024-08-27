@@ -9,7 +9,7 @@ export async function getPackageLogger(
   importMeta: ImportMeta,
   path?: string,
 ): Promise<Logger> {
-  const denoJsoncPath = importMeta.resolve("deno.jsonc");
+  const denoJsoncPath = importMeta.resolve("./deno.jsonc");
 
   const denoJsoncStr = await Deno.readTextFile(denoJsoncPath);
 
@@ -28,7 +28,7 @@ export function getPackageLoggerSync(
   importMeta: ImportMeta,
   path?: string,
 ): Logger {
-  const denoJsoncPath = importMeta.resolve("deno.jsonc");
+  const denoJsoncPath = importMeta.resolve("./deno.jsonc");
 
   const denoJsoncStr = Deno.readTextFileSync(denoJsoncPath);
 
