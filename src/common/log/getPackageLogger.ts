@@ -7,6 +7,7 @@ import {
 
 export async function getPackageLogger(
   importMeta: ImportMeta,
+  path?: string,
 ): Promise<Logger> {
   const denoJsoncPath = importMeta.resolve("deno.jsonc");
 
@@ -14,11 +15,18 @@ export async function getPackageLogger(
 
   const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
-  return getLogger(denoConfig.name);
+  let name = denoConfig?.name;
+
+  if (path) {
+    name = name ? `${name}/${path}` : path;
+  }
+
+  return getLogger(name);
 }
 
 export function getPackageLoggerSync(
   importMeta: ImportMeta,
+  path?: string,
 ): Logger {
   const denoJsoncPath = importMeta.resolve("deno.jsonc");
 
@@ -26,5 +34,11 @@ export function getPackageLoggerSync(
 
   const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
-  return getLogger(denoConfig.name);
+  let name = denoConfig?.name;
+
+  if (path) {
+    name = name ? `${name}/${path}` : path;
+  }
+
+  return getLogger(name);
 }
