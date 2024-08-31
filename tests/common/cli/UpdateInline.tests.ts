@@ -1,23 +1,88 @@
+import { assert, assertEquals, delay } from "../../test.deps.ts";
 import { UpdateInline } from "../../../src/common/cli/UpdateInline.ts";
-import { assert, assertEquals } from "../../test.deps.ts";
+import { showCursor } from "../../../src/common/cli/utils/showCursor.ts";
+import { hideCursor } from "../../../src/common/cli/utils/hideCursor.ts";
+import { Spinner } from "jsr:@std/cli/spinner";
 
 Deno.test("Update Inline Tests", async (t) => {
-  // await t.step('Quick Texts', () => {
-  //   console.log(
-  //     `${Colors.bgBlue(
-  //       Colors.red(
-  //         `Hello, ${Colors.bgYellow(
-  //           Colors.black('Good day!')
-  //         )} Its so nice to meet you`
-  //       )
-  //     )}... This seems fine`
-  //   );
+  await t.step("Quick Texts", async () => {
+    let message = "Loading...";
 
-  //   console.log('Whats up?');
-  // });
+    const spinner = new Spinner({ message, color: "yellow" });
+
+    spinner.start();
+
+    for (let i = 0; i < 100; i++) {
+      await delay(80);
+
+      spinner.message = message = message + ".";
+    }
+
+    await delay(3000);
+
+    spinner.stop();
+
+    console.log("Finished loading!");
+  });
+
+  await t.step("Quick Texts", async () => {
+    console.log("From another system.");
+
+    const inliner = new UpdateInline();
+
+    await delay(2000);
+
+    inliner.Configure("Whats up?");
+
+    await delay(2000);
+
+    inliner.Configure("Whats up hommie?");
+
+    await delay(2000);
+
+    inliner.Configure("Whats up my hommie?");
+
+    await delay(2000);
+
+    inliner.Configure("Whats up my super cool hommie?");
+  });
+
+  await t.step("Quick Texts - Long", async () => {
+    console.log("From another system.");
+
+    const inliner = new UpdateInline();
+
+    await delay(2000);
+
+    inliner.Configure(
+      "Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? ",
+    );
+
+    await delay(2000);
+
+    inliner.Configure(
+      "Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie?",
+    );
+
+    await delay(2000);
+
+    inliner.Configure(
+      "Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie?",
+    );
+
+    await delay(2000);
+
+    inliner.Configure(
+      "Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie?",
+    );
+  });
 
   await t.step("Only Text", async () => {
     const inliner = new UpdateInline();
+
+    await delay(5000);
+
+    hideCursor(Deno.stdout, new TextEncoder());
 
     await inliner.Configure("Hello");
 
@@ -26,6 +91,12 @@ Deno.test("Update Inline Tests", async (t) => {
     await inliner.Configure("Hello2");
 
     assertEquals(inliner.LastInlined, "Hello2");
+
+    await delay(5000);
+
+    showCursor(Deno.stdout, new TextEncoder());
+
+    await delay(5000);
   });
 
   await t.step("Blue background", async () => {

@@ -1,4 +1,4 @@
-import type { Writer } from "./.deps.ts";
+import type { WriterSync } from "./.deps.ts";
 import type { Spinner } from "./Spinner.ts";
 import type { StyleOptions } from "./StyleKeys.ts";
 import type { TextContent } from "./TextContent.ts";
@@ -7,6 +7,8 @@ import type { TextContent } from "./TextContent.ts";
  * Options used for configuring the UpdateInline CLI tool.
  */
 export type UpdateInlineOptions = {
+  Columns?: number;
+
   ID?: string;
 
   Indent?: number;
@@ -37,5 +39,5 @@ export type UpdateInlineOptions = {
 
   UseStdin?: boolean;
 
-  Writer?: Writer;
+  Writer?: WriterSync;
 };

@@ -1,18 +1,13 @@
-import { merge } from "./.deps.ts";
+import { merge, writeAllSync, type WriterSync } from "./.deps.ts";
 import type { UpdateInlineOptions } from "./UpdateInlineOptions.ts";
 import { appendStyles } from "./utils/appendStyles.ts";
 import { buildTextContent } from "./utils/buildTextContent.ts";
+import { clearLine } from "./utils/clearLine.ts";
 
 export class UpdateInline {
   // #region Fields
   protected get lineCount(): number {
-    // TODO(mcgear): Add lines based on line breaks in text combined with prefix and possible spinner and max columns (chars per line)
-    let lineCount = this.options.LineCount || 1;
-
-    if (this.options.SuffixText) {
-      // TODO(mcgear): Add lines based on line breaks and max columns (chars per line)
-      lineCount++;
-    }
+    const lineCount = this.LastInlined?.split("\n").length ?? 0;
 
     return lineCount;
   }
@@ -22,6 +17,10 @@ export class UpdateInline {
   protected textEncoder: TextEncoder;
 
   protected timeout: AbortController;
+
+  protected get writer(): WriterSync {
+    return this.options.Writer || Deno.stderr;
+  }
   // #endregion
 
   // #region Properties
@@ -39,10 +38,12 @@ export class UpdateInline {
   }
 
   // #region API Methods
-  public async Configure(options: UpdateInlineOptions | string): Promise<this> {
+  public Configure(options: UpdateInlineOptions | string): this {
     if (typeof options === "string") {
       options = { Text: options };
     }
+
+    const exists = !!this.LastInlined;
 
     this.options = merge(this.options ?? {}, options ?? {});
 
@@ -55,26 +56,23 @@ export class UpdateInline {
       );
     }
 
-    await this.render();
+    if (exists) {
+      clearLine(this.writer, this.textEncoder, this.lineCount);
+    }
+
+    this.render();
 
     return this;
   }
   // #endregion
 
   // #region Helpers
-  protected async render(): Promise<void> {
-    let styles = this.options.Styles;
-
-    if (styles && !Array.isArray(styles)) {
-      styles = [styles];
-    }
-
-    const [text, prefix, suffix] = await Promise.all([
-      buildTextContent(this.options.Text),
-      buildTextContent(this.options.PrefixText),
-      buildTextContent(this.options.SuffixText),
-    ]);
-
+  protected assembleLines(
+    text?: string,
+    prefix?: string,
+    suffix?: string,
+    _spinner?: boolean,
+  ): string[] {
     const lines: string[][] = [];
 
     lines.push([
@@ -85,11 +83,42 @@ export class UpdateInline {
 
     lines.push([...(suffix ? [suffix] : [])]);
 
+    const columns = this.options.Columns ?? 100;
+
+    return lines
+      .map((line) => {
+        const result = line.join(this.options.LineSpacer || " ");
+
+        return result.split("").reduce<string[]>((acc, _, i) => {
+          if (i % columns === 0) {
+            acc.push(result.slice(i, i + columns));
+          }
+          return acc;
+        }, []);
+      })
+      .flatMap((l) => l);
+  }
+
+  protected render(): void {
+    let styles = this.options.Styles;
+
+    if (styles && !Array.isArray(styles)) {
+      styles = [styles];
+    }
+
+    const [text, prefix, suffix] = [
+      buildTextContent(this.options.Text),
+      buildTextContent(this.options.PrefixText),
+      buildTextContent(this.options.SuffixText),
+    ];
+
+    const lines: string[] = this.assembleLines(text, prefix, suffix);
+
     const result = lines.reduce((res, line) => {
       let fullLine = "";
 
-      if (line?.length) {
-        fullLine = line.join(this.options.LineSpacer || " ");
+      if (line) {
+        fullLine = line;
 
         if (fullLine && line === lines[0]) {
           fullLine = styles?.reduce((txt, nextStyle) => {
@@ -101,11 +130,13 @@ export class UpdateInline {
       return !fullLine ? res : !res ? fullLine : `${res}\n${fullLine}`;
     }, "");
 
-    await (this.options.Writer || Deno.stdout).write(
-      this.textEncoder.encode(`${result}\n`),
-    );
+    if (result) {
+      this.writer.writeSync(this.textEncoder.encode(`${result}\n`));
 
-    this.LastInlined = result;
+      this.LastInlined = result;
+    }
+
+    writeAllSync(this.writer, this.textEncoder.encode(`\u001B[100H`));
   }
   // #endregion
 }
