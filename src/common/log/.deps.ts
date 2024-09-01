@@ -12,9 +12,9 @@ export { join as pathJoin } from 'jsr:@std/path@^1.0.2';
 
 export { jsonMapSetStringify } from 'jsr:@fathym/common@0.2.34/iterables/json-map-set';
 
-import Kia, { type Color } from '../../../../kia/mod.ts';
+// import Kia, { type Color } from '../../../../kia/mod.ts';
 // import Kia, { type Color } from 'jsr:@fathym/kia@0.0.117';
-export { type Color, Kia };
+// export { type Color, Kia };
 
 export { type DenoConfig } from '../../build/DenoConfig.ts';
 

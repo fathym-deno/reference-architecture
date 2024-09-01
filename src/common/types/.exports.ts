@@ -2,5 +2,7 @@
  * Helper types used by the Fathym systems.
  * @module
  */
-export * from './getPropertyNames.ts';
+export * from './IsObject.ts';
+export * from './NoPropertiesUndefined.ts';
 export * from './NullableArrayOrObject.ts';
+export * from './ValueType.ts';
