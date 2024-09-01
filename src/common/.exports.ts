@@ -47,7 +47,6 @@
 export * from './http/.exports.ts';
 export * from './iterables/.exports.ts';
 export * from './jwt/.exports.ts';
-export * from './log/.exports.ts';
 export * from './merge/.exports.ts';
 export * from './path/.exports.ts';
 export * from './types/.exports.ts';
