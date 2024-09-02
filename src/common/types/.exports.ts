@@ -3,6 +3,7 @@
  * @module
  */
 export * from './IsObject.ts';
+export * from './IsUndefined.ts';
 export * from './NoPropertiesUndefined.ts';
 export * from './NullableArrayOrObject.ts';
 export * from './RemoveIndexSignature.ts';
