@@ -2,6 +2,7 @@
  * Helper types used by the Fathym systems.
  * @module
  */
+export * from './ExcludeKeysByPrefix.ts';
 export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsUndefined.ts';
