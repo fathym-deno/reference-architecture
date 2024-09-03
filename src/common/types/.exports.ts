@@ -3,6 +3,7 @@
  * @module
  */
 export * from './ExcludeKeysByPrefix.ts';
+export * from './HasTypeCheck.ts';
 export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsUndefined.ts';
