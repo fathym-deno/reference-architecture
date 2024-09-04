@@ -1,5 +1,19 @@
+// deno-lint-ignore-file no-explicit-any
 import {
+  $TagExists,
+  ExcludeKeysByPrefix,
+  NoPropertiesUndefined,
+  ValueType,
+} from '../../src/fluent/.deps.ts';
+import {
+  DetermineEaCFluentMethods,
+  DetermineFluentMethodsType,
   fluentBuilder,
+  FluentMethodsMap,
+  FluentMethodsObject,
+  FluentMethodsProperty,
+  FluentMethodsRecord,
+  SelectFluentMethods,
   type $FluentTag,
   type $FluentTagDataKeyOptions,
   type $FluentTagExists,
@@ -13,8 +27,8 @@ import {
 import { assert, assertEquals, assertFalse } from '../test.deps.ts';
 
 Deno.test('$Fluent Tag Tests', async (t) => {
-  await t.step('Type Tests', async (t) => {
-    await t.step('Tags Tests', async (t) => {
+  await t.step('Type', async (t) => {
+    await t.step('Tags', async (t) => {
       type tagFluent = $FluentTag<
         'Methods',
         'Property',
@@ -241,10 +255,184 @@ Deno.test('$Fluent Tag Tests', async (t) => {
       });
     });
 
-    await t.step('Fluent Tests', async (t) => {
-      await t.step('', () => {
-        
-      })
+    await t.step('Fluent', async (t) => {
+      await t.step('Methods', async (t) => {
+        type fluentTest = {
+          Hello: string;
+          Nested: {
+            Goodbye: string;
+          };
+          Record: Record<
+            string,
+            {
+              Speak: string;
+            }
+          > &
+            $FluentTag<'Methods', 'Record'>;
+        };
+
+        await t.step('Types', async (t) => {
+          await t.step('Object', () => {
+            type fluentMethods = FluentMethodsObject<
+              fluentTest,
+              'Nested',
+              fluentTest
+            >;
+
+            const check: fluentMethods = () => {
+              return {} as any;
+            };
+
+            const next = check();
+
+            assert(next);
+          });
+
+          await t.step('Property', () => {
+            type fluentMethods = FluentMethodsProperty<
+              fluentTest,
+              'Hello',
+              fluentTest
+            >;
+
+            const check: fluentMethods = (input) => {
+              return input as any;
+            };
+
+            const next = check('Hello');
+
+            assert(next);
+            assertEquals<any>(next, 'Hello');
+          });
+
+          await t.step('Property Nested', () => {
+            type fluentMethods = FluentMethodsProperty<
+              fluentTest['Nested'],
+              'Goodbye',
+              fluentTest
+            >;
+
+            const check: fluentMethods = (input) => {
+              return input as any;
+            };
+
+            const next = check('Friend');
+
+            assert(next);
+            assertEquals<any>(next, 'Friend');
+          });
+
+          await t.step('Object as Property', () => {
+            type fluentMethods = FluentMethodsProperty<
+              fluentTest,
+              'Nested',
+              fluentTest
+            >;
+
+            const check: fluentMethods = (input) => {
+              return input as any;
+            };
+
+            const next = check({
+              Goodbye: 'Friend',
+            });
+
+            assert(next);
+            assertEquals<any>((next as any).Goodbye, 'Friend');
+          });
+
+          await t.step('Object as Record', () => {
+            type fluentMethods = FluentMethodsRecord<
+              fluentTest,
+              'Record',
+              fluentTest
+            >;
+
+            const check: fluentMethods = (_input) => {
+              return {} as any;
+            };
+
+            const next = check('recordKey').Speak('Hello');
+
+            assert(next);
+            assertEquals<any>((next as any).Speak, 'You got it');
+          });
+        });
+
+        await t.step('Select', async (t) => {
+          await t.step('Object', () => {
+            type fluentObjectMethods = SelectFluentMethods<
+              fluentTest['Nested'],
+              fluentTest
+            >;
+
+            const objectMethods: fluentObjectMethods = {
+              Goodbye: (value: string) => {
+                return value as any;
+              },
+            };
+
+            const friend = objectMethods.Goodbye('Friend');
+
+            assert(friend);
+            assertEquals<any>('Friend', friend);
+          });
+
+          await t.step('Property', () => {
+            type fluentPropertyMethods = SelectFluentMethods<
+              { Bucket: fluentTest['Hello'] },
+              fluentTest
+            >;
+
+            const propertyMethods: fluentPropertyMethods['Bucket'] = (
+              value: string
+            ) => {
+              return value as any;
+            };
+
+            const hello = propertyMethods('World');
+
+            assert(hello);
+            assertEquals<any>('World', hello);
+          });
+
+          await t.step('Record', () => {
+            type exists = $FluentTagExists<
+              fluentTest['Record'],
+              'Methods',
+              'Record'
+            >;
+
+            type extracted = $FluentTagExtract<fluentTest['Record'], 'Methods'>;
+
+            type extractedCheck = extracted extends 'Record' ? true : false;
+
+            const check: extractedCheck = true;
+
+            assert(check);
+
+            type fluentPropertyMethods = SelectFluentMethods<
+              { Bucket: fluentTest['Record'] },
+              fluentTest
+            >;
+
+            const propertyMethods: fluentPropertyMethods['Bucket'] = (
+              key: string
+            ) => {
+              return { key } as any;
+            };
+
+            const hello = propertyMethods('NewKey').Speak('');
+
+            assert(hello);
+            assertEquals<any>('World', hello);
+          });
+
+          await t.step('Full', () => {
+            type fluentMethods = SelectFluentMethods<fluentTest, fluentTest>;
+          });
+        });
+      });
     });
   });
 });

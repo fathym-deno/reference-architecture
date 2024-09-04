@@ -1,2 +1,5 @@
-export type { ExcludeKeysByPrefix } from '../ExcludeKeysByPrefix.ts';
-export type { HasTypeCheck } from '../HasTypeCheck.ts';
+export type {
+  ExcludeKeysByPrefix,
+  HasTypeCheck,
+  IsObject,
+} from '../.exports.ts';

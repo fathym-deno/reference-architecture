@@ -1,14 +1,13 @@
-import type { NoPropertiesUndefined } from "../.deps.ts";
-import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
+import type { NoPropertiesUndefined } from '../.deps.ts';
+import type { DetermineEaCFluentMethods } from './DetermineEaCFluentMethods.ts';
 
 /**
  * Processes a type and selects the Fluent methods for it.
  */
 export type SelectFluentMethods<T, TBuilderModel> = {
-  [
-    K in keyof NoPropertiesUndefined<T> as K extends string ? K
-      : never
-  ]: DetermineEaCFluentMethods<T, K, TBuilderModel>;
+  [K in keyof NoPropertiesUndefined<T> as K extends string | number | symbol
+    ? K
+    : never]: DetermineEaCFluentMethods<T, K, TBuilderModel>;
 };
 
 // import {

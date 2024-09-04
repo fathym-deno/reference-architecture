@@ -1,4 +1,4 @@
-import { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
+import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
 import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
 import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 
@@ -10,5 +10,5 @@ export type FluentMethodsObject<
   K extends keyof T,
   TBuilderModel,
 > = () =>
-  & SelectFluentBuilder<$FluentTagStrip<T[K]>, TBuilderModel>
-  & SelectFluentMethods<$FluentTagStrip<T[K]>, TBuilderModel>;
+  & SelectFluentBuilder<T[K], TBuilderModel>
+  & SelectFluentMethods<T[K], TBuilderModel>;

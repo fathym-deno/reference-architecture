@@ -11,11 +11,11 @@ export type FluentMethodsRecord<T, K extends keyof T, TBuilderModel> = (
   key: string | number | symbol | keyof T[K],
 ) =>
   & SelectFluentBuilder<
-    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
+    ValueType<ExcludeKeysByPrefix<T[K], "$">>,
     TBuilderModel
   >
   & SelectFluentMethods<
-    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
+    ValueType<ExcludeKeysByPrefix<T[K], "$">>,
     TBuilderModel
   >;
 

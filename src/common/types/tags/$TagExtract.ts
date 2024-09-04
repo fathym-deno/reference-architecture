@@ -1,4 +1,5 @@
-import type { $TagExists } from "./$TagExists.ts";
+import type { RemoveIndexSignature } from "../RemoveIndexSignature.ts";
+import type { $TagExists } from './$TagExists.ts';
 
 /**
  * Extracts the tag from a $Tag type.
@@ -6,6 +7,10 @@ import type { $TagExists } from "./$TagExists.ts";
 export type $TagExtract<T, TType extends string> = false extends $TagExists<
   T,
   TType
-> ? never
-  : T extends { [Key in `@${TType}`]?: infer TValue } ? TValue
+>
+  ? never
+  : RemoveIndexSignature<NonNullable<T>> extends {
+      [Key in `@${TType}`]?: infer TValue;
+    }
+  ? TValue
   : never;
