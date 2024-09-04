@@ -1,189 +1,188 @@
-import { $TagStrip } from "../../../../src/common/types/.exports.ts";
-import { $TagExtractDataKeys } from "../../../../src/common/types/tags/$TagExtractDataKeys.ts";
+import type { $TagStrip } from "../../../../src/common/types/.exports.ts";
+import type { $TagExtractDataKeys } from "../../../../src/common/types/tags/$TagExtractDataKeys.ts";
 import type {
-    $TagExists,
-    $TagExtract,
-    $TagExtractValue,
-    $TagExtractValues,
-    $TagValues,
+  $TagExists,
+  $TagExtract,
+  $TagExtractValue,
+  $TagExtractValues,
+  $TagValues,
 } from "../../../../src/common/types/tags/.exports.ts";
 import { assert, assertEquals, assertFalse } from "../../../test.deps.ts";
 
 Deno.test("$Tag Tests", async (t) => {
-    type testTag = $TagValues<
+  type testTag = $TagValues<
+    "Test",
+    "Thing",
+    "value" | "trim",
+    { trim: "true"; value: "false" }
+  >;
+
+  const check: testTag = {
+    "@Test": "Thing",
+    "@Test-trim": "true",
+    "@Test-value": "false",
+  };
+
+  await t.step("Tag Creation", () => {
+    assert(check);
+    assertEquals(check["@Test-trim"], "true");
+    assertEquals(check["@Test-value"], "false");
+
+    type testValue = NonNullable<testTag["@Test-value"]> extends "false" ? true
+      : false;
+
+    const checkValue: testValue = true;
+
+    assert(checkValue);
+  });
+
+  await t.step("Tag Data Keys", () => {
+    type tagDataKeys = $TagExtractDataKeys<testTag, "Test", "Thing">;
+
+    const dataKeys: tagDataKeys = "trim";
+
+    assert(dataKeys);
+    assertEquals(dataKeys, "trim");
+  });
+
+  await t.step("Tag Exists", () => {
+    type tagExists = {
+      Type: $TagExists<testTag, "Test">;
+      TypeTag: $TagExists<testTag, "Test", "Thing">;
+      TypeTagValues: $TagExists<testTag, "Test", "Thing", "trim">;
+      TypeTagValuesBoth: $TagExists<
+        testTag,
         "Test",
         "Thing",
-        "value" | "trim",
-        { trim: "true"; value: "false" }
-    >;
-
-    const check: testTag = {
-        "@Test": "Thing",
-        "@Test-trim": "true",
-        "@Test-value": "false",
+        "trim" | "value"
+      >;
+      TypeTagValuesPartial: $TagExists<
+        testTag,
+        "Test",
+        "Thing",
+        "trim" | "Bad"
+      >;
+      BadType: $TagExists<testTag, "Bad", "Thing", "trim">;
+      BadTag: $TagExists<testTag, "Test", "Bad", "trim">;
+      BadTypeTag: $TagExists<testTag, "Bad", "Bad", "trim">;
+      BadTypeTagValues: $TagExists<testTag, "Test", "Thing", "Bad">;
+      BadTypeTagValuesBoth: $TagExists<
+        testTag,
+        "Test",
+        "Thing",
+        "Bad" | "Bad"
+      >;
     };
 
-    await t.step("Tag Creation", () => {
-        assert(check);
-        assertEquals(check["@Test-trim"], "true");
-        assertEquals(check["@Test-value"], "false");
+    const d: tagExists = {
+      Type: true,
+      TypeTag: true,
+      TypeTagValues: true,
+      TypeTagValuesBoth: true,
+      TypeTagValuesPartial: true,
+      BadType: false,
+      BadTag: false,
+      BadTypeTag: false,
+      BadTypeTagValues: false,
+      BadTypeTagValuesBoth: false,
+    };
 
-        type testValue = NonNullable<testTag["@Test-value"]> extends "false"
-            ? true
-            : false;
+    assert(d);
+    assert(d.Type);
+    assert(d.TypeTag);
+    assert(d.TypeTagValues);
+    assert(d.TypeTagValuesBoth);
+    assert(d.TypeTagValuesPartial);
+    assertFalse(d.BadType);
+    assertFalse(d.BadTag);
+    assertFalse(d.BadTypeTag);
+    assertFalse(d.BadTypeTagValues);
+    assertFalse(d.BadTypeTagValuesBoth);
+  });
 
-        const checkValue: testValue = true;
+  await t.step("Tag Extracts", () => {
+    type tag = $TagExtract<testTag, "Test">;
 
-        assert(checkValue);
-    });
+    const tagged: tag = "Thing";
 
-    await t.step("Tag Data Keys", () => {
-        type tagDataKeys = $TagExtractDataKeys<testTag, "Test", "Thing">;
+    assert(tagged);
+    assertEquals(tagged, "Thing");
 
-        const dataKeys: tagDataKeys = "trim";
+    type tagValue = $TagExtractValue<testTag, "Test", tag, "trim">;
 
-        assert(dataKeys);
-        assertEquals(dataKeys, "trim");
-    });
+    const value: tagValue = "true";
 
-    await t.step("Tag Exists", () => {
-        type tagExists = {
-            Type: $TagExists<testTag, "Test">;
-            TypeTag: $TagExists<testTag, "Test", "Thing">;
-            TypeTagValues: $TagExists<testTag, "Test", "Thing", "trim">;
-            TypeTagValuesBoth: $TagExists<
-                testTag,
-                "Test",
-                "Thing",
-                "trim" | "value"
-            >;
-            TypeTagValuesPartial: $TagExists<
-                testTag,
-                "Test",
-                "Thing",
-                "trim" | "Bad"
-            >;
-            BadType: $TagExists<testTag, "Bad", "Thing", "trim">;
-            BadTag: $TagExists<testTag, "Test", "Bad", "trim">;
-            BadTypeTag: $TagExists<testTag, "Bad", "Bad", "trim">;
-            BadTypeTagValues: $TagExists<testTag, "Test", "Thing", "Bad">;
-            BadTypeTagValuesBoth: $TagExists<
-                testTag,
-                "Test",
-                "Thing",
-                "Bad" | "Bad"
-            >;
-        };
+    assertEquals(value, "true");
 
-        const d: tagExists = {
-            Type: true,
-            TypeTag: true,
-            TypeTagValues: true,
-            TypeTagValuesBoth: true,
-            TypeTagValuesPartial: true,
-            BadType: false,
-            BadTag: false,
-            BadTypeTag: false,
-            BadTypeTagValues: false,
-            BadTypeTagValuesBoth: false,
-        };
+    type tagValues = $TagExtractValues<
+      testTag,
+      "Test",
+      tag,
+      "trim" | "value"
+    >;
 
-        assert(d);
-        assert(d.Type);
-        assert(d.TypeTag);
-        assert(d.TypeTagValues);
-        assert(d.TypeTagValuesBoth);
-        assert(d.TypeTagValuesPartial);
-        assertFalse(d.BadType);
-        assertFalse(d.BadTag);
-        assertFalse(d.BadTypeTag);
-        assertFalse(d.BadTypeTagValues);
-        assertFalse(d.BadTypeTagValuesBoth);
-    });
+    const values: tagValues = {
+      Test: {
+        trim: "true",
+        value: "false",
+      },
+    };
 
-    await t.step("Tag Extracts", () => {
-        type tag = $TagExtract<testTag, "Test">;
+    assert(values?.Test?.trim);
+    assert(values?.Test?.value);
+    assertEquals(values?.Test?.trim, "true");
+    assertEquals(values?.Test?.value, "false");
+  });
 
-        const tagged: tag = "Thing";
+  await t.step("Tag Stripped", () => {
+    type tagStripped1 = $TagStrip<testTag, "Test">;
 
-        assert(tagged);
-        assertEquals(tagged, "Thing");
+    const stripped1: tagStripped1 = {};
 
-        type tagValue = $TagExtractValue<testTag, "Test", tag, "trim">;
+    assert(stripped1);
 
-        const value: tagValue = "true";
+    type tagStripped2 = $TagStrip<testTag, "Test", "Thing", "trim">;
 
-        assertEquals(value, "true");
+    const stripped2: tagStripped2 = {
+      "@Test": "Thing",
+      "@Test-value": "false",
+    };
 
-        type tagValues = $TagExtractValues<
-            testTag,
-            "Test",
-            tag,
-            "trim" | "value"
-        >;
+    assert(stripped2);
+    assertEquals(stripped2["@Test"], "Thing");
+    // @ts-ignore Ignore missing property, to enforce assertion
+    assertFalse(stripped2["@Test-trim"]);
+    assertEquals(stripped2["@Test-value"], "false");
 
-        const values: tagValues = {
-            Test: {
-                trim: "true",
-                value: "false",
-            },
-        };
+    type tagStripped3 = $TagStrip<
+      testTag,
+      "Test",
+      "Thing",
+      "trim" | "value"
+    >;
 
-        assert(values?.Test?.trim);
-        assert(values?.Test?.value);
-        assertEquals(values?.Test?.trim, "true");
-        assertEquals(values?.Test?.value, "false");
-    });
+    const stripped3: tagStripped3 = {
+      "@Test": "Thing",
+    };
 
-    await t.step("Tag Stripped", () => {
-        type tagStripped1 = $TagStrip<testTag, "Test">;
+    assert(stripped3);
+    assertEquals(stripped3["@Test"], "Thing");
+    // @ts-ignore Ignore missing property, to enforce assertion
+    assertFalse(stripped3["@Test-trim"]);
+    // @ts-ignore Ignore missing property, to enforce assertion
+    assertFalse(stripped3["@Test-value"]);
 
-        const stripped1: tagStripped1 = {};
+    type tagStripped4 = $TagStrip<testTag, "Test", "Thing", never, true>;
 
-        assert(stripped1);
+    const stripped4: tagStripped4 = {
+      "@Test-trim": "true",
+      "@Test-value": "false",
+    };
 
-        type tagStripped2 = $TagStrip<testTag, "Test", "Thing", "trim">;
-
-        const stripped2: tagStripped2 = {
-            "@Test": "Thing",
-            "@Test-value": "false",
-        };
-
-        assert(stripped2);
-        assertEquals(stripped2["@Test"], "Thing");
-        // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped2["@Test-trim"]);
-        assertEquals(stripped2["@Test-value"], "false");
-
-        type tagStripped3 = $TagStrip<
-            testTag,
-            "Test",
-            "Thing",
-            "trim" | "value"
-        >;
-
-        const stripped3: tagStripped3 = {
-            "@Test": "Thing",
-        };
-
-        assert(stripped3);
-        assertEquals(stripped3["@Test"], "Thing");
-        // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped3["@Test-trim"]);
-        // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped3["@Test-value"]);
-
-        type tagStripped4 = $TagStrip<testTag, "Test", "Thing", never, true>;
-
-        const stripped4: tagStripped4 = {
-            "@Test-trim": "true",
-            "@Test-value": "false",
-        };
-
-        assert(stripped4);
-        // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped4["@Test"]);
-        assertEquals(check["@Test-trim"], "true");
-        assertEquals(check["@Test-value"], "false");
-    });
+    assert(stripped4);
+    // @ts-ignore Ignore missing property, to enforce assertion
+    assertFalse(stripped4["@Test"]);
+    assertEquals(stripped4["@Test-trim"], "true");
+    assertEquals(stripped4["@Test-value"], "false");
+  });
 });

@@ -17,7 +17,7 @@
     "./oauth": "./src/oauth/.exports.ts",
     "./path": "./src/common/path/.exports.ts",
     "./types": "./src/common/types/.exports.ts",
-    "./types/tag": "./src/common/types/tag/.exports.ts",
+    "./types/tags": "./src/common/types/tags/.exports.ts",
     "./workers": "./src/workers/.exports.ts"
   },
   "tasks": {

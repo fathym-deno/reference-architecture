@@ -1,14 +1,14 @@
-import type { $TagExtractValues } from "../.deps.ts";
+import type { $TagExtractValueAndStrip } from "../.deps.ts";
 import type { $FluentTagDataKeyOptions } from "./$FluentTagDataKeyOptions.ts";
 import type { $FluentTagOptions } from "./$FluentTagOptions.ts";
 import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 
 /**
- * Extracts all the tag data values from a $FluentTag type in a nested structure.
+ * Extracts the tag data value from a $FluentTag type and returns it along with the stripped type.
  */
-export type $FluentTagExtractValues<
+export type $FluentTagExtractValueAndStrip<
   T,
   TType extends $FluentTagTypeOptions,
   TTag extends $FluentTagOptions<TType>,
   TData extends $FluentTagDataKeyOptions<TType>,
-> = $TagExtractValues<T, TType, TTag, TData>;
+> = $TagExtractValueAndStrip<T, TType, TTag, TData>;
