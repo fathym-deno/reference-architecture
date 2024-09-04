@@ -1,112 +1,113 @@
-import type {
-  $FluentTag,
-  $FluentTagDataKeyOptions,
-  $FluentTagExists,
-  $FluentTagExtract,
-  $FluentTagExtractValue,
-  $FluentTagExtractValues,
-  $FluentTagOptions,
-  $FluentTagStrip,
-  $FluentTagTypeOptions,
-} from "../../src/fluent/.exports.ts";
-import { assert, assertEquals, assertFalse } from "../test.deps.ts";
+import {
+  fluentBuilder,
+  type $FluentTag,
+  type $FluentTagDataKeyOptions,
+  type $FluentTagExists,
+  type $FluentTagExtract,
+  type $FluentTagExtractValue,
+  type $FluentTagExtractValues,
+  type $FluentTagOptions,
+  type $FluentTagStrip,
+  type $FluentTagTypeOptions,
+} from '../../src/fluent/.exports.ts';
+import { assert, assertEquals, assertFalse } from '../test.deps.ts';
 
-Deno.test("$Fluent Tag Tests", async (t) => {
-  await t.step("Type Tests", async (t) => {
-    await t.step("Fluent Tests", async (t) => {
-      await t.step("Fluent Tag Type Options", () => {
-        type t = $FluentTagTypeOptions;
-
-        const c: t = "Methods";
-
-        assert(c);
-        assertEquals(c, "Methods");
-      });
-
-      await t.step("Fluent Tag Options", () => {
-        type t = $FluentTagOptions<"Methods">;
-
-        const c: t = "Record";
-
-        assert(c);
-        assertEquals(c, "Record");
-      });
-
-      await t.step("Fluent Tag Data Key Options", () => {
-        type t = $FluentTagDataKeyOptions<"Methods">;
-
-        const c: t = "...";
-
-        assert(c);
-        assertEquals(c, "...");
-      });
-
+Deno.test('$Fluent Tag Tests', async (t) => {
+  await t.step('Type Tests', async (t) => {
+    await t.step('Tags Tests', async (t) => {
       type tagFluent = $FluentTag<
-        "Methods",
-        "Property",
-        "..." | "......",
-        { "...": "true"; "......": "false" }
+        'Methods',
+        'Property',
+        '...' | '......',
+        { '...': 'true'; '......': 'false' }
       >;
 
-      await t.step("Tag Exists", () => {
+      await t.step('Fluent Tag Type Options', () => {
+        type t = $FluentTagTypeOptions;
+
+        const c: t = 'Methods';
+
+        assert(c);
+        assertEquals(c, 'Methods');
+      });
+
+      await t.step('Fluent Tag Options', () => {
+        type t = $FluentTagOptions<'Methods'>;
+
+        const c: t = 'Record';
+
+        assert(c);
+        assertEquals(c, 'Record');
+      });
+
+      await t.step('Fluent Tag Data Key Options', () => {
+        type t = $FluentTagDataKeyOptions<'Methods'>;
+
+        const c: t = '...';
+
+        assert(c);
+        assertEquals(c, '...');
+      });
+
+      await t.step('Tag Exists', () => {
         type tagExists = {
-          Type: $FluentTagExists<tagFluent, "Methods">;
-          TypeTag: $FluentTagExists<tagFluent, "Methods", "Property">;
+          Type: $FluentTagExists<tagFluent, 'Methods'>;
+          TypeTag: $FluentTagExists<tagFluent, 'Methods', 'Property'>;
           TypeTagValues: $FluentTagExists<
             tagFluent,
-            "Methods",
-            "Property",
-            "..."
+            'Methods',
+            'Property',
+            '...'
           >;
           TypeTagValuesBoth: $FluentTagExists<
             tagFluent,
-            "Methods",
-            "Property",
-            "..." | "......"
+            'Methods',
+            'Property',
+            '...' | '......'
           >;
           TypeTagValuesPartial: $FluentTagExists<
             tagFluent,
-            "Methods",
-            "Property",
+            'Methods',
+            'Property',
             // @ts-ignore Allow setting a bad value to support test
-            "..." | "Bad"
+            '...' | 'Bad'
           >;
           BadType: $FluentTagExists<
             tagFluent,
             // @ts-ignore Allow setting a bad value to support test
-            "Bad",
-            "Property",
-            "..."
+            'Bad',
+            'Property',
+            '...'
           >;
           BadTag: $FluentTagExists<
             tagFluent,
-            "Methods",
+            'Methods',
             // @ts-ignore Allow setting a bad value to support test
-            "Bad",
-            "..."
+            'Bad',
+            '...'
           >;
           BadTypeTag: $FluentTagExists<
             tagFluent,
             // @ts-ignore Allow setting a bad value to support test
-            "Bad",
-            "Bad",
-            "trim"
+            'Bad',
+            'Bad',
+            'trim'
           >;
           BadTypeTagValues: $FluentTagExists<
             tagFluent,
-            "Methods",
-            "Property",
+            'Methods',
+            'Property',
             // @ts-ignore Allow setting a bad value to support test
-            "Bad"
+            'Bad'
           >;
           BadTypeTagValuesBoth: $FluentTagExists<
             tagFluent,
-            "Methods",
-            "Property",
+            'Methods',
+            'Property',
             // @ts-ignore Allow setting a bad value to support test
-            "Bad" | "Bad"
+            'Bad' | 'Bad'
           >;
-          WrongTag: $FluentTagExists<tagFluent, "Methods", "Object">;
+          WrongTag: $FluentTagExists<tagFluent, 'Methods', 'Object'>;
         };
 
         const d: tagExists = {
@@ -137,47 +138,47 @@ Deno.test("$Fluent Tag Tests", async (t) => {
         assertFalse(d.WrongTag);
       });
 
-      await t.step("Tag Extracts", () => {
-        type tagExtract = $FluentTagExtract<tagFluent, "Methods">;
+      await t.step('Tag Extracts', () => {
+        type tagExtract = $FluentTagExtract<tagFluent, 'Methods'>;
 
-        const tagged: tagExtract = "Property";
+        const tagged: tagExtract = 'Property';
 
         assert(tagged);
-        assertEquals(tagged, "Property");
+        assertEquals(tagged, 'Property');
 
         type tagValue = $FluentTagExtractValue<
           tagFluent,
-          "Methods",
+          'Methods',
           tagExtract,
-          "..."
+          '...'
         >;
 
-        const value: tagValue = "true";
+        const value: tagValue = 'true';
 
-        assertEquals(value, "true");
+        assertEquals(value, 'true');
 
         type tagValues = $FluentTagExtractValues<
           tagFluent,
-          "Methods",
+          'Methods',
           tagExtract,
-          "..." | "......"
+          '...' | '......'
         >;
 
         const values: tagValues = {
           Methods: {
-            "...": "true",
-            "......": "false",
+            '...': 'true',
+            '......': 'false',
           },
         };
 
-        assert(values?.Methods?.["..."]);
-        assert(values?.Methods?.["......"]);
-        assertEquals(values?.Methods?.["..."], "true");
-        assertEquals(values?.Methods?.["......"], "false");
+        assert(values?.Methods?.['...']);
+        assert(values?.Methods?.['......']);
+        assertEquals(values?.Methods?.['...'], 'true');
+        assertEquals(values?.Methods?.['......'], 'false');
       });
 
-      await t.step("Tag Stripped", () => {
-        type tagStripped1 = $FluentTagStrip<tagFluent, "Methods">;
+      await t.step('Tag Stripped', () => {
+        type tagStripped1 = $FluentTagStrip<tagFluent, 'Methods'>;
 
         const stripped1: tagStripped1 = {};
 
@@ -185,59 +186,65 @@ Deno.test("$Fluent Tag Tests", async (t) => {
 
         type tagStripped2 = $FluentTagStrip<
           tagFluent,
-          "Methods",
-          "Property",
-          "......"
+          'Methods',
+          'Property',
+          '......'
         >;
 
         const stripped2: tagStripped2 = {
-          "@Methods": "Property",
-          "@Methods-...": "true",
+          '@Methods': 'Property',
+          '@Methods-...': 'true',
         };
 
         assert(stripped2);
-        assertEquals(stripped2["@Methods"], "Property");
+        assertEquals(stripped2['@Methods'], 'Property');
         // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped2["@Methods-......"]);
-        assertEquals(stripped2["@Methods-..."], "true");
+        assertFalse(stripped2['@Methods-......']);
+        assertEquals(stripped2['@Methods-...'], 'true');
 
         type tagStripped3 = $FluentTagStrip<
           tagFluent,
-          "Methods",
-          "Property",
-          "..." | "......"
+          'Methods',
+          'Property',
+          '...' | '......'
         >;
 
         const stripped3: tagStripped3 = {
-          "@Methods": "Property",
+          '@Methods': 'Property',
         };
 
         assert(stripped3);
-        assertEquals(stripped3["@Methods"], "Property");
+        assertEquals(stripped3['@Methods'], 'Property');
         // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped3["@Methods-trim"]);
+        assertFalse(stripped3['@Methods-trim']);
         // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped3["@Methods-value"]);
+        assertFalse(stripped3['@Methods-value']);
 
         type tagStripped4 = $FluentTagStrip<
           tagFluent,
-          "Methods",
-          "Property",
+          'Methods',
+          'Property',
           never,
           true
         >;
 
         const stripped4: tagStripped4 = {
-          "@Methods-...": "true",
-          "@Methods-......": "false",
+          '@Methods-...': 'true',
+          '@Methods-......': 'false',
         };
 
         assert(stripped4);
         // @ts-ignore Ignore missing property, to enforce assertion
-        assertFalse(stripped4["@Methods"]);
-        assertEquals(stripped4["@Methods-..."], "true");
-        assertEquals(stripped4["@Methods-......"], "false");
+        assertFalse(stripped4['@Methods']);
+        assertEquals(stripped4['@Methods-...'], 'true');
+        assertEquals(stripped4['@Methods-......'], 'false');
       });
+    });
+
+    await t.step('Fluent Tests', async (t) => {
+      await t.step('', () => {
+        
+      })
     });
   });
 });
