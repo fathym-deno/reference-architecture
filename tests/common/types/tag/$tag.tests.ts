@@ -1,3 +1,4 @@
+import { $TagStrip } from "../../../../src/common/types/.exports.ts";
 import type {
     $TagExists,
     $TagExtract,
@@ -15,13 +16,13 @@ Deno.test("$Tag Tests", async (t) => {
         { trim: "true"; value: "false" }
     >;
 
-    await t.step("Tag Creation", () => {
-        const check: testTag = {
-            "@Test": "Thing",
-            "@Test-trim": "true",
-            "@Test-value": "false",
-        };
+    const check: testTag = {
+        "@Test": "Thing",
+        "@Test-trim": "true",
+        "@Test-value": "false",
+    };
 
+    await t.step("Tag Creation", () => {
         assert(check);
         assertEquals(check["@Test-trim"], "true");
         assertEquals(check["@Test-value"], "false");
@@ -122,5 +123,57 @@ Deno.test("$Tag Tests", async (t) => {
         assert(values?.Test?.value);
         assertEquals(values?.Test?.trim, "true");
         assertEquals(values?.Test?.value, "false");
+    });
+
+    await t.step("Tag Stripped", () => {
+        type tagStripped1 = $TagStrip<testTag, "Test">;
+
+        const stripped1: tagStripped1 = {};
+
+        assert(stripped1);
+
+        type tagStripped2 = $TagStrip<testTag, "Test", "Thing", "trim">;
+
+        const stripped2: tagStripped2 = {
+            "@Test": "Thing",
+            "@Test-value": "false",
+        };
+
+        assert(stripped2);
+        assertEquals(stripped2["@Test"], "Thing");
+        // @ts-ignore Ignore missing property, to enforce assertion
+        assertFalse(stripped2["@Test-trim"]);
+        assertEquals(stripped2["@Test-value"], "false");
+
+        type tagStripped3 = $TagStrip<
+            testTag,
+            "Test",
+            "Thing",
+            "trim" | "value"
+        >;
+
+        const stripped3: tagStripped3 = {
+            "@Test": "Thing",
+        };
+
+        assert(stripped3);
+        assertEquals(stripped3["@Test"], "Thing");
+        // @ts-ignore Ignore missing property, to enforce assertion
+        assertFalse(stripped3["@Test-trim"]);
+        // @ts-ignore Ignore missing property, to enforce assertion
+        assertFalse(stripped3["@Test-value"]);
+
+        type tagStripped4 = $TagStrip<testTag, "Test", "Thing", never, true>;
+
+        const stripped4: tagStripped4 = {
+            "@Test-trim": "true",
+            "@Test-value": "false",
+        };
+
+        assert(stripped4);
+        // @ts-ignore Ignore missing property, to enforce assertion
+        assertFalse(stripped4["@Test"]);
+        assertEquals(check["@Test-trim"], "true");
+        assertEquals(check["@Test-value"], "false");
     });
 });
