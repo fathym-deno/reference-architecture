@@ -1,4 +1,5 @@
 import { $TagStrip } from "../../../../src/common/types/.exports.ts";
+import { $TagExtractDataKeys } from "../../../../src/common/types/tags/$TagExtractDataKeys.ts";
 import type {
     $TagExists,
     $TagExtract,
@@ -34,6 +35,15 @@ Deno.test("$Tag Tests", async (t) => {
         const checkValue: testValue = true;
 
         assert(checkValue);
+    });
+
+    await t.step("Tag Data Keys", () => {
+        type tagDataKeys = $TagExtractDataKeys<testTag, "Test", "Thing">;
+
+        const dataKeys: tagDataKeys = "trim";
+
+        assert(dataKeys);
+        assertEquals(dataKeys, "trim");
     });
 
     await t.step("Tag Exists", () => {
