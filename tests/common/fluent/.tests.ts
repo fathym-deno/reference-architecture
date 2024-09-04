@@ -1,1 +1,1 @@
-import './fluent.tests.ts';
+import './$fluent.tests.ts';
