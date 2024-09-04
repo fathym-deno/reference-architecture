@@ -1,4 +1,4 @@
-import type { $TagValues } from "../.deps.ts";
+import type { $TagValues } from "../../.deps.ts";
 import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 import type { $FluentTagOptions } from "./$FluentTagOptions.ts";
 import type { $FluentTagDataKeyOptions } from "./$FluentTagDataKeyOptions.ts";

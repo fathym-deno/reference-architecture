@@ -1,4 +1,4 @@
-import type { $TagDeepStrip } from "../.deps.ts";
+import type { $TagDeepStrip } from "../../.deps.ts";
 import type { $FluentTagOptions } from "./$FluentTagOptions.ts";
 import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 

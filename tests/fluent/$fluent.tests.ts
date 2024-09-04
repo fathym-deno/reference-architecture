@@ -8,9 +8,8 @@ import type {
   $FluentTagOptions,
   $FluentTagStrip,
   $FluentTagTypeOptions,
-} from "../../../src/fluent/.exports.ts";
-import type {} from "../../../src/fluent/types/$FluentTagOptions.ts";
-import { assert, assertEquals, assertFalse } from "../../test.deps.ts";
+} from "../../src/fluent/.exports.ts";
+import { assert, assertEquals, assertFalse } from "../test.deps.ts";
 
 Deno.test("$Fluent Tag Tests", async (t) => {
   await t.step("Type Tests", async (t) => {

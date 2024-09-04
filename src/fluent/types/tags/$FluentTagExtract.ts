@@ -1,4 +1,4 @@
-import type { $TagExtract } from "../.deps.ts";
+import type { $TagExtract } from "../../.deps.ts";
 import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 
 /**
