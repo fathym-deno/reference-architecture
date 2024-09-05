@@ -129,7 +129,7 @@ export class FluentBuilder<TBuilderModel> {
     receiver: any,
     args: unknown[]
   ): FluentBuilder<TBuilderModel> {
-    const result: ReturnType<typeof this.executeVirtualObject> = undefined;
+    let result: ReturnType<typeof this.executeVirtualObject> = undefined;
     // {
     //   Keys: [],
     //   Prop: prop.toString(),
