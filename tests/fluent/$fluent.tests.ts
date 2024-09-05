@@ -25,7 +25,7 @@ Deno.test('$Fluent Tag Tests', async (t) => {
         'Methods',
         'Property',
         'generic' | 'handlers',
-        { 'generic': 'true'; 'handlers': 'false' }
+        { generic: true; handlers: { Compile: () => {} } }
       >;
 
       await t.step('Fluent Tag Type Options', () => {
@@ -169,9 +169,9 @@ Deno.test('$Fluent Tag Tests', async (t) => {
           'generic'
         >;
 
-        const value: tagValue = 'true';
+        const value: tagValue = true;
 
-        assertEquals(value, 'true');
+        assertEquals(value, true);
 
         type tagValues = $FluentTagExtractValues<
           tagFluent,
@@ -182,15 +182,15 @@ Deno.test('$Fluent Tag Tests', async (t) => {
 
         const values: tagValues = {
           Methods: {
-            'generic': 'true',
-            'handlers': 'false',
+            generic: true,
+            handlers: { Compile: () => ({}) },
           },
         };
 
         assert(values?.Methods?.['generic']);
         assert(values?.Methods?.['handlers']);
-        assertEquals(values?.Methods?.['generic'], 'true');
-        assertEquals(values?.Methods?.['handlers'], 'false');
+        assertEquals(values?.Methods?.['generic'], true);
+        assert(values?.Methods?.['handlers']?.Compile);
       });
 
       await t.step('Tag Stripped', () => {
@@ -209,14 +209,14 @@ Deno.test('$Fluent Tag Tests', async (t) => {
 
         const stripped2: tagStripped2 = {
           '@Methods': 'Property',
-          '@Methods-generic': 'true',
+          '@Methods-generic': true,
         };
 
         assert(stripped2);
         assertEquals(stripped2['@Methods'], 'Property');
         // @ts-ignore Ignore missing property, to enforce assertion
         assertFalse(stripped2['@Methods-handlers']);
-        assertEquals(stripped2['@Methods-generic'], 'true');
+        assertEquals(stripped2['@Methods-generic'], true);
 
         type tagStripped3 = $FluentTagStrip<
           tagFluent,
@@ -245,15 +245,15 @@ Deno.test('$Fluent Tag Tests', async (t) => {
         >;
 
         const stripped4: tagStripped4 = {
-          '@Methods-generic': 'true',
-          '@Methods-handlers': 'false',
+          '@Methods-generic': true,
+          '@Methods-handlers': { Compile: () => ({}) },
         };
 
         assert(stripped4);
         // @ts-ignore Ignore missing property, to enforce assertion
         assertFalse(stripped4['@Methods']);
-        assertEquals(stripped4['@Methods-generic'], 'true');
-        assertEquals(stripped4['@Methods-handlers'], 'false');
+        assertEquals(stripped4['@Methods-generic'], true);
+        assert(stripped4['@Methods-handlers']?.Compile);
       });
 
       await t.step('Tag Stripped - No Metadata - Record', () => {

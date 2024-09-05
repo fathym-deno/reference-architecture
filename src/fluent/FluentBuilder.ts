@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import { readStringDelim } from "jsr:@std/io@^0.224.6/read-string-delim";
 import { jsonMapSetClone, type ValueType } from './.deps.ts';
 import type { $FluentTagDeepStrip, $FluentTagTypeOptions } from './.exports.ts';
 import type { IsFluentBuildable } from './types/IsFluentBuildable.ts';
@@ -91,52 +92,171 @@ export class FluentBuilder<TBuilderModel> {
     return new Proxy(this, {
       get(target, prop, receiver) {
         if (prop in target.handlers) {
-          return (...args: unknown[]) =>
-            target.handlers[prop.toString()].call(target, args);
+          return (...args: unknown[]) => {
+            return target.executeHandlers(target, prop, receiver, args);
+          };
         } else if (prop in target) {
-          return Reflect.get(target, prop, receiver);
+          return target.executeActual(target, prop, receiver);
         } else {
           return (...args: unknown[]) => {
-            const newKeys: string[] = [];
-
-            let newValue: unknown;
-
-            if (args?.length) {
-              if (prop.toString().startsWith('_')) {
-                prop = prop.toString().startsWith('_')
-                  ? prop.toString().slice(1)
-                  : prop.toString();
-
-                const [lookup] = args as [string];
-
-                newKeys.push(...[prop, lookup]);
-
-                newValue = target.workingRecords()[prop] ?? {};
-
-                if (!(lookup in (newValue as Record<string, unknown>))) {
-                  (newValue as Record<string, unknown>)[lookup] = {};
-                }
-              } else {
-                const [value] = args;
-
-                newValue = value;
-              }
-            } else {
-              newKeys.push(prop.toString());
-
-              newValue = target.workingRecords()[prop.toString()] ?? {};
-            }
-
-            target.workingRecords()[prop.toString()] = newValue;
-
-            return new FluentBuilder<TBuilderModel>(
-              [...target.keyDepth, ...newKeys],
-              target.model
-            );
+            return target.executeVirtual(target, prop, receiver, args);
           };
         }
       },
     }) as this;
+  }
+
+  protected executeActual(
+    target: this,
+    prop: string | symbol,
+    receiver: any
+  ): unknown {
+    return Reflect.get(target, prop, receiver);
+  }
+
+  protected executeHandlers(
+    target: this,
+    prop: string | symbol,
+    _receiver: any,
+    ...args: unknown[]
+  ): unknown {
+    return this.handlers[prop.toString()].call(target, ...args);
+  }
+
+  protected executeVirtual(
+    target: this,
+    prop: string | symbol,
+    _receiver: any,
+    args: unknown[]
+  ): FluentBuilder<TBuilderModel> {
+    const result: ReturnType<typeof this.executeVirtualObject> = {
+      Keys: [],
+      Prop: prop.toString(),
+      Value: undefined,
+    } as ReturnType<typeof target.executeVirtualObject>;
+
+    if (args?.length) {
+      if (result.Prop.toString().startsWith('_')) {
+        result.Prop = result.Prop.toString().slice(1);
+
+        const [lookup] = args as [string];
+
+        result.Keys.push(...[result.Prop, lookup]);
+
+        result.Value = target.workingRecords()[result.Prop] ?? {};
+
+        if (!(lookup in (result.Value as Record<string, unknown>))) {
+          (result.Value as Record<string, unknown>)[lookup] = {};
+        }
+      } else {
+        const [value] = args;
+
+        result.Value = value;
+      }
+    } else {
+      result.Keys.push(result.Prop);
+
+      result.Value = target.workingRecords()[result.Prop] ?? {};
+    }
+
+    // const workers = [
+    //   this.executeVirtualObject,
+    //   this.executeVirtualProperty,
+    //   this.executeVirtualRecord,
+    // ];
+
+    // result = workers.reduce(
+    //   (result, worker) => {
+    //     const {
+    //       Keys: newKeys,
+    //       Prop: newProp,
+    //       Value: newValue,
+    //     } = worker(target, prop, receiver, args);
+
+    //     return {
+    //       Keys: (result.Keys.length ? result.Keys : newKeys) ?? [],
+    //       Prop: result.Prop ?? newProp,
+    //       Value: result.Value ?? newValue,
+    //     };
+    //   },
+    //   result
+    // );
+
+    // if (!newValue) {
+    //   console.log(newProp);
+    // }
+    
+    target.workingRecords()[result.Prop] = result.Value;
+
+    return new FluentBuilder<TBuilderModel>(
+      [...target.keyDepth, ...result.Keys],
+      target.model
+    );
+  }
+
+  protected executeVirtualObject(
+    target: this,
+    prop: string | symbol,
+    _receiver: any,
+    args: unknown[]
+  ): { Keys: string[]; Prop: string; Value: unknown } {
+    const newKeys: string[] = [];
+
+    let newValue: unknown;
+
+    if (!args?.length) {
+      newKeys.push(prop.toString());
+
+      newValue = target.workingRecords()[prop.toString()] ?? {};
+    }
+
+    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
+  }
+
+  protected executeVirtualProperty(
+    _target: this,
+    prop: string | symbol,
+    _receiver: any,
+    args: unknown[]
+  ): ReturnType<typeof this.executeVirtualObject> {
+    const newKeys: string[] = [];
+
+    let newValue: unknown = undefined;
+
+    if (args?.length && !prop.toString().startsWith('_')) {
+      const [value] = args;
+
+      newValue = value;
+    }
+
+    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
+  }
+
+  protected executeVirtualRecord(
+    target: this,
+    prop: string | symbol,
+    _receiver: any,
+    args: unknown[]
+  ): ReturnType<typeof this.executeVirtualObject> {
+    const newKeys: string[] = [];
+
+    let newValue: unknown = undefined;
+
+    if (args?.length && prop.toString().startsWith('_')) {
+      prop = prop.toString().slice(1);
+
+      const [lookup] = args as [string];
+
+      newKeys.push(...[prop, lookup]);
+
+      newValue = target.workingRecords()[prop] ?? {};
+
+      if (!(lookup in (newValue as Record<string, unknown>))) {
+        (newValue as Record<string, unknown>)[lookup] = {};
+      }
+    }
+
+    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
   }
 
   protected workingRecords(): Record<string, unknown> {

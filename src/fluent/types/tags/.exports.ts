@@ -3,6 +3,7 @@
  */
 export * from './$FluentTag.ts';
 export * from './$FluentTagDataKeyOptions.ts';
+export * from './$FluentTagDataValueOptions.ts'
 export * from './$FluentTagDeepStrip.ts';
 export * from './$FluentTagExists.ts';
 export * from './$FluentTagExtract.ts';
