@@ -3,7 +3,7 @@ import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 /**
  * The Fluent tag data key options.
  */
-export type $FluentTagMethodsDataKeyOptions = "..." | "......";
+export type $FluentTagMethodsDataKeyOptions = "generic" | "handlers";
 
 /**
  * Map for looking up the Fluent tag data key options, by tag type

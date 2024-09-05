@@ -1,20 +1,18 @@
 // deno-lint-ignore-file no-explicit-any
-import { jsonMapSetClone, type ValueType } from "./.deps.ts";
-import type { $FluentTagDeepStrip, $FluentTagTypeOptions } from "./.exports.ts";
-import type { IsFluentBuildable } from "./types/IsFluentBuildable.ts";
-import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
+import { jsonMapSetClone, type ValueType } from './.deps.ts';
+import type { $FluentTagDeepStrip, $FluentTagTypeOptions } from './.exports.ts';
+import type { IsFluentBuildable } from './types/IsFluentBuildable.ts';
+import type { SelectFluentMethods } from './types/SelectFluentMethods.ts';
 
 export function fluentBuilder<TBuilderModel>(
-  model?: IsFluentBuildable<TBuilderModel>,
-):
-  & FluentBuilder<TBuilderModel>
-  & SelectFluentMethods<TBuilderModel, TBuilderModel> {
+  model?: IsFluentBuildable<TBuilderModel>
+): FluentBuilder<TBuilderModel> &
+  SelectFluentMethods<TBuilderModel, TBuilderModel> {
   return new FluentBuilder<TBuilderModel>(
     [],
-    model,
-  ) as
-    & FluentBuilder<TBuilderModel>
-    & SelectFluentMethods<TBuilderModel, TBuilderModel>;
+    model
+  ) as FluentBuilder<TBuilderModel> &
+    SelectFluentMethods<TBuilderModel, TBuilderModel>;
 }
 
 /**
@@ -35,7 +33,7 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: typeof this.handlers,
+    handlers?: typeof this.handlers
   ) {
     this.handlers = handlers || {};
 
@@ -72,18 +70,16 @@ export class FluentBuilder<TBuilderModel> {
   }
 
   public With(
-    action: (x: this) => void,
-  ):
-    & this
-    & SelectFluentMethods<
+    action: (x: this) => void
+  ): this &
+    SelectFluentMethods<
       ValueType<ReturnType<typeof this.workingRecords>>,
       TBuilderModel
     > {
     action(this);
 
-    return this as
-      & this
-      & SelectFluentMethods<
+    return this as this &
+      SelectFluentMethods<
         ValueType<ReturnType<typeof this.workingRecords>>,
         TBuilderModel
       >;
@@ -94,13 +90,11 @@ export class FluentBuilder<TBuilderModel> {
   protected createProxy(): this {
     return new Proxy(this, {
       get(target, prop, receiver) {
-        if (prop in target) {
-          return Reflect.get(target, prop, receiver);
-        }
-
         if (prop in target.handlers) {
           return (...args: unknown[]) =>
             target.handlers[prop.toString()].call(target, args);
+        } else if (prop in target) {
+          return Reflect.get(target, prop, receiver);
         } else {
           return (...args: unknown[]) => {
             const newKeys: string[] = [];
@@ -108,8 +102,8 @@ export class FluentBuilder<TBuilderModel> {
             let newValue: unknown;
 
             if (args?.length) {
-              if (prop.toString().startsWith("_")) {
-                prop = prop.toString().startsWith("_")
+              if (prop.toString().startsWith('_')) {
+                prop = prop.toString().startsWith('_')
                   ? prop.toString().slice(1)
                   : prop.toString();
 
@@ -137,7 +131,7 @@ export class FluentBuilder<TBuilderModel> {
 
             return new FluentBuilder<TBuilderModel>(
               [...target.keyDepth, ...newKeys],
-              target.model,
+              target.model
             );
           };
         }
