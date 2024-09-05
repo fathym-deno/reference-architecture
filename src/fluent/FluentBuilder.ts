@@ -129,62 +129,63 @@ export class FluentBuilder<TBuilderModel> {
     receiver: any,
     args: unknown[]
   ): FluentBuilder<TBuilderModel> {
-    const result: NonNullable<ReturnType<typeof this.executeVirtualObject>> = {
-      Keys: [],
-      Prop: prop.toString(),
-      Value: undefined,
-    } as NonNullable<ReturnType<typeof target.executeVirtualObject>>;
+    const result: ReturnType<typeof this.executeVirtualObject> = undefined;
+    // {
+    //   Keys: [],
+    //   Prop: prop.toString(),
+    //   Value: undefined,
+    // } as NonNullable<ReturnType<typeof target.executeVirtualObject>>;
 
-    if (args?.length) {
-      if (result.Prop.toString().startsWith('_')) {
-        result.Prop = result.Prop.toString().slice(1);
+    // if (args?.length) {
+    //   if (result.Prop.toString().startsWith('_')) {
+    //     result.Prop = result.Prop.toString().slice(1);
 
-        const [lookup] = args as [string];
+    //     const [lookup] = args as [string];
 
-        result.Keys.push(...[result.Prop, lookup]);
+    //     result.Keys.push(...[result.Prop, lookup]);
 
-        result.Value = target.workingRecords()[result.Prop] ?? {};
+    //     result.Value = target.workingRecords()[result.Prop] ?? {};
 
-        if (!(lookup in (result.Value as Record<string, unknown>))) {
-          (result.Value as Record<string, unknown>)[lookup] = {};
-        }
-      } else {
-        const [value] = args;
+    //     if (!(lookup in (result.Value as Record<string, unknown>))) {
+    //       (result.Value as Record<string, unknown>)[lookup] = {};
+    //     }
+    //   } else {
+    //     const [value] = args;
 
-        result.Value = value;
-      }
-    } else {
-      result.Keys.push(result.Prop);
+    //     result.Value = value;
+    //   }
+    // } else {
+    //   result.Keys.push(result.Prop);
 
-      result.Value = target.workingRecords()[result.Prop] ?? {};
-    }
-
-    // const workers = [
-    const a = this.executeVirtualObject(target, prop, receiver, args);
-    const b = this.executeVirtualProperty(target, prop, receiver, args);
-    const c = this.executeVirtualRecord(target, prop, receiver, args);
-    // ];
-
-    // result = workers.reduce(
-    //   (result, worker) => {
-    //     const {
-    //       Keys: newKeys,
-    //       Prop: newProp,
-    //       Value: newValue,
-    //     } = worker(target, prop, receiver, args);
-
-    //     return {
-    //       Keys: (result.Keys.length ? result.Keys : newKeys) ?? [],
-    //       Prop: result.Prop ?? newProp,
-    //       Value: result.Value ?? newValue,
-    //     };
-    //   },
-    //   result
-    // );
-
-    // if (!newValue) {
-    //   console.log(newProp);
+    //   result.Value = target.workingRecords()[result.Prop] ?? {};
     // }
+
+    const workers = [
+      this.executeVirtualObject, //(target, prop, receiver, args);
+      this.executeVirtualProperty, //(target, prop, receiver, args);
+      this.executeVirtualRecord, //(target, prop, receiver, args);
+    ];
+
+    result = workers.reduce(
+      (result, worker) => {
+        const {
+          Keys: newKeys,
+          Prop: newProp,
+          Value: newValue,
+        } = worker(target, prop, receiver, args);
+
+        return {
+          Keys: (result.Keys.length ? result.Keys : newKeys) ?? [],
+          Prop: result.Prop ?? newProp,
+          Value: result.Value ?? newValue,
+        };
+      },
+      result
+    );
+
+    if (!result) {
+      console.log(result);
+    }
 
     target.workingRecords()[result.Prop] = result.Value;
 
