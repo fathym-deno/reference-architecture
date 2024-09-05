@@ -5,8 +5,12 @@ import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 /**
  * Used for managing the property as it's value type.
  */
+// export type FluentMethodsProperty<T, K extends keyof T, TBuilderModel> = (
+//   input: T[K]
+// ) => SelectFluentBuilder<T[K], TBuilderModel> &
+//   SelectFluentMethods<Omit<T, K>, TBuilderModel>;
 export type FluentMethodsProperty<T, K extends keyof T, TBuilderModel> = (
   input: $FluentTagStrip<T[K]>,
 ) =>
-  & SelectFluentBuilder<T[K], TBuilderModel>
-  & SelectFluentMethods<Omit<T, K>, TBuilderModel>;
+  & SelectFluentBuilder<$FluentTagStrip<T[K]>, TBuilderModel>
+  & SelectFluentMethods<Omit<$FluentTagStrip<T>, K>, TBuilderModel>;

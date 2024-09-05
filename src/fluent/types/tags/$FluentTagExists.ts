@@ -8,9 +8,7 @@ import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
  */
 export type $FluentTagExists<
   T,
-  TType extends $FluentTagTypeOptions = $FluentTagTypeOptions,
-  TTag extends $FluentTagOptions<TType> = $FluentTagOptions<TType>,
-  TData extends $FluentTagDataKeyOptions<TType> = $FluentTagDataKeyOptions<
-    TType
-  >,
+  TType extends $FluentTagTypeOptions,
+  TTag extends $FluentTagOptions<TType> = never,
+  TData extends $FluentTagDataKeyOptions<TType> = never,
 > = $TagExists<T, TType, TTag, TData>;

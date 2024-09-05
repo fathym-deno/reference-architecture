@@ -9,8 +9,9 @@ export type $TagValues<
   TData extends string = never,
   // deno-lint-ignore no-explicit-any
   TValues extends Record<TData, any> = never,
-> =
-  & $Tag<TType, TTag>
-  & {
-    [Key in keyof TValues as `@${TType}-${Key & TData}`]?: TValues[Key];
-  };
+> = [TData] extends [never] ? $Tag<TType, TTag>
+  :
+    & $Tag<TType, TTag>
+    & {
+      [Key in keyof TValues as `@${TType}-${Key & TData}`]?: TValues[Key];
+    };

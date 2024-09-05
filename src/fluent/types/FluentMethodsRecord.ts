@@ -7,15 +7,25 @@ import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 /**
  * Used for managing the property as a Record<,> set where the root object property takes a key for the record, returning a fluent API for each of it's properties.
  */
+// export type FluentMethodsRecord<T, K extends keyof T, TBuilderModel> = (
+//   key: string
+// ) => SelectFluentBuilder<
+//   ValueType<ExcludeKeysByPrefix<T[K], '$'>>,
+//   TBuilderModel
+// > &
+//   SelectFluentMethods<
+//     ValueType<ExcludeKeysByPrefix<T[K], '$'>>,
+//     TBuilderModel
+//   >;
 export type FluentMethodsRecord<T, K extends keyof T, TBuilderModel> = (
-  key: string | number | symbol | keyof T[K],
+  key: string,
 ) =>
   & SelectFluentBuilder<
-    ValueType<ExcludeKeysByPrefix<T[K], "$">>,
+    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
     TBuilderModel
   >
   & SelectFluentMethods<
-    ValueType<ExcludeKeysByPrefix<T[K], "$">>,
+    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
     TBuilderModel
   >;
 

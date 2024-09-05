@@ -7,6 +7,6 @@ import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
  */
 export type $FluentTagDeepStrip<
   T,
-  TType extends $FluentTagTypeOptions = $FluentTagTypeOptions,
-  TTag extends $FluentTagOptions<TType> = $FluentTagOptions<TType>,
+  TType extends $FluentTagTypeOptions,
+  TTag extends $FluentTagOptions<TType> = never,
 > = $TagDeepStrip<T, TType, TTag>;

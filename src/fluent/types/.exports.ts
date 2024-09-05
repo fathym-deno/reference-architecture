@@ -7,5 +7,6 @@ export * from './FluentMethodsMap.ts';
 export * from './FluentMethodsObject.ts';
 export * from './FluentMethodsProperty.ts';
 export * from './FluentMethodsRecord.ts';
+export * from './IsFluentBuildable.ts';
 export * from './SelectFluentBuilder.ts';
 export * from './SelectFluentMethods.ts';

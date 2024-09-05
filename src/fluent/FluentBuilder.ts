@@ -1,22 +1,20 @@
-import { IsObject, jsonMapSetClone, type ValueType } from './.deps.ts';
-import type { SelectFluentMethods } from './types/SelectFluentMethods.ts';
-
-/**
- * Determines if an intial input is able to be used in a FluentBuilder.
- */
-export type IsFluentBuildable<TBuilderModel> = IsObject<TBuilderModel> extends true
-  ? TBuilderModel
-  : never;
+// deno-lint-ignore-file no-explicit-any
+import { jsonMapSetClone, type ValueType } from "./.deps.ts";
+import type { $FluentTagDeepStrip, $FluentTagTypeOptions } from "./.exports.ts";
+import type { IsFluentBuildable } from "./types/IsFluentBuildable.ts";
+import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
 
 export function fluentBuilder<TBuilderModel>(
-  model?: IsFluentBuildable<TBuilderModel>
-): FluentBuilder<TBuilderModel> &
-  SelectFluentMethods<TBuilderModel, TBuilderModel> {
+  model?: IsFluentBuildable<TBuilderModel>,
+):
+  & FluentBuilder<TBuilderModel>
+  & SelectFluentMethods<TBuilderModel, TBuilderModel> {
   return new FluentBuilder<TBuilderModel>(
     [],
-    model
-  ) as FluentBuilder<TBuilderModel> &
-    SelectFluentMethods<TBuilderModel, TBuilderModel>;
+    model,
+  ) as
+    & FluentBuilder<TBuilderModel>
+    & SelectFluentMethods<TBuilderModel, TBuilderModel>;
 }
 
 /**
@@ -25,7 +23,7 @@ export function fluentBuilder<TBuilderModel>(
 export class FluentBuilder<TBuilderModel> {
   // #region Fields
   protected handlers: {
-    [handlerName: string | symbol]: (...args: unknown[]) => unknown;
+    [handlerName: string]: (...args: unknown[]) => unknown;
   };
 
   protected keyDepth: string[];
@@ -37,7 +35,7 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: typeof this.handlers
+    handlers?: typeof this.handlers,
   ) {
     this.handlers = handlers || {};
 
@@ -50,7 +48,7 @@ export class FluentBuilder<TBuilderModel> {
   // #endregion
 
   // #region API Methods
-  public Export(): TBuilderModel {
+  public Export(): $FluentTagDeepStrip<TBuilderModel, $FluentTagTypeOptions> {
     const newModel = jsonMapSetClone(this.model) as Record<string, unknown>;
 
     let eacWorking = newModel as Record<string, unknown>;
@@ -60,7 +58,6 @@ export class FluentBuilder<TBuilderModel> {
 
       workingProps.forEach((key) => {
         if (key !== nextKey) {
-          // deno-lint-ignore no-explicit-any
           delete (eacWorking as any)[key];
         }
       });
@@ -68,20 +65,25 @@ export class FluentBuilder<TBuilderModel> {
       eacWorking = eacWorking[nextKey] as Record<string, unknown>;
     });
 
-    return newModel as TBuilderModel;
+    return newModel as $FluentTagDeepStrip<
+      TBuilderModel,
+      $FluentTagTypeOptions
+    >;
   }
 
   public With(
-    action: (x: this) => void
-  ): this &
-    SelectFluentMethods<
+    action: (x: this) => void,
+  ):
+    & this
+    & SelectFluentMethods<
       ValueType<ReturnType<typeof this.workingRecords>>,
       TBuilderModel
     > {
     action(this);
 
-    return this as this &
-      SelectFluentMethods<
+    return this as
+      & this
+      & SelectFluentMethods<
         ValueType<ReturnType<typeof this.workingRecords>>,
         TBuilderModel
       >;
@@ -98,7 +100,7 @@ export class FluentBuilder<TBuilderModel> {
 
         if (prop in target.handlers) {
           return (...args: unknown[]) =>
-            target.handlers[prop].call(target, args);
+            target.handlers[prop.toString()].call(target, args);
         } else {
           return (...args: unknown[]) => {
             const newKeys: string[] = [];
@@ -106,16 +108,16 @@ export class FluentBuilder<TBuilderModel> {
             let newValue: unknown;
 
             if (args?.length) {
-              if (
-                typeof target.workingRecords() === 'object' &&
-                'Details' in target.workingRecords() &&
-                typeof target.workingRecords().Details !== 'undefined'
-              ) {
+              if (prop.toString().startsWith("_")) {
+                prop = prop.toString().startsWith("_")
+                  ? prop.toString().slice(1)
+                  : prop.toString();
+
                 const [lookup] = args as [string];
 
-                newKeys.push(...[prop.toString(), lookup]);
+                newKeys.push(...[prop, lookup]);
 
-                newValue = target.workingRecords()[prop.toString()] ?? {};
+                newValue = target.workingRecords()[prop] ?? {};
 
                 if (!(lookup in (newValue as Record<string, unknown>))) {
                   (newValue as Record<string, unknown>)[lookup] = {};
@@ -135,7 +137,7 @@ export class FluentBuilder<TBuilderModel> {
 
             return new FluentBuilder<TBuilderModel>(
               [...target.keyDepth, ...newKeys],
-              target.model
+              target.model,
             );
           };
         }

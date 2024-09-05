@@ -9,9 +9,7 @@ import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 export type $FluentTagStrip<
   T,
   TType extends $FluentTagTypeOptions = $FluentTagTypeOptions,
-  TTag extends $FluentTagOptions<TType> = $FluentTagOptions<TType>,
-  TData extends $FluentTagDataKeyOptions<TType> = $FluentTagDataKeyOptions<
-    TType
-  >,
+  TTag extends $FluentTagOptions<TType> = never,
+  TData extends $FluentTagDataKeyOptions<TType> = never,
   TExact extends boolean = false,
 > = $TagStrip<T, TType, TTag, TData, TExact>;
