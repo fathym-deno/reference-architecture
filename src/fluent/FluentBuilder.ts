@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { readStringDelim } from "jsr:@std/io@^0.224.6/read-string-delim";
+import { readStringDelim } from 'jsr:@std/io@^0.224.6/read-string-delim';
 import { jsonMapSetClone, type ValueType } from './.deps.ts';
 import type { $FluentTagDeepStrip, $FluentTagTypeOptions } from './.exports.ts';
 import type { IsFluentBuildable } from './types/IsFluentBuildable.ts';
@@ -126,14 +126,14 @@ export class FluentBuilder<TBuilderModel> {
   protected executeVirtual(
     target: this,
     prop: string | symbol,
-    _receiver: any,
+    receiver: any,
     args: unknown[]
   ): FluentBuilder<TBuilderModel> {
-    const result: ReturnType<typeof this.executeVirtualObject> = {
+    const result: NonNullable<ReturnType<typeof this.executeVirtualObject>> = {
       Keys: [],
       Prop: prop.toString(),
       Value: undefined,
-    } as ReturnType<typeof target.executeVirtualObject>;
+    } as NonNullable<ReturnType<typeof target.executeVirtualObject>>;
 
     if (args?.length) {
       if (result.Prop.toString().startsWith('_')) {
@@ -160,9 +160,9 @@ export class FluentBuilder<TBuilderModel> {
     }
 
     // const workers = [
-    //   this.executeVirtualObject,
-    //   this.executeVirtualProperty,
-    //   this.executeVirtualRecord,
+    const a = this.executeVirtualObject(target, prop, receiver, args);
+    const b = this.executeVirtualProperty(target, prop, receiver, args);
+    const c = this.executeVirtualRecord(target, prop, receiver, args);
     // ];
 
     // result = workers.reduce(
@@ -185,7 +185,7 @@ export class FluentBuilder<TBuilderModel> {
     // if (!newValue) {
     //   console.log(newProp);
     // }
-    
+
     target.workingRecords()[result.Prop] = result.Value;
 
     return new FluentBuilder<TBuilderModel>(
@@ -199,7 +199,7 @@ export class FluentBuilder<TBuilderModel> {
     prop: string | symbol,
     _receiver: any,
     args: unknown[]
-  ): { Keys: string[]; Prop: string; Value: unknown } {
+  ): { Keys: string[]; Prop: string; Value: unknown } | undefined {
     const newKeys: string[] = [];
 
     let newValue: unknown;
@@ -210,7 +210,9 @@ export class FluentBuilder<TBuilderModel> {
       newValue = target.workingRecords()[prop.toString()] ?? {};
     }
 
-    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
+    return newValue
+      ? { Keys: newKeys, Prop: prop.toString(), Value: newValue }
+      : undefined;
   }
 
   protected executeVirtualProperty(
@@ -229,7 +231,9 @@ export class FluentBuilder<TBuilderModel> {
       newValue = value;
     }
 
-    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
+    return newValue
+      ? { Keys: newKeys, Prop: prop.toString(), Value: newValue }
+      : undefined;
   }
 
   protected executeVirtualRecord(
@@ -256,7 +260,9 @@ export class FluentBuilder<TBuilderModel> {
       }
     }
 
-    return { Keys: newKeys, Prop: prop.toString(), Value: newValue };
+    return newValue
+      ? { Keys: newKeys, Prop: prop.toString(), Value: newValue }
+      : undefined;
   }
 
   protected workingRecords(): Record<string, unknown> {
