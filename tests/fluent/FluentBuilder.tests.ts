@@ -3,7 +3,7 @@ import {
   $FluentTagExtractValue,
   fluentBuilder,
 } from '../../src/fluent/.exports.ts';
-import { assert, assertEquals, assertFalse } from '../test.deps.ts';
+import { assert, assertEquals, assertFalse, assertNotEquals } from '../test.deps.ts';
 
 Deno.test('Fluent Builder Tests', async (t) => {
   await t.step('Basic Tests', async (t) => {
@@ -135,6 +135,37 @@ Deno.test('Fluent Builder Tests', async (t) => {
       assert(partial);
       assertFalse(partial.Hello);
       assert(whole.NestedRecord['TestKey'].BringIt);
+    });
+
+    await t.step('Nested Record as Property', () => {
+      const bldr = fluentBuilder<fluentTest>();
+
+      bldr.Hello('World');
+
+      bldr
+        ._NestedRecordGeneric<expandedBase>('TestKey')
+        .Speak('Something')
+        .Hello('World');
+
+      const whole = bldr.Export();
+
+      assert(whole);
+      assertEquals(whole.Hello, 'World');
+      assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+      assertEquals(
+        (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+        'World'
+      );
+      
+      const partial = bldr._NestedRecordGeneric<expandedBase>('TestKey').Export();
+
+      assert(partial);
+      assertFalse(partial.Hello);
+      assertEquals(partial.NestedRecordGeneric['TestKey'].Speak, 'Something');
+      assertEquals(
+        (partial.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+        'World'
+      );
     });
   });
 });
