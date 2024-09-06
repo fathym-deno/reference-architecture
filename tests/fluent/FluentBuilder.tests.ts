@@ -156,14 +156,14 @@ Deno.test('Fluent Builder Tests', async (t) => {
 
       bldr._NestedRecord('TestKey').BringIt(true);
 
-      const whole = bldr.Export();
+      const whole: fluentTest = bldr.Export();
 
       assert(whole);
       assertEquals(whole.Hello, 'World');
       assert(whole.NestedRecord['TestKey'].BringIt);
       assertFalse(whole.NestedRecord['@Methods']);
 
-      const partial = bldr._NestedRecord('TestKey').Export();
+      const partial: fluentTest = bldr._NestedRecord('TestKey').Export();
 
       assert(partial);
       assertFalse(partial.Hello);
@@ -180,7 +180,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
         .Speak('Something')
         .Hello('World');
 
-      const whole = bldr.Export();
+      const whole: fluentTest = bldr.Export();
 
       assert(whole);
       assertEquals(whole.Hello, 'World');
@@ -220,21 +220,19 @@ Deno.test('Fluent Builder Tests', async (t) => {
 
       assert(whole);
       assertEquals(whole.Hello, 'World');
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
+      assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
 
-      const partial = bldr
-        .Lowered()._Generic("TestKey")
-        .Export();
+      const partial = bldr.Lowered()._Generic('TestKey').Export();
 
       assert(partial);
       assertFalse(partial.Hello);
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
+      assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
 
-      const recBldr = bldr.Lowered()._Generic("TestKey");
+      const recBldr = bldr.Lowered()._Generic('TestKey');
 
       assert(recBldr);
       assert(recBldr.Compile);
-      assertEquals(recBldr.Compile("Mike"), "Hey Mike");
+      assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
     });
   });
 });
