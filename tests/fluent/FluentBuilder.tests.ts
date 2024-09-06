@@ -8,9 +8,12 @@ import { assert, assertEquals, assertFalse } from '../test.deps.ts';
 
 Deno.test('Fluent Builder Tests', async (t) => {
   await t.step('Basic Tests', async (t) => {
-    const bldr = fluentBuilder<{ Hello: string }>();
-
     await t.step('Object with Property', () => {
+      const bldr = fluentBuilder<{ Hello: string }>(
+        undefined,
+        undefined
+      ).Root();
+
       const hello = bldr.Hello;
 
       const value = hello('World').Export();
@@ -44,7 +47,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
         }
       >;
       NestedRecordGeneric: Record<string, tempBase> & {
-        // $Elevated: string[];
+        $Elevated: string[];
       } & $FluentTag<
           'Methods',
           'Record',
@@ -53,7 +56,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
         >;
       Lowered: {
         Generic: Record<string, tempBase> & {
-          // $Elevated: string[];
+          $Elevated: string[];
         } & $FluentTag<
             'Methods',
             'Record',
@@ -68,7 +71,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
     };
 
     await t.step('Object with Property', () => {
-      const bldr = fluentBuilder<fluentTest>();
+      const bldr = fluentBuilder<fluentTest>().Root();
 
       const value = bldr.Hello('World').Export();
 
@@ -77,7 +80,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
     });
 
     await t.step('Nested Object as Property', () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers);
+      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
       bldr.Hello('World');
 
@@ -97,7 +100,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
     });
 
     await t.step('Nested Object with Property', () => {
-      const bldr = fluentBuilder<fluentTest>();
+      const bldr = fluentBuilder<fluentTest>().Root();
 
       bldr.Hello('World');
 
@@ -124,7 +127,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
         'generic'
       >;
 
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers);
+      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
       bldr.Hello('World');
 
@@ -134,7 +137,9 @@ Deno.test('Fluent Builder Tests', async (t) => {
 
       nested.Speak('Something').Hello('World');
 
-      const whole = bldr.Export();
+      config.$Elevated(['this-is-a-test']);
+
+    const whole = bldr.Export();
 
       assert(whole);
       assertEquals(whole.Hello, 'World');
@@ -150,7 +155,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
     });
 
     await t.step('Nested Record with Property', () => {
-      const bldr = fluentBuilder<fluentTest>();
+      const bldr = fluentBuilder<fluentTest>().Root();
 
       bldr.Hello('World');
 
@@ -171,7 +176,7 @@ Deno.test('Fluent Builder Tests', async (t) => {
     });
 
     await t.step('Nested Record as Property', () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers);
+      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
       bldr.Hello('World');
 
@@ -210,17 +215,23 @@ Deno.test('Fluent Builder Tests', async (t) => {
     });
 
     await t.step('Double Nested Record', () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers);
+      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
       bldr.Hello('World');
 
-      bldr.Lowered()._Generic('TestKey').Speak('Something');
+      const generic = bldr.Lowered()._Generic;
+
+      generic('TestKey').Speak('Something');
+
+      generic.$Elevated(['this-is-a-test']);
 
       const whole = bldr.Export();
 
       assert(whole);
       assertEquals(whole.Hello, 'World');
       assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
+      assert(whole.Lowered.Generic.$Elevated);
+      assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
 
       const partial = bldr.Lowered()._Generic('TestKey').Export();
 
