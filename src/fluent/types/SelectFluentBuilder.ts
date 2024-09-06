@@ -6,6 +6,3 @@ import type { FluentBuilder } from "../FluentBuilder.ts";
 export type SelectFluentBuilder<T, TBuilderModel> = FluentBuilder<
   TBuilderModel
 >;
-
-export type ExtractFluentBuilderModel<T> = T extends FluentBuilder<infer U> ? U
-  : never;

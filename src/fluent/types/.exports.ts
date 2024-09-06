@@ -3,6 +3,7 @@ export * from './DefaultFluentMethods.ts';
 export * from './DetermineDefaultFluentMethodsType.ts';
 export * from './DetermineEaCFluentMethods.ts';
 export * from './DetermineFluentMethodsType.ts';
+export * from './ExtractFluentBuilderModel.ts';
 export * from './FluentMethodsMap.ts';
 export * from './FluentMethodsObject.ts';
 export * from './FluentMethodsProperty.ts';
