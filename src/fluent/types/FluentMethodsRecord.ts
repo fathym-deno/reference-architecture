@@ -46,5 +46,6 @@ type FluentMethodsRecordReturnType<
     ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
     TBuilderModel
   >
+  // & SelectFluentMethods<$FluentTagStrip<TMethods>, TBuilderModel>
   & SelectFluentMethods<TMethods, TBuilderModel>
   & $FluentTagLoadHandlers<T, K>;

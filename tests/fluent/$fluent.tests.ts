@@ -355,6 +355,23 @@ Deno.test("$Fluent Tag Tests", async (t) => {
               }
             >
             & $FluentTag<"Methods", "Record">;
+
+          DoubleNested: {
+            Record:
+              & Record<
+                string,
+                {
+                  Speak: string;
+                }
+              >
+              & $FluentTag<
+                "Methods",
+                "Record",
+                "handlers",
+                { handlers: { Compile: (test: string) => string } }
+              >;
+          } & $FluentTag<"Methods", "Object">;
+
           WithHandlers:
             & Record<
               string,
@@ -571,6 +588,47 @@ Deno.test("$Fluent Tag Tests", async (t) => {
             assert(keyBldr);
             assert(keyBldr.Compile);
             assertEquals(keyBldr.Compile("Hey"), "Hey");
+          });
+
+          await t.step("Doube Nested Record with Handler", () => {
+            type extracted = $FluentTagLoadHandlers<
+              fluentTest["DoubleNested"],
+              "Record"
+            >;
+
+            const check: extracted = {
+              Compile: (test: string) => test,
+            };
+
+            assert(check);
+
+            type fluentPropertyMethods = SelectFluentMethods<
+              fluentTest["DoubleNested"],
+              fluentTest
+            >;
+
+            const recordMethods: $FluentTagStrip<fluentPropertyMethods> = {
+              _Record: (_key: string) => {
+                return {
+                  Speak: (input: string) => {
+                    return input as any;
+                  },
+                  Compile: (test: string) => test,
+                } as any;
+              },
+            };
+
+            const bldr = recordMethods._Record("NewKey");
+
+            bldr.Speak("Something");
+
+            assert(bldr);
+
+            // const keyBldr = bldr._NewKey("NestedNewKey");
+
+            // assert(keyBldr);
+            // assert(keyBldr.Compile);
+            // assertEquals(keyBldr.Compile("Hey"), "Hey");
           });
 
           await t.step("Full", () => {
