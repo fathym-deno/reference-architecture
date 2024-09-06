@@ -1,4 +1,9 @@
-import type { ExtractExact, HasIndexSignatures, IsObject, ValueType } from '../.deps.ts';
+import type {
+  ExtractExact,
+  HasIndexSignatures,
+  IsObject,
+  ValueType,
+} from '../.deps.ts';
 import type { $FluentTagMethodsOptions } from './tags/$FluentTagOptions.ts';
 
 /**
@@ -9,6 +14,8 @@ export type DetermineDefaultFluentMethodsType<
   K extends keyof T
 > = true extends IsObject<T[K]>
   ? true extends IsObject<ValueType<T[K]>>
-    ? ExtractExact<$FluentTagMethodsOptions, 'Record'>
+    ? true extends HasIndexSignatures<ValueType<T[K]>>
+      ? ExtractExact<$FluentTagMethodsOptions, 'Object'>
+      : ExtractExact<$FluentTagMethodsOptions, 'Record'>
     : ExtractExact<$FluentTagMethodsOptions, 'Object'>
   : ExtractExact<$FluentTagMethodsOptions, 'Property'>;
