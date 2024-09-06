@@ -11,9 +11,9 @@ export type $TagExtractValues<
 > = false extends $TagExists<T, TType, TTag> ? never
   : {
     [KType in TType]: {
-      [KData in TData]: T extends {
+      [KData in TData]: NonNullable<T> extends {
         [Key in `@${KType}-${KData}`]?: infer TValue;
-      } ? TValue
+      } ? NonNullable<TValue>
         : never;
     };
   };

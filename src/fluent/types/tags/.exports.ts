@@ -11,6 +11,7 @@ export * from './$FluentTagExtractDataKeys.ts';
 export * from './$FluentTagExtractValue.ts';
 export * from './$FluentTagExtractValueAndStrip.ts';
 export * from './$FluentTagExtractValues.ts';
+export * from './$FluentTagLoadHandlers.ts';
 export * from './$FluentTagOptions.ts';
 export * from './$FluentTagStrip.ts';
 export * from './$FluentTagTypeOptions.ts';

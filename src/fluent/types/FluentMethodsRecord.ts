@@ -1,11 +1,10 @@
-import type { ExcludeKeysByPrefix } from '../../common/types/ExcludeKeysByPrefix.ts';
-import type { ValueType } from '../../common/types/ValueType.ts';
-import { $Tag } from '../.deps.ts';
-import type { SelectFluentBuilder } from './SelectFluentBuilder.ts';
-import type { SelectFluentMethods } from './SelectFluentMethods.ts';
-import { $FluentTag } from './tags/$FluentTag.ts';
-import { $FluentTagExtractValue } from './tags/$FluentTagExtractValue.ts';
-import type { $FluentTagStrip } from './tags/$FluentTagStrip.ts';
+import type { ExcludeKeysByPrefix } from "../../common/types/ExcludeKeysByPrefix.ts";
+import type { ValueType } from "../../common/types/ValueType.ts";
+import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
+import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
+import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
+import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
+import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 
 /**
  * Used for managing the property as a Record<,> set where the root object property takes a key for the record, returning a fluent API for each of it's properties.
@@ -13,23 +12,33 @@ import type { $FluentTagStrip } from './tags/$FluentTagStrip.ts';
 export type FluentMethodsRecord<
   T,
   K extends keyof T,
-  TBuilderModel
-> = true extends $FluentTagExtractValue<T[K], 'Methods', 'Record', 'generic'>
+  TBuilderModel,
+> = true extends $FluentTagExtractValue<T[K], "Methods", "Record", "generic">
   ? <
-      TGeneric extends ValueType<
-        ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, '$'>
-      > = ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, '$'>>
-    >(
-      key: string
-    ) => FluentMethodsRecordReturnType<ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, '$'>>, TGeneric, TBuilderModel>
+    TGeneric extends ValueType<
+      ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">
+    > = ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
+  >(
+    key: string,
+  ) => FluentMethodsRecordReturnType<T, K, TGeneric, TBuilderModel>
   : (
-      key: string
-    ) => FluentMethodsRecordReturnType<
-      ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, '$'>>,
-      ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, '$'>>,
-      TBuilderModel
-    >;
+    key: string,
+  ) => FluentMethodsRecordReturnType<
+    T,
+    K,
+    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
+    TBuilderModel
+  >;
 
-type FluentMethodsRecordReturnType<TBuild, TMethods, TBuilderModel> =
-  SelectFluentBuilder<TBuild, TBuilderModel> &
-    SelectFluentMethods<TMethods, TBuilderModel>;
+type FluentMethodsRecordReturnType<
+  T,
+  K extends keyof T,
+  TMethods,
+  TBuilderModel,
+> =
+  & SelectFluentBuilder<
+    ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,
+    TBuilderModel
+  >
+  & SelectFluentMethods<TMethods, TBuilderModel>
+  & $FluentTagLoadHandlers<T, K>;

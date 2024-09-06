@@ -8,7 +8,8 @@ export type $TagExtractValue<
   TType extends string,
   TTag,
   TData extends string,
-> = false extends $TagExists<T, TType, TTag> ? never : T extends {
-  [Key in `@${TType}-${TData}`]?: infer TValue;
-} ? TValue
-: never;
+> = false extends $TagExists<T, TType, TTag> ? never
+  : NonNullable<T> extends {
+    [Key in `@${TType}-${TData}`]?: infer TValue;
+  } ? NonNullable<TValue>
+  : never;
