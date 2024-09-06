@@ -166,28 +166,21 @@ export class FluentBuilder<TBuilderModel> {
       this.executeVirtualRecord, //(target, prop, receiver, args);
     ];
 
-    result = workers.reduce(
-      (result, worker) => {
-        const {
-          Keys: newKeys,
-          Prop: newProp,
-          Value: newValue,
-        } = worker(target, prop, receiver, args);
+    result = workers.reduce((result, worker) => {
+      if (!result) {
+        const wrkResult = worker(target, prop, receiver, args);
 
-        return {
-          Keys: (result.Keys.length ? result.Keys : newKeys) ?? [],
-          Prop: result.Prop ?? newProp,
-          Value: result.Value ?? newValue,
-        };
-      },
-      result
-    );
+        return wrkResult;
+      } else {
+        return result;
+      }
+    }, result as ReturnType<typeof this.executeVirtualObject> | undefined);
 
     if (!result) {
-      console.log(result);
+      throw new Error(`Property '${prop.toString()}' was not properly resolved.`);
     }
 
-    target.workingRecords()[result.Prop] = result.Value;
+    target.workingRecords()[result!.Prop] = result!.Value;
 
     return new FluentBuilder<TBuilderModel>(
       [...target.keyDepth, ...result.Keys],
