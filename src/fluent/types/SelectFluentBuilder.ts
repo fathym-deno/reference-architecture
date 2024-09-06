@@ -7,4 +7,5 @@ export type SelectFluentBuilder<T, TBuilderModel> = FluentBuilder<
   TBuilderModel
 >;
 
-export type ExtractFluentBuilderModel<T> = T extends FluentBuilder<infer U> ? U : never;
+export type ExtractFluentBuilderModel<T> = T extends FluentBuilder<infer U> ? U
+  : never;

@@ -609,9 +609,9 @@ Deno.test("$Fluent Tag Tests", async (t) => {
               fluentTest
             >;
 
-            const recordMethods: $FluentTagStrip<fluentMethods> = {} as any;
+            // const recordMethods: $FluentTagStrip<fluentMethods> = {} as any;
 
-            // const bldr = recordMethods.DoubleNested()._DoubleRecord('TestKey');
+            // const bldr = recordMethods.DoubleNested()._DoubleRecord("TestKey");
 
             // bldr.Speak("Something");
 
