@@ -36,9 +36,6 @@
  * - For more complex scenarios involving union or intersection types,
  *   additional type handling may be required to achieve desired behavior.
  */
-// export type ExcludeKeys<T, TKey extends keyof T> = T extends infer U ? {
-//   [K in keyof U as K extends TKey ? never : K]: T[K];
-// } : T;
 export type ExcludeKeys<T, TKey extends keyof T | string> = T extends infer U
   ? {
     [K in keyof U as K extends TKey ? never : K]: U[K];

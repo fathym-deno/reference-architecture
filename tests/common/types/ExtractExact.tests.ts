@@ -4,7 +4,7 @@ import { assert } from "../../test.deps.ts";
 
 export type $FluentTagMethodsOptions = "Record" | "Object" | "Property";
 
-Deno.test("ExtractExact Tests", async (t) => {
+Deno.test("Extract Exact Tests", async (t) => {
   // Basic Functionality Tests
   await t.step("Basic Functionality Tests", async (t) => {
     await t.step("Exact String Literal Match", () => {
