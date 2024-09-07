@@ -10,6 +10,7 @@ export * from './ExtractExact.ts';
 export * from './ExtractKeysByPrefix.ts';
 export * from './HasIndexSignatures.ts';
 export * from './HasTypeCheck.ts';
+export * from './IsNativeType.ts';
 export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsUndefined.ts';

@@ -3,6 +3,7 @@ import './ExcludeKeysByPrefix.tests.ts';
 import './ExtractExact.tests.ts';
 import './ExtractKeysByPrefix.tests.ts';
 import './HasIndexSignatures.tests.ts';
+import './IsNativeType.tests.ts';
 import './NoPropertiesUndefined.tests.ts';
 import './RemoveIndexSignatures.ts';
 import './ResolveIndexSignatures.tests.ts';
