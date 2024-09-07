@@ -2,4 +2,4 @@ export type {
   ExcludeKeysByPrefix,
   HasTypeCheck,
   IsObject,
-} from '../.exports.ts';
+} from '../types/.exports.ts';

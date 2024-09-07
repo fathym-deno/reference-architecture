@@ -2,7 +2,7 @@
  * Helper types used by the Fathym systems.
  * @module
  */
-export * from './tags/.exports.ts';
+export * from '../tags/.exports.ts';
 export * from './ExcludeKeys.ts';
 export * from './ExcludeKeysByPrefix.ts';
 export * from './ExtractExact.ts';

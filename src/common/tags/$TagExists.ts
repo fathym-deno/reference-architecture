@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ExtractKeysByPrefix } from "../ExtractKeysByPrefix.ts";
-import type { HasTypeCheck } from "../HasTypeCheck.ts";
+import type { ExtractKeysByPrefix } from "../types/ExtractKeysByPrefix.ts";
+import type { HasTypeCheck } from "../types/HasTypeCheck.ts";
 import type { $Tag } from "./$Tag.ts";
 
 /**

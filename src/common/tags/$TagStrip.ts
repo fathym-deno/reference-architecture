@@ -1,5 +1,5 @@
-import type { ExcludeKeys } from "../ExcludeKeys.ts";
-import type { ExcludeKeysByPrefix } from "../ExcludeKeysByPrefix.ts";
+import type { ExcludeKeys } from "../types/ExcludeKeys.ts";
+import type { ExcludeKeysByPrefix } from "../types/ExcludeKeysByPrefix.ts";
 import type { $TagExists } from "./$TagExists.ts";
 
 /**
