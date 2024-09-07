@@ -2,6 +2,7 @@ import './ExcludeKeys.tests.ts';
 import './ExcludeKeysByPrefix.tests.ts';
 import './ExtractExact.tests.ts';
 import './ExtractKeysByPrefix.tests.ts';
+import './HasIndexSignatures.tests.ts';
 import './RemoveIndexSignatures.ts';
 import './ResolveIndexSignatures.tests.ts';
 import './ValueType.tests.ts';
