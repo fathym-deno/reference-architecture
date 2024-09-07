@@ -31,10 +31,10 @@ export type $TagDeepStrip<
   T,
   TType extends string,
   TTag = never,
-> = T extends infer U ? (U extends any[] ? $TagDeepStripArray<U, TType, TTag>
-    : (U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
-      : (U extends object ? $TagDeepStripObject<U, TType, TTag>
-        : $TagStrip<U, TType, TTag>)))
+> = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag>
+  : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
+  : U extends object ? $TagDeepStripObject<U, TType, TTag>
+  : $TagStrip<U, TType, TTag>
   : never;
 
 /**
@@ -45,7 +45,11 @@ export type $TagDeepStripArray<
   TType extends string,
   TTag = never,
 > = {
-  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
+  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<
+    $TagStrip<T, TType, TTag>[K],
+    TType,
+    TTag
+  >;
 };
 
 /**
@@ -56,7 +60,11 @@ export type $TagDeepStripTuple<
   TType extends string,
   TTag = never,
 > = {
-  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
+  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<
+    $TagStrip<T, TType, TTag>[K],
+    TType,
+    TTag
+  >;
 };
 
 /**
@@ -67,5 +75,9 @@ export type $TagDeepStripObject<
   TType extends string,
   TTag = never,
 > = {
-  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
+  [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<
+    $TagStrip<T, TType, TTag>[K],
+    TType,
+    TTag
+  >;
 };

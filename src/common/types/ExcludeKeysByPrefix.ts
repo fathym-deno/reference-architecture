@@ -25,6 +25,15 @@
  * - Properties whose keys do not match the given prefix are retained in the resulting type.
  * - Works with both the default `"$"` prefix and custom prefixes.
  */
-export type ExcludeKeysByPrefix<T, Prefix extends string = "$"> = {
-  [K in keyof T as K extends `${Prefix}${string}` ? never : K]: T[K];
-};
+export type ExcludeKeysByPrefix<
+  T,
+  Prefix extends string = "$",
+> = T extends infer U ? {
+    [
+      K in keyof U as K extends `${Prefix}${infer S}`
+        ? K extends keyof U ? never
+        : K
+        : K
+    ]: U[K];
+  }
+  : T;
