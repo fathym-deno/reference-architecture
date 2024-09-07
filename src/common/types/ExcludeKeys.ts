@@ -40,4 +40,4 @@ export type ExcludeKeys<T, TKey extends keyof T | string> = T extends infer U
   ? {
     [K in keyof U as K extends TKey ? never : K]: U[K];
   }
-  : T;
+  : never;

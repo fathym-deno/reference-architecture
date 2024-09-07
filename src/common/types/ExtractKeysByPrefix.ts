@@ -24,4 +24,4 @@ export type ExtractKeysByPrefix<
         : never
     ]: U[K];
   }
-  : T;
+  : never;

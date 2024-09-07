@@ -36,4 +36,4 @@ export type ExcludeKeysByPrefix<
         : K
     ]: U[K];
   }
-  : T;
+  : never;
