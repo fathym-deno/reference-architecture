@@ -1,3 +1,4 @@
+// deno-lint-ignore-file ban-types
 import type { $Tag } from "./$Tag.ts";
 
 /**
@@ -10,10 +11,10 @@ export type $TagValues<
   TValues extends {
     [K in TData extends infer KData ? KData : never]?: unknown;
   } = never,
-> = [TData] extends [never] ? TTag extends [never] ? never
+> = [TData] extends [never] ? [TTag] extends [never] ? {}
   : $Tag<TType, TTag>
   :
-    & (TTag extends [never] ? never : $Tag<TType, TTag>)
+    & ([TTag] extends [never] ? {} : $Tag<TType, TTag>)
     & {
       [Key in keyof TValues as `@${TType}-${Key & TData}`]?: TValues[Key];
     };

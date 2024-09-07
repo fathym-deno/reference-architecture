@@ -1,4 +1,3 @@
-import type { NoPropertiesUndefined } from "../.deps.ts";
 import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
 import type { DetermineFluentMethodsType } from "./DetermineFluentMethodsType.ts";
 
@@ -7,7 +6,7 @@ import type { DetermineFluentMethodsType } from "./DetermineFluentMethodsType.ts
  */
 export type SelectFluentMethods<T, TBuilderModel> = {
   [
-    K in keyof NoPropertiesUndefined<T> as K extends string
+    K in keyof T as K extends string
       ? DetermineFluentMethodsType<T, K> extends "Record" ? `_${K}`
       : K
       : never

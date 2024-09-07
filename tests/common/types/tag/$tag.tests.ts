@@ -1,4 +1,8 @@
-import type { $TagStrip } from "../../../../src/common/types/.exports.ts";
+import type {
+  $TagStrip,
+  HasTypeCheck,
+  NoPropertiesUndefined,
+} from "../../../../src/common/types/.exports.ts";
 import type { $TagExtractDataKeys } from "../../../../src/common/types/tags/$TagExtractDataKeys.ts";
 import type {
   $TagDeepStrip,
@@ -316,5 +320,59 @@ Deno.test("$Tag Tests", async (t) => {
 
     assert(stripped2);
     assert(stripped2.Bucket[""].BringIt);
+  });
+
+  await t.step("Tag Value Only Extracts", () => {
+    type tagged = $TagValues<
+      "Test",
+      never,
+      "test",
+      { test: true }
+    >;
+
+    type tagExists = $TagExists<tagged, "Test", never, "test">;
+    type xx = NoPropertiesUndefined<tagged>;
+    type x = HasTypeCheck<
+      tagged,
+      {
+        [K in `@Test-test`]: unknown;
+      }
+    >;
+
+    type tagValue = $TagExtractValue<tagged, "Methods", never, "test">;
+
+    type tagValueCheck = tagValue extends "true" ? true : false;
+
+    // const value: tagValueCheck = true;
+
+    // assertEquals(value, true);
+
+    // type tagValues = $TagExtractValues<testTag, 'Test', tag, 'trim' | 'value'>;
+
+    // type tagValueChecks = {
+    //   [KValue in keyof tagValues]: {
+    //     [K in keyof tagValues[KValue]]: K extends 'trim'
+    //       ? tagValues[KValue]['trim'] extends 'true'
+    //         ? true
+    //         : false
+    //       : K extends 'value'
+    //       ? tagValues[KValue]['value'] extends 'false'
+    //         ? true
+    //         : false
+    //       : false;
+    //   };
+    // };
+
+    // const values: tagValueChecks = {
+    //   Test: {
+    //     trim: true,
+    //     value: true,
+    //   },
+    // };
+
+    // assert(values?.Test?.trim);
+    // assert(values?.Test?.value);
+    // assert(values?.Test?.trim);
+    // assert(values?.Test?.value);
   });
 });

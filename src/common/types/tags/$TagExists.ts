@@ -1,4 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
+import type { ExtractKeysByPrefix } from "../ExtractKeysByPrefix.ts";
 import type { HasTypeCheck } from "../HasTypeCheck.ts";
 import type { $Tag } from "./$Tag.ts";
 
@@ -11,17 +12,18 @@ export type $TagExists<
   TTag = never,
   TData extends string = never,
 > = [TData] extends [never] ? HasTypeCheck<
-    T,
+    ExtractKeysByPrefix<T, "@">,
     $Tag<TType, [TTag] extends [never] ? any : TTag>
   > extends true ? true
   : false
   : false extends HasTypeCheck<
-    T,
+    ExtractKeysByPrefix<T, "@">,
     $Tag<TType, [TTag] extends [never] ? any : TTag>
   > ? false
-  : HasTypeCheck<
-    T,
+  : true extends HasTypeCheck<
+    ExtractKeysByPrefix<T, "@">,
     {
       [K in `@${TType}-${TData}`]: any;
     }
-  >;
+  > ? true
+  : false;
