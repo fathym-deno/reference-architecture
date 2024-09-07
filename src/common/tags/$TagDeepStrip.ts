@@ -17,15 +17,25 @@ import type { $TagStrip } from "./$TagStrip.ts";
 /**
  * Utility type to remove $Tag from the entire type tree.
  */
+// export type $TagDeepStrip<
+//   T,
+//   TType extends string,
+//   TTag = never,
+// > = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag>
+//   : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
+//   : U extends object ? $TagDeepStripObject<U, TType, TTag>
+//   : $TagStrip<U, TType, TTag>
+//   : $TagStrip<T, TType, TTag>;
+
 export type $TagDeepStrip<
   T,
   TType extends string,
   TTag = never,
-> = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag>
-  : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
-  : U extends object ? $TagDeepStripObject<U, TType, TTag>
-  : $TagStrip<U, TType, TTag>
-  : $TagStrip<T, TType, TTag>;
+> = T extends infer U ? (U extends any[] ? $TagDeepStripArray<U, TType, TTag>
+    : (U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
+      : (U extends object ? $TagDeepStripObject<U, TType, TTag>
+        : $TagStrip<U, TType, TTag>)))
+  : never;
 
 /**
  * Utility type to remove $Tag from arrays.

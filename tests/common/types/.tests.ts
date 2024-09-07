@@ -1,2 +1,2 @@
-import '../tag/.tests.ts'
+import './ExcludeKeys.tests.ts'
 import './ValueType.tests.ts'
