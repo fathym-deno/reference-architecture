@@ -63,7 +63,7 @@ export class FluentBuilder<TBuilderModel> {
   // #endregion
 
   // #region API Methods
-  public Export(): TBuilderModel {
+  public Export<TExport extends TBuilderModel = TBuilderModel>(): TExport {
     const newModel = jsonMapSetClone(this.model) as Record<string, unknown>;
 
     let eacWorking = newModel as Record<string, unknown>;
@@ -80,7 +80,7 @@ export class FluentBuilder<TBuilderModel> {
       eacWorking = eacWorking[nextKey] as Record<string, unknown>;
     });
 
-    return newModel?.["Root"] as TBuilderModel;
+    return newModel?.["Root"] as TExport;
   }
 
   public With(
