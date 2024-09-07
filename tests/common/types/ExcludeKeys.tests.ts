@@ -15,8 +15,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { a: "test", c: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Multiple Key Exclusions", () => {
@@ -29,8 +29,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { a: "test", d: "data" });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Key Not in Type", () => {
@@ -43,8 +43,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { a: "test", b: 42, c: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -61,8 +61,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { a: "test" });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Intersection Type", () => {
@@ -75,8 +75,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { a: "test", c: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -92,8 +92,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Optional Property", () => {
@@ -106,8 +106,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assertEquals(check, { b: 42 });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -120,8 +120,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
 
       // Validate at runtime
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Non-Matching Keys", () => {
@@ -133,8 +133,8 @@ Deno.test("Exclude Keys Tests", async (t) => {
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
 
       // Validate at runtime
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

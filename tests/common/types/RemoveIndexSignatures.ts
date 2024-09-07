@@ -15,8 +15,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, { id: 1, name: "John" });
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Remove Symbol Index Signature", () => {
@@ -29,8 +29,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, { name: "John" });
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -45,8 +45,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Complex Record Type", () => {
@@ -59,8 +59,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Nested Record Type", () => {
@@ -73,8 +73,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Mixed Explicit and Index Signatures", () => {
@@ -108,8 +108,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, { id: 1, name: "John" });
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Only Index Signature", () => {
@@ -122,8 +122,8 @@ Deno.test("RemoveIndexSignatures Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Cleaned, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

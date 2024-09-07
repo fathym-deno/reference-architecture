@@ -15,8 +15,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Nested Object", () => {
@@ -34,8 +34,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -50,8 +50,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Array of Primitives", () => {
@@ -63,8 +63,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Nested Array", () => {
@@ -76,8 +76,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -92,8 +92,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Tuple with Objects", () => {
@@ -105,8 +105,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Tuple with Mixed Types", () => {
@@ -122,8 +122,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -138,8 +138,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Promise Type", () => {
@@ -151,8 +151,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -167,8 +167,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Optional Properties", () => {
@@ -180,8 +180,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Complex Nested Object", () => {
@@ -198,8 +198,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -214,8 +214,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Record Type", () => {
@@ -227,8 +227,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Record of Records", () => {
@@ -240,8 +240,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Array of Records", () => {
@@ -253,8 +253,8 @@ Deno.test("NoPropertiesUndefined Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

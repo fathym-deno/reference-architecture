@@ -15,8 +15,8 @@ Deno.test("ResolveIndexSignatures Tests", async (t) => {
       assertEquals(check, { someKey: "test" });
 
       type AssertTest = AssertEquals<Resolved, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -31,8 +31,8 @@ Deno.test("ResolveIndexSignatures Tests", async (t) => {
       assertEquals(check, { key: "value" });
 
       type AssertTest = AssertEquals<Resolved, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Complex Record Type", () => {
@@ -45,8 +45,8 @@ Deno.test("ResolveIndexSignatures Tests", async (t) => {
       assertEquals(check, { key: { a: 1, b: "text" } });
 
       type AssertTest = AssertEquals<Resolved, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Mixed Explicit and Index Signature", () => {
@@ -59,8 +59,8 @@ Deno.test("ResolveIndexSignatures Tests", async (t) => {
       assertEquals(check, { key: "value" });
 
       type AssertTest = AssertEquals<Resolved, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -75,8 +75,8 @@ Deno.test("ResolveIndexSignatures Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Resolved, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

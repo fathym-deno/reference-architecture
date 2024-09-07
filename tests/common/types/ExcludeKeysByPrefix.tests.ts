@@ -16,8 +16,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { external: 42, config: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Single Key Exclusion with Custom Prefix (__)", () => {
@@ -30,8 +30,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { data: 42, user: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Key Not in Type", () => {
@@ -44,8 +44,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { a: "test", b: 42, c: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -61,8 +61,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { a: "test" });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Intersection Type", () => {
@@ -75,8 +75,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { a: "test", c: true });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -93,8 +93,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("No Properties with Prefix", () => {
@@ -107,8 +107,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       assertEquals(check, { a: "test", b: 42 });
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -120,8 +120,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       type Expected = { a: string; c: boolean };
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Non-Matching Keys", () => {
@@ -131,8 +131,8 @@ Deno.test("Exclude Keys By Prefix Tests", async (t) => {
       type Expected = { a: string; b: number; c: boolean };
 
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

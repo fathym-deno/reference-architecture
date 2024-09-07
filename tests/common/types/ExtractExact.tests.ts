@@ -13,8 +13,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("No Exact Match", () => {
@@ -23,8 +23,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Exact String Match from a Union", () => {
@@ -34,8 +34,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -48,8 +48,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("No Match in Union", () => {
@@ -59,8 +59,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -73,8 +73,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("No Match", () => {
@@ -86,8 +86,8 @@ Deno.test("Extract Exact Tests", async (t) => {
 
       // Type assertion
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

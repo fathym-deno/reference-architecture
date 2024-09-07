@@ -14,8 +14,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Object without Index Signature", () => {
@@ -27,8 +27,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -44,8 +44,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
         assert(check);
 
         type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-        const _assertTest: AssertTest = true;
-        assert(_assertTest);
+        const assertTest: AssertTest = true;
+        assert(assertTest);
       },
     );
 
@@ -60,8 +60,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
         assertFalse(check);
 
         type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-        const _assertTest: AssertTest = true;
-        assert(_assertTest);
+        const assertTest: AssertTest = true;
+        assert(assertTest);
       },
     );
 
@@ -74,8 +74,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -90,8 +90,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Object with Optional Properties", () => {
@@ -103,8 +103,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Mixed Explicit and Index Signatures", () => {
@@ -116,8 +116,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -132,8 +132,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Nested Record Type", () => {
@@ -145,8 +145,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Record with Different Key/Value Types", () => {
@@ -158,8 +158,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -177,8 +177,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Intersection of Complex Types", () => {
@@ -192,8 +192,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Nested Union and Intersection", () => {
@@ -207,8 +207,8 @@ Deno.test("HasIndexSignatures Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<HasIndex, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

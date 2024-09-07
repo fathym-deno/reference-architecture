@@ -15,8 +15,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, { $internal: "test" });
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Custom Prefix Extraction", () => {
@@ -29,8 +29,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, { __meta: "metadata" });
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("No Properties with Prefix", () => {
@@ -43,8 +43,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -59,8 +59,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, { $internal: "test" });
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Intersection Type", () => {
@@ -76,8 +76,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, { $internal: "test", $meta: true });
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -92,8 +92,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, {});
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Optional Properties", () => {
@@ -106,8 +106,8 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       assertEquals(check, { $internal: "test" });
 
       type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });

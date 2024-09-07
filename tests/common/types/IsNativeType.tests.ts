@@ -13,8 +13,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("WritableStream Type", () => {
@@ -25,8 +25,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("TransformStream Type", () => {
@@ -37,8 +37,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Request Type", () => {
@@ -49,8 +49,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Response Type", () => {
@@ -61,8 +61,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Headers Type", () => {
@@ -73,8 +73,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("URL Type", () => {
@@ -85,8 +85,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Blob Type", () => {
@@ -97,8 +97,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("ArrayBuffer Type", () => {
@@ -109,8 +109,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("DataView Type", () => {
@@ -121,8 +121,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -136,8 +136,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Array of Non-Native Types", () => {
@@ -148,8 +148,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Tuple with Native Types", () => {
@@ -160,8 +160,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -175,8 +175,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Map Type", () => {
@@ -187,8 +187,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Set Type", () => {
@@ -199,8 +199,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assert(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 
@@ -214,8 +214,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Non-Native Primitive Type", () => {
@@ -226,8 +226,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
 
     await t.step("Native Primitive Type", () => {
@@ -238,8 +238,8 @@ Deno.test("IsNativeType Extended Tests", async (t) => {
       assertFalse(check);
 
       type AssertTest = AssertEquals<Result, Expected>; // Expect: true
-      const _assertTest: AssertTest = true;
-      assert(_assertTest);
+      const assertTest: AssertTest = true;
+      assert(assertTest);
     });
   });
 });
