@@ -1,4 +1,5 @@
 // deno-lint-ignore-file ban-types
+import type { AssertEquals } from "../../../src/common/.exports.ts";
 import type { ExcludeKeys } from "../../../src/common/types/ExcludeKeys.ts";
 import { assert, assertEquals } from "../../test.deps.ts";
 
@@ -13,11 +14,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { a: "test", c: true });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -32,11 +28,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { a: "test", d: "data" });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -51,11 +42,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { a: "test", b: 42, c: true });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -74,14 +60,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { a: "test" });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = keyof T extends never
-        ? keyof Expected extends never ? true
-        : false
-        : T extends Expected ? Expected extends T ? true
-          : false
-        : false;
-
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -96,11 +74,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { a: "test", c: true });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -118,11 +91,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, {});
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -137,11 +105,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       assert(check);
       assertEquals(check, { b: 42 });
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
       const _assertTest: AssertTest = true;
       assert(_assertTest);
@@ -154,11 +117,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       type Excluded = ExcludeKeys<Original, "b">;
       type Expected = { a: string; c: boolean };
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
 
       // Validate at runtime
@@ -172,11 +130,6 @@ Deno.test("Exclude Keys Tests", async (t) => {
       type Excluded = ExcludeKeys<Original, "d">;
       type Expected = { a: string; b: number; c: boolean };
 
-      // Type Assertion
-      type AssertEquals<T, Expected> = T extends Expected
-        ? Expected extends T ? true
-        : false
-        : false;
       type AssertTest = AssertEquals<Excluded, Expected>; // Expect: true
 
       // Validate at runtime
