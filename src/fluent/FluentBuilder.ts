@@ -39,11 +39,11 @@ export function fluentBuilder<TBuilderModel>(
  */
 export class FluentBuilder<TBuilderModel> {
   // #region Fields
-  protected handlers: FluentBuilderHandlers;
+  protected readonly handlers: FluentBuilderHandlers;
 
-  protected keyDepth: string[];
+  protected readonly keyDepth: string[];
 
-  protected model: FluentBuilderRoot<TBuilderModel>;
+  protected readonly model: FluentBuilderRoot<TBuilderModel>;
   // #endregion
 
   // #region Constructors
