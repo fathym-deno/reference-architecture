@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import type { $TagStrip } from "./$TagStrip.ts";
+import type { $TagStrip } from './$TagStrip.ts';
 
 /**
  * Utility type to remove $Tag from the entire type tree.
@@ -20,10 +20,15 @@ import type { $TagStrip } from "./$TagStrip.ts";
 export type $TagDeepStrip<
   T,
   TType extends string,
-  TTag = never,
-> = T extends any[] ? $TagDeepStripArray<T, TType, TTag>
-  : T extends [infer F, ...infer R] ? $TagDeepStripTuple<T, TType, TTag>
-  : T extends object ? $TagDeepStripObject<T, TType, TTag>
+  TTag = never
+> = T extends infer U
+  ? U extends any[]
+    ? $TagDeepStripArray<U, TType, TTag>
+    : U extends [infer F, ...infer R]
+    ? $TagDeepStripTuple<U, TType, TTag>
+    : U extends object
+    ? $TagDeepStripObject<U, TType, TTag>
+    : $TagStrip<U, TType, TTag>
   : $TagStrip<T, TType, TTag>;
 
 /**
@@ -32,7 +37,7 @@ export type $TagDeepStrip<
 export type $TagDeepStripArray<
   T extends any[],
   TType extends string,
-  TTag = never,
+  TTag = never
 > = {
   [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
 };
@@ -43,7 +48,7 @@ export type $TagDeepStripArray<
 export type $TagDeepStripTuple<
   T extends [any, ...any[]],
   TType extends string,
-  TTag = never,
+  TTag = never
 > = {
   [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
 };
@@ -54,7 +59,7 @@ export type $TagDeepStripTuple<
 export type $TagDeepStripObject<
   T extends object,
   TType extends string,
-  TTag = never,
+  TTag = never
 > = {
   [K in keyof $TagStrip<T, TType, TTag>]: $TagDeepStrip<T[K], TType, TTag>;
 };
