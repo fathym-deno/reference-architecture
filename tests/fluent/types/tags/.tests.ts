@@ -7,4 +7,4 @@ import './$FluentTagExtractDataKeys.tests.ts';
 import './$FluentTagExtractValue.tests.ts';
 import './$FluentTagExtractValueAndStrip.tests.ts';
 import './$FluentTagExtractValues.tests.ts';
-
+import './$FluentTagLoadHandlers.tests.ts';
