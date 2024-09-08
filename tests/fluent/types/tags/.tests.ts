@@ -5,4 +5,4 @@ import './$FluentTagDeepStrip.tests.ts';
 import './$FluentTagExtract.tests.ts';
 import './$FluentTagExtractDataKeys.tests.ts';
 import './$FluentTagExtractValue.tests.ts';
-
+import './$FluentTagExtractValueAndStrip.tests.ts';
