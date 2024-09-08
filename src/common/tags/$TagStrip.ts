@@ -38,28 +38,3 @@ export type $TagStrip<
   : false extends $TagExists<T, TType, TTag> // If TTag, check to see if the tag exists
     ? T // If no TTag exists, return original type
   : ExcludeKeysByPrefix<T, `@${TType}`>; // If TTag, stip
-
-// export type $TagStrip<
-//   T,
-//   TType extends string,
-//   TTag = never,
-//   TData extends string = never,
-//   TExact extends boolean = false,
-// > = false extends $TagExists<T, TType, TTag> ? T
-//   : [TData] extends [never] ? true extends TExact ? ExcludeKeys<T, `@${TType}`>
-//     : ExcludeKeysByPrefix<T, `@${TType}`>
-//   : ExcludeKeysByPrefix<T, `@${TType}-${TData}`>;
-
-// export type $TagStrip<
-//   T,
-//   TType extends string,
-//   TTag = unknown,
-//   TData extends string = never,
-//   TExact extends boolean = false
-// > = false extends $TagExists<T, TType, TTag>
-//   ? T
-//   : [TData] extends [never]
-//   ? true extends TExact
-//     ? ExcludeKeys<T, `@${TType}`>
-//     : ExcludeKeysByPrefix<T, `@${TType}`>
-//   : ExcludeKeysByPrefix<T, `@${TType}-${TData}`>;

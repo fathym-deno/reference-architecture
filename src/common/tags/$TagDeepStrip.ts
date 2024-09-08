@@ -2,43 +2,39 @@
 import type { $TagStrip } from "./$TagStrip.ts";
 
 /**
- * Utility type to remove $Tag from the entire type tree.
+ * `$TagDeepStrip<T, TType, TTag>` recursively removes `$Tag` metadata from the entire type tree.
+ *
+ * This utility type strips tag metadata from any structure, including:
+ * - Primitive types (directly handled by `$TagStrip`).
+ * - Arrays (handled by `$TagDeepStripArray`).
+ * - Tuples (handled by `$TagDeepStripTuple`).
+ * - Objects (handled by `$TagDeepStripObject`).
+ *
+ * This type ensures that no metadata keys prefixed with `@${TType}` remain, including deeply nested structures.
+ *
+ * @template T - The input type to be stripped of `$Tag` metadata.
+ * @template TType - The tag type (string) used to identify metadata keys.
+ * @template TTag - The specific tag to match (optional, default is `never`).
  */
-// export type $TagDeepStrip<T, TType extends string, TTag = never> = $TagStrip<
-//   {
-//     [K in keyof T]: T[K] extends never ? never
-//       : T[K] extends (infer U)[] ? $TagDeepStrip<U, TType, TTag>[]
-//       : T extends object ? $TagDeepStrip<T[K], TType, TTag>
-//       : $TagStrip<T[K], TType, TTag>;
-//   },
-//   TType,
-//   TTag
-// >;
-/**
- * Utility type to remove $Tag from the entire type tree.
- */
-// export type $TagDeepStrip<
-//   T,
-//   TType extends string,
-//   TTag = never,
-// > = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag>
-//   : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
-//   : U extends object ? $TagDeepStripObject<U, TType, TTag>
-//   : $TagStrip<U, TType, TTag>
-//   : $TagStrip<T, TType, TTag>;
-
 export type $TagDeepStrip<
   T,
   TType extends string,
   TTag = never,
-> = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag>
-  : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag>
-  : U extends object ? $TagDeepStripObject<U, TType, TTag>
-  : $TagStrip<U, TType, TTag>
+> = T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag> // Handle arrays by delegating to $TagDeepStripArray
+  : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag> // Handle tuples by delegating to $TagDeepStripTuple
+  : U extends object ? $TagDeepStripObject<U, TType, TTag> // Handle objects by delegating to $TagDeepStripObject
+  : $TagStrip<U, TType, TTag> // Handle primitive types using $TagStrip
   : never;
 
 /**
- * Utility type to remove $Tag from arrays.
+ * `$TagDeepStripArray<T, TType, TTag>` removes `$Tag` from arrays recursively.
+ *
+ * For each element of the array `T`, the type recursively applies `$TagDeepStrip` to ensure
+ * that tag metadata is removed from all nested elements.
+ *
+ * @template T - The array type to be stripped of `$Tag` metadata.
+ * @template TType - The tag type (string) used to identify metadata keys.
+ * @template TTag - The specific tag to match (optional, default is `never`).
  */
 export type $TagDeepStripArray<
   T extends any[],
@@ -53,7 +49,14 @@ export type $TagDeepStripArray<
 };
 
 /**
- * Utility type to remove $Tag from tuples.
+ * `$TagDeepStripTuple<T, TType, TTag>` removes `$Tag` from tuples recursively.
+ *
+ * For each element of the tuple `T`, the type recursively applies `$TagDeepStrip` to ensure
+ * that tag metadata is removed from all tuple elements.
+ *
+ * @template T - The tuple type to be stripped of `$Tag` metadata.
+ * @template TType - The tag type (string) used to identify metadata keys.
+ * @template TTag - The specific tag to match (optional, default is `never`).
  */
 export type $TagDeepStripTuple<
   T extends [any, ...any[]],
@@ -68,7 +71,14 @@ export type $TagDeepStripTuple<
 };
 
 /**
- * Utility type to remove $Tag from objects.
+ * `$TagDeepStripObject<T, TType, TTag>` removes `$Tag` from objects recursively.
+ *
+ * For each property of the object `T`, the type recursively applies `$TagDeepStrip` to ensure
+ * that tag metadata is removed from all properties of the object, including nested properties.
+ *
+ * @template T - The object type to be stripped of `$Tag` metadata.
+ * @template TType - The tag type (string) used to identify metadata keys.
+ * @template TTag - The specific tag to match (optional, default is `never`).
  */
 export type $TagDeepStripObject<
   T extends object,
