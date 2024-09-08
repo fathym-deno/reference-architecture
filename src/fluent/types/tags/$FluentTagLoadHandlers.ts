@@ -11,10 +11,5 @@ export type $FluentTagLoadHandlers<
   "Methods",
   $FluentTagOptions<"Methods">,
   "handlers"
-> ? $FluentTagExtractValue<
-    T[K],
-    "Methods",
-    $FluentTagOptions<"Methods">,
-    "handlers"
-  >
+> ? $FluentTagExtractValue<T[K], "Methods", "handlers">
   : {};

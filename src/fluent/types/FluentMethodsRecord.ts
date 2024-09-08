@@ -16,8 +16,7 @@ export type FluentMethodsRecord<
   K extends keyof T,
   TBuilderModel,
 > =
-  & (true extends $FluentTagExtractValue<T[K], "Methods", "Record", "generic">
-    ? <
+  & (true extends $FluentTagExtractValue<T[K], "Methods", "generic"> ? <
       TGeneric extends ValueType<
         ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">
       > = ValueType<ExcludeKeysByPrefix<$FluentTagStrip<T[K]>, "$">>,

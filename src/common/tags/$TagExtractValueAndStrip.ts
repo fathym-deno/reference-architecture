@@ -12,5 +12,5 @@ export type $TagExtractValueAndStrip<
 > = {
   Stripped: $TagStrip<T, TType, TTag>;
 
-  Value: $TagExtractValue<T, TType, TTag, TData>;
+  Value: $TagExtractValue<T, TType, TData>;
 };

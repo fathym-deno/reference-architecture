@@ -51,7 +51,7 @@ Deno.test("$Tag Tests", async (t) => {
     assert(tagged);
     assertEquals(tagged, "Thing");
 
-    type tagValue = $TagExtractValue<testTag, "Test", tag, "trim">;
+    type tagValue = $TagExtractValue<testTag, "Test", "trim">;
 
     type tagValueCheck = tagValue extends "true" ? true : false;
 
@@ -103,7 +103,7 @@ Deno.test("$Tag Tests", async (t) => {
     assert(tagged);
     assertEquals(tagged, "Thing");
 
-    type tagValue = $TagExtractValue<recordTest, "Test", tag, "trim">;
+    type tagValue = $TagExtractValue<recordTest, "Test", "trim">;
 
     const value: tagValue = "true";
 
@@ -226,7 +226,7 @@ Deno.test("$Tag Tests", async (t) => {
       }
     >;
 
-    type tagValue = $TagExtractValue<tagged, "Test", never, "test">;
+    type tagValue = $TagExtractValue<tagged, "Test", "test">;
 
     type tagValueCheck = "true" extends tagValue ? true : false;
 
