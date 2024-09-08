@@ -1,3 +1,4 @@
+import './options.tests.ts';
 import './$FluentTag.tests.ts';
-import './FluentOptions.tests.ts';
+import './$FluentTagExists.tests.ts';
 import './$FluentTagDeepStrip.tests.ts';
