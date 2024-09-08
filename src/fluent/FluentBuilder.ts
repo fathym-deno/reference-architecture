@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { jsonMapSetClone, type ValueType } from "./.deps.ts";
-import type { FluentBuilderHandlers } from "./FluentBuilderHandlers.ts";
+import type { FluentBuilderHandlers } from "./types/FluentBuilderHandlers.ts";
 import type { IsFluentBuildable } from "./types/IsFluentBuildable.ts";
 import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
 

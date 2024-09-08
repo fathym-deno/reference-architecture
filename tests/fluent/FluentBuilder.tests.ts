@@ -3,7 +3,7 @@ import {
   type $FluentTagExtractValue,
   fluentBuilder,
 } from "../../src/fluent/.exports.ts";
-import type { FluentBuilderHandlers } from "../../src/fluent/FluentBuilderHandlers.ts";
+import type { FluentBuilderHandlers } from "../../src/fluent/types/FluentBuilderHandlers.ts";
 import { assert, assertEquals, assertFalse } from "../test.deps.ts";
 
 Deno.test("Fluent Builder Tests", async (t) => {
