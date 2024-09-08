@@ -60,7 +60,7 @@ Deno.test("$TagExists Type Tests", async (t) => {
     runTest<Result, false>(false, false); // This should pass
   });
 
-  type testTag =
+  type TestTag =
     // { Hello: string } &
     $TagValues<
       "Test",
@@ -70,20 +70,30 @@ Deno.test("$TagExists Type Tests", async (t) => {
     >;
 
   await t.step("Tag Exists", () => {
-    type x = $TagExists<testTag, "Test">;
+    type x = $TagExists<TestTag, "Test">;
 
     type tagExists = {
-      Type: $TagExists<testTag, "Test">;
-      TypeTag: $TagExists<testTag, "Test", "Thing">;
-      TypeTagValues: $TagExists<testTag, "Test", "Thing", "trim">;
-      TypeTagValuesBoth: $TagExists<testTag, "Test", "Thing", "trim" | "value">;
-      BadType: $TagExists<testTag, "Bad", "Thing", "trim">;
-      BadTag: $TagExists<testTag, "Test", "Bad", "trim">;
-      BadTypeTag: $TagExists<testTag, "Bad", "Bad", "trim">;
-      BadTypeTagValues: $TagExists<testTag, "Test", "Thing", "Bad">;
-      BadTypeTagValuesBoth: $TagExists<testTag, "Test", "Thing", "Bad" | "Bad">;
+      Type: $TagExists<TestTag, "Test">;
+      TypeTag: $TagExists<TestTag, "Test", "Thing">;
+      TypeTagValues: $TagExists<TestTag, "Test", "Thing", "trim">;
+      TypeTagValuesBoth: $TagExists<
+        TestTag,
+        "Test",
+        "Thing",
+        "trim" | "value"
+      >;
+      BadType: $TagExists<TestTag, "Bad", "Thing", "trim">;
+      BadTag: $TagExists<TestTag, "Test", "Bad", "trim">;
+      BadTypeTag: $TagExists<TestTag, "Bad", "Bad", "trim">;
+      BadTypeTagValues: $TagExists<TestTag, "Test", "Thing", "Bad">;
+      BadTypeTagValuesBoth: $TagExists<
+        TestTag,
+        "Test",
+        "Thing",
+        "Bad" | "Bad"
+      >;
       BadTypeTagValuesPartial: $TagExists<
-        testTag,
+        TestTag,
         "Test",
         "Thing",
         "trim" | "Bad"
@@ -120,17 +130,27 @@ Deno.test("$TagExists Type Tests", async (t) => {
     type tagged = $TagValues<"Test", never, "trim", { trim: true }>;
 
     type tagExists = {
-      Type: $TagExists<testTag, "Test">;
-      TypeTagValues: $TagExists<testTag, "Test", never, "trim">;
-      TypeTagValuesBoth: $TagExists<testTag, "Test", never, "trim" | "value">;
-      BadType: $TagExists<testTag, "Bad", never, "trim">;
-      BadTag: $TagExists<testTag, "Test", "Bad", "trim">;
-      BadTypeTag: $TagExists<testTag, "Bad", "Bad", "trim">;
-      BadTypeTagExclude: $TagExists<testTag, "Test", never>;
-      BadTypeTagValues: $TagExists<testTag, "Test", never, "Bad">;
-      BadTypeTagValuesBoth: $TagExists<testTag, "Test", never, "Bad" | "Bad">;
+      Type: $TagExists<TestTag, "Test">;
+      TypeTagValues: $TagExists<TestTag, "Test", never, "trim">;
+      TypeTagValuesBoth: $TagExists<
+        TestTag,
+        "Test",
+        never,
+        "trim" | "value"
+      >;
+      BadType: $TagExists<TestTag, "Bad", never, "trim">;
+      BadTag: $TagExists<TestTag, "Test", "Bad", "trim">;
+      BadTypeTag: $TagExists<TestTag, "Bad", "Bad", "trim">;
+      BadTypeTagExclude: $TagExists<TestTag, "Test", never>;
+      BadTypeTagValues: $TagExists<TestTag, "Test", never, "Bad">;
+      BadTypeTagValuesBoth: $TagExists<
+        TestTag,
+        "Test",
+        never,
+        "Bad" | "Bad"
+      >;
       BadTypeTagValuesPartial: $TagExists<
-        testTag,
+        TestTag,
         "Test",
         never,
         "trim" | "Bad"
@@ -171,7 +191,7 @@ Deno.test("$TagExists Type Tests", async (t) => {
           BringIt: boolean;
         }
       >
-      & testTag;
+      & TestTag;
 
     type tagExists = {
       Type: $TagExists<recordTest, "Test">;

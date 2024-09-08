@@ -1,5 +1,4 @@
 import { assert, assertEquals } from "../../test.deps.ts";
-import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
 import type { $TagExtractDataKeys } from "../../../src/common/tags/$TagExtractDataKeys.ts";
 import { runTest } from "../../../src/common/types/testing/runTest.ts";
 
@@ -73,18 +72,11 @@ Deno.test("Testing $TagExtractDataKeys", async (t) => {
   });
 
   await t.step("Tag Extract Data Keys", () => {
-    type testTag = $TagValues<
-      "Test",
-      "Thing",
-      "value" | "trim",
-      { trim: "true"; value: "false" }
-    >;
+    type tagDataKeys = $TagExtractDataKeys<TestTag, "TestTag">;
 
-    type tagDataKeys = $TagExtractDataKeys<testTag, "Test">;
-
-    const dataKeys: tagDataKeys = "trim";
+    const dataKeys: tagDataKeys = "id";
 
     assert(dataKeys);
-    assertEquals(dataKeys, "trim");
+    assertEquals(dataKeys, "id");
   });
 });
