@@ -9,6 +9,7 @@ export * from './ExcludeKeysByPrefix.ts';
 export * from './ExtractExact.ts';
 export * from './ExtractKeysByPrefix.ts';
 export * from './HasIndexSignatures.ts';
+export * from './HasKeys.ts';
 export * from './HasTypeCheck.ts';
 export * from './IsMatched.ts';
 export * from './IsNativeType.ts';

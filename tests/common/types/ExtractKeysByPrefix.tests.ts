@@ -46,6 +46,20 @@ Deno.test("ExtractKeysByPrefix Tests", async (t) => {
       const assertTest: AssertTest = true;
       assert(assertTest);
     });
+
+    await t.step("No Properties", () => {
+      type Original = {};
+      type Extracted = ExtractKeysByPrefix<Original, "">;
+      type Expected = {};
+
+      const check: Extracted = {};
+      assert(check);
+      assertEquals(check, {});
+
+      type AssertTest = AssertEquals<Extracted, Expected>; // Expect: true
+      const assertTest: AssertTest = true;
+      assert(assertTest);
+    });
   });
 
   await t.step("Union and Intersection Types", async (t) => {
