@@ -1,6 +1,7 @@
 import type { $TagExtractValue } from "../../../src/common/tags/$TagExtractValue.ts";
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
 import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { assertEquals } from "../../test.deps.ts";
 
 Deno.test("Testing $TagExtractValue", async (t) => {
   type TestTagValues =
@@ -48,5 +49,17 @@ Deno.test("Testing $TagExtractValue", async (t) => {
       "Pete",
       "Pete",
     );
+  });
+
+  await t.step("Tag Value Only Extracts", () => {
+    type tagged = $TagValues<"Test", never, "test", { test: true }>;
+
+    type tagValue = $TagExtractValue<tagged, "Test", "test">;
+
+    type tagValueCheck = true extends tagValue ? true : false;
+
+    const value: tagValueCheck = true;
+
+    assertEquals(value, true);
   });
 });
