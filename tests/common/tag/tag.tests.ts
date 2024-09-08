@@ -1,9 +1,6 @@
 import type { $TagStrip } from "../../../src/common/types/.exports.ts";
 import type {
   $TagDeepStrip,
-  $TagExtract,
-  $TagExtractValue,
-  $TagExtractValues,
   $TagValues,
 } from "../../../src/common/tags/.exports.ts";
 import { assert, assertEquals, assertFalse } from "../../test.deps.ts";
@@ -36,92 +33,6 @@ Deno.test("$Tag Tests", async (t) => {
     const checkValue: testValue = true;
 
     assert(checkValue);
-  });
-
-  await t.step("Tag Extracts", () => {
-    type tag = $TagExtract<testTag, "Test">;
-
-    const tagged: tag = "Thing";
-
-    assert(tagged);
-    assertEquals(tagged, "Thing");
-
-    type tagValue = $TagExtractValue<testTag, "Test", "trim">;
-
-    type tagValueCheck = tagValue extends "true" ? true : false;
-
-    const value: tagValueCheck = true;
-
-    assertEquals(value, true);
-
-    type tagValues = $TagExtractValues<testTag, "Test", tag, "trim" | "value">;
-
-    type tagValueChecks = {
-      [KValue in keyof tagValues]: {
-        [K in keyof tagValues[KValue]]: K extends "trim"
-          ? tagValues[KValue]["trim"] extends "true" ? true
-          : false
-          : K extends "value"
-            ? tagValues[KValue]["value"] extends "false" ? true
-            : false
-          : false;
-      };
-    };
-
-    const values: tagValueChecks = {
-      Test: {
-        trim: true,
-        value: true,
-      },
-    };
-
-    assert(values?.Test?.trim);
-    assert(values?.Test?.value);
-    assert(values?.Test?.trim);
-    assert(values?.Test?.value);
-  });
-
-  await t.step("Tag Record Extracts", () => {
-    type recordTest =
-      & Record<
-        string,
-        {
-          BringIt: boolean;
-        }
-      >
-      & testTag;
-
-    type tag = $TagExtract<recordTest, "Test">;
-
-    const tagged: tag = "Thing";
-
-    assert(tagged);
-    assertEquals(tagged, "Thing");
-
-    type tagValue = $TagExtractValue<recordTest, "Test", "trim">;
-
-    const value: tagValue = "true";
-
-    assertEquals(value, "true");
-
-    type tagValues = $TagExtractValues<
-      recordTest,
-      "Test",
-      tag,
-      "trim" | "value"
-    >;
-
-    const values: tagValues = {
-      Test: {
-        trim: "true",
-        value: "false",
-      },
-    };
-
-    assert(values?.Test?.trim);
-    assert(values?.Test?.value);
-    assertEquals(values?.Test?.trim, "true");
-    assertEquals(values?.Test?.value, "false");
   });
 
   await t.step("Tag Stripped", () => {

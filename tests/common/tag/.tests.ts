@@ -4,4 +4,5 @@ import './$TagExists.tests.ts';
 import './$TagExtract.tests.ts';
 import './$TagExtractDataKeys.tests.ts';
 import './$TagExtractValue.tests.ts';
+import './$TagExtractValues.tests.ts';
 import './$TagValues.tests.ts';
