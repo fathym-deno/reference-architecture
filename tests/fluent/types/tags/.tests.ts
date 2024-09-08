@@ -3,3 +3,4 @@ import './$FluentTag.tests.ts';
 import './$FluentTagExists.tests.ts';
 import './$FluentTagDeepStrip.tests.ts';
 import './$FluentTagExtract.tests.ts';
+import './$FluentTagExtractDataKeys.tests.ts';
