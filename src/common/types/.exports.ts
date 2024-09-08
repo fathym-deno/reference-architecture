@@ -16,6 +16,7 @@ export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsUndefined.ts';
 export * from './IsUnion.ts';
+export * from './MatchSwitch.ts';
 export * from './NoPropertiesUndefined.ts';
 export * from './NormalizeNever.ts';
 export * from './NullableArrayOrObject.ts';
