@@ -13,6 +13,7 @@ import './IsUnion.tests.ts';
 import './MatchSwitch.tests.ts';
 import './NoPropertiesUndefined.tests.ts';
 import './NormalizeNerver.tests.ts';
+import './NullableArrayOrObject.tests.ts';
 import './RemoveIndexSignatures.ts';
 import './ResolveIndexSignatures.tests.ts';
 import './ValueType.tests.ts';

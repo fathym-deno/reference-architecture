@@ -20,7 +20,6 @@ export * from './MatchSwitch.ts';
 export * from './NoPropertiesUndefined.ts';
 export * from './NormalizeNever.ts';
 export * from './NullableArrayOrObject.ts';
-export * from './ReIntersect.ts';
 export * from './RemoveIndexSignatures.ts';
 export * from './ResolveIndexSignatures.ts';
 export * from './ValueType.ts';
