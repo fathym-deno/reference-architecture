@@ -3,7 +3,7 @@ import {
   type $FluentTagExtractValue,
   fluentBuilder,
 } from "../../src/fluent/.exports.ts";
-import type { FluentBuilderHandlers } from "../../src/fluent/types/FluentBuilderHandlers.ts";
+import type { FluentBuilderMethodsHandlers } from "../../src/fluent/types/FluentBuilderMethodsHandlers.ts";
 import { assert, assertEquals, assertFalse } from "../test.deps.ts";
 
 Deno.test("Fluent Builder Tests", async (t) => {
@@ -70,7 +70,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
       };
     };
 
-    const handlers: FluentBuilderHandlers = {
+    const handlers: FluentBuilderMethodsHandlers = {
       Compile: (name: string) => `Hey ${name}`,
     };
 
@@ -304,7 +304,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
 
     type x = fluentTest["NestedProp"];
 
-    const handlers: FluentBuilderHandlers = {
+    const handlers: FluentBuilderMethodsHandlers = {
       Compile: (name: string) => `Hey ${name}`,
     };
 

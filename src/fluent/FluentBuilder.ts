@@ -1,27 +1,13 @@
 // deno-lint-ignore-file no-explicit-any
 import { jsonMapSetClone, type ValueType } from "./.deps.ts";
-import type { FluentBuilderHandlers } from "./types/FluentBuilderHandlers.ts";
-import type { IsFluentBuildable } from "./types/IsFluentBuildable.ts";
+import type { FluentBuilderMethodsHandlers } from "./types/FluentBuilderMethodsHandlers.ts";
 import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
-
-// export function fluentBuilder<TBuilderModel>(
-//   model?: IsFluentBuildable<TBuilderModel>,
-//   handlers?: FluentBuilderHandlers
-// ): FluentBuilder<TBuilderModel> &
-//   SelectFluentMethods<TBuilderModel, TBuilderModel> {
-//   return new FluentBuilder<TBuilderModel>(
-//     [],
-//     model,
-//     handlers
-//   ) as FluentBuilder<TBuilderModel> &
-//     SelectFluentMethods<TBuilderModel, TBuilderModel>;
-// }
 
 export type FluentBuilderRoot<TBuilderModel> = { Root: TBuilderModel };
 
 export function fluentBuilder<TBuilderModel>(
-  model?: IsFluentBuildable<TBuilderModel>,
-  handlers?: FluentBuilderHandlers,
+  model?: TBuilderModel,
+  handlers?: FluentBuilderMethodsHandlers,
 ):
   & FluentBuilder<TBuilderModel>
   & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
@@ -39,7 +25,7 @@ export function fluentBuilder<TBuilderModel>(
  */
 export class FluentBuilder<TBuilderModel> {
   // #region Fields
-  protected readonly handlers: FluentBuilderHandlers;
+  protected readonly handlers: FluentBuilderMethodsHandlers;
 
   protected readonly keyDepth: string[];
 
@@ -50,7 +36,7 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: FluentBuilderHandlers,
+    handlers?: FluentBuilderMethodsHandlers,
   ) {
     this.handlers = handlers || {};
 
