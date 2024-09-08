@@ -11,16 +11,22 @@
  * in a tuple. If `T` is not a union, `[U] extends [T]` will be `true`; if `T` is a union,
  * the check will fail for individual members of the union, and thus return `false`.
  *
+ * ### Key Points:
+ * - If `T` is a union, the distribution across its members will return `true`.
+ * - If `T` is not a union (e.g., a single type, `never`, or an intersection), it returns `false`.
+ *
  * @example
  * type Test1 = IsUnion<string | number>; // true
  * type Test2 = IsUnion<string>;          // false
  * type Test3 = IsUnion<string & number>; // false
+ * type Test4 = IsUnion<never>;           // false
  *
- * @param T - The type to be checked.
- * @param U - An internal helper that defaults to `T`, used to preserve the original type.
  * @returns `true` if `T` is a union, `false` otherwise.
  */
-// deno-lint-ignore no-explicit-any
-export type IsUnion<T, U = T> = T extends any ? [U] extends [T] ? false
-  : true
-  : never;
+export type IsUnion<T, U = T> = [T] extends [never] // Handle `never` type explicitly
+  ? false
+  : T extends U // Distribute over union members
+    ? [U] extends [T] // Check if it's a non-union
+      ? false
+    : true
+  : false;
