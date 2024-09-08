@@ -3,7 +3,6 @@ import type {
   HasTypeCheck,
   NoPropertiesUndefined,
 } from "../../../src/common/types/.exports.ts";
-import type { $TagExtractDataKeys } from "../../../src/common/tags/$TagExtractDataKeys.ts";
 import type {
   $TagDeepStrip,
   $TagExists,
@@ -42,15 +41,6 @@ Deno.test("$Tag Tests", async (t) => {
     const checkValue: testValue = true;
 
     assert(checkValue);
-  });
-
-  await t.step("Tag Extract Data Keys", () => {
-    type tagDataKeys = $TagExtractDataKeys<testTag, "Test", "Thing">;
-
-    const dataKeys: tagDataKeys = "trim";
-
-    assert(dataKeys);
-    assertEquals(dataKeys, "trim");
   });
 
   await t.step("Tag Extracts", () => {

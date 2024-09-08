@@ -1,5 +1,4 @@
 import type { $TagExtractDataKeys } from "../../.deps.ts";
-import type { $FluentTagOptions } from "./$FluentTagOptions.ts";
 import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 
 /**
@@ -8,5 +7,4 @@ import type { $FluentTagTypeOptions } from "./$FluentTagTypeOptions.ts";
 export type $FluentTagExtractDataKeys<
   T,
   TType extends $FluentTagTypeOptions,
-  TTag extends $FluentTagOptions<TType>,
-> = $TagExtractDataKeys<T, TType, TTag>;
+> = $TagExtractDataKeys<T, TType>;
