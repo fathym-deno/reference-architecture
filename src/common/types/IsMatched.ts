@@ -9,7 +9,7 @@
  */
 export type IsMatched<
   Matches extends boolean | never,
-  MatchAll extends boolean,
+  MatchAll extends boolean = false,
 > = MatchAll extends true
   // MatchAll: Ensure that all matches are true
   ? [Matches] extends [never] // Check if Matches is never (an empty union)
