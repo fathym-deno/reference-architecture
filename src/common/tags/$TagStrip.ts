@@ -33,8 +33,10 @@ export type $TagStrip<
     : false extends $TagExists<T, TType, TTag> // If TTag, check to see if the tag exists
       ? T // If no TTag, return original type
     : ExcludeKeys<T, `@${TType}-${TData}`> // If TTag, return type with TData tag excluded
-  : [TTag] extends [never] // If not exact, check for TTag
-    ? ExcludeKeysByPrefix<T, `@${TType}`> // If no TTag, strip all TData for TType
-  : false extends $TagExists<T, TType, TTag> // If TTag, check to see if the tag exists
-    ? T // If no TTag exists, return original type
-  : ExcludeKeysByPrefix<T, `@${TType}`>; // If TTag, stip
+  : [TData] extends [never] // If not exact, check for TData
+    ? [TTag] extends [never] // If not TData, check for TTag
+      ? ExcludeKeysByPrefix<T, `@${TType}`> // If no TTag, strip all TData for TType
+    : false extends $TagExists<T, TType, TTag> // If TTag, check to see if the tag exists
+      ? T // If no TTag exists, return original type
+    : ExcludeKeysByPrefix<T, `@${TType}`> // If TTag, strip
+  : ExcludeKeysByPrefix<T, `@${TType}-@${TData}`>; // TData, check for TTag
