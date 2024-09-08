@@ -1,5 +1,6 @@
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
 import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { assert, assertEquals } from "../../test.deps.ts";
 
 Deno.test("$TagValues Type Tests", async (t) => {
   // Basic test for $TagValues with a simple tag
@@ -91,6 +92,7 @@ Deno.test("$TagValues Type Tests", async (t) => {
       "info" | "warning",
       { info: string; warning: boolean }
     >;
+
     runTest<
       Result,
       {
@@ -110,5 +112,32 @@ Deno.test("$TagValues Type Tests", async (t) => {
         "@status-warning": false,
       },
     );
+  });
+
+  await t.step("Tag Creation", () => {
+    type testTag = $TagValues<
+      "Test",
+      "Thing",
+      "value" | "trim",
+      { trim: "true"; value: "false" }
+    >;
+
+    const check: testTag = {
+      // Hello: 'World',
+      "@Test": "Thing",
+      "@Test-trim": "true",
+      "@Test-value": "false",
+    };
+
+    assert(check);
+    assertEquals(check["@Test-trim"], "true");
+    assertEquals(check["@Test-value"], "false");
+
+    type testValue = NonNullable<testTag["@Test-value"]> extends "false" ? true
+      : false;
+
+    const checkValue: testValue = true;
+
+    assert(checkValue);
   });
 });

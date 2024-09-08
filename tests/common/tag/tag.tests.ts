@@ -44,7 +44,7 @@ Deno.test("$Tag Tests", async (t) => {
     assert(checkValue);
   });
 
-  await t.step("Tag Data Keys", () => {
+  await t.step("Tag Extract Data Keys", () => {
     type tagDataKeys = $TagExtractDataKeys<testTag, "Test", "Thing">;
 
     const dataKeys: tagDataKeys = "trim";
