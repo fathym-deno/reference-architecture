@@ -6,6 +6,7 @@ import './HasIndexSignatures.tests.ts';
 import './HasTypeCheck.tests.ts';
 import './IsMatched.tests.ts';
 import './IsNativeType.tests.ts';
+import './IsObject.tests.ts';
 import './IsUndefined.tests.ts';
 import './MatchSwitch.tests.ts';
 import './NoPropertiesUndefined.tests.ts';
