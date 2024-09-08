@@ -7,6 +7,7 @@ import './HasTypeCheck.tests.ts';
 import './IsMatched.tests.ts';
 import './IsNativeType.tests.ts';
 import './NoPropertiesUndefined.tests.ts';
+import './NormalizeNerver.tests.ts';
 import './RemoveIndexSignatures.ts';
 import './ResolveIndexSignatures.tests.ts';
 import './ValueType.tests.ts';
