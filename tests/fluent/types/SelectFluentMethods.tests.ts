@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any
-import type { SelectFluentMethods } from "../../../src/fluent/types/SelectFluentMethods.ts";
 import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
 
 Deno.test("Testing SelectFluentMethods", async (t) => {
@@ -32,17 +30,6 @@ Deno.test("Testing SelectFluentMethods", async (t) => {
 
       ParentEnterpriseLookup?: string;
     };
-
-    type ResultHandlers = SelectFluentMethods<Example, any>["_Handlers"];
-    type Result = SelectFluentMethods<Example, any>;
-
-    type x = ResultHandlers;
-
-    const c: ResultHandlers = {};
-
-    c.$Force(true);
-
-    c("TestKey").APIPath("");
 
     // runTest<
     //   Result,

@@ -1,4 +1,4 @@
-import './$Tag.tests.ts';
+import './_$tag.tests.ts';
 import './$TagDeepStrip.tests.ts';
 import './$TagExists.tests.ts';
 import './$TagExtract.tests.ts';
