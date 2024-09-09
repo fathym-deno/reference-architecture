@@ -25,4 +25,5 @@ export * from './NormalizeNever.ts';
 export * from './NullableArrayOrObject.ts';
 export * from './RemoveIndexSignatures.ts';
 export * from './ResolveIndexSignatures.ts';
+export * from './UnionToIntersection.ts';
 export * from './ValueType.ts';

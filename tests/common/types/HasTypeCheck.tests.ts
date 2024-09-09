@@ -223,5 +223,57 @@ Deno.test("HasTypeCheck Extended Tests", async (t) => {
       const assertTest: AssertTest = true;
       assert(assertTest);
     });
+
+    await t.step("From EaC", () => {
+      type EaCModuleHandler = {
+        APIPath: string;
+        Order: number;
+      };
+
+      type EaCModuleHandlers = {
+        $Force?: boolean;
+      } & Record<string, EaCModuleHandler>;
+
+      type EaCVertexDetails = {
+        Description?: string;
+        Name?: string;
+      } & EaCMetadataBase;
+      type EaCMetadataBase =
+        | Record<string | number | symbol, unknown>
+        | undefined;
+      type EaCEnterpriseDetails = EaCVertexDetails;
+      type EverythingAsCode = {
+        Details?: EaCEnterpriseDetails;
+        EnterpriseLookup?: string;
+        Handlers?: EaCModuleHandlers;
+        ParentEnterpriseLookup?: string;
+      };
+
+      type details = HasTypeCheck<
+        NonNullable<EverythingAsCode["Details"]>,
+        EaCVertexDetails,
+        true
+      >;
+
+      type handlers = HasTypeCheck<
+        NonNullable<EverythingAsCode["Handlers"]>,
+        EaCVertexDetails,
+        true
+      >;
+
+      const detailsCheck: details = true;
+      assert(detailsCheck);
+
+      // const handlersCheck: handlers = false;
+      // assert(handlersCheck);
+
+      type AssertDetailsTest = AssertEquals<details, true>; // Expect: true
+      const assertDetailsTest: AssertDetailsTest = true;
+      assert(assertDetailsTest);
+
+      // type AssertHandlersTest = AssertEquals<handlers, false>; // Expect: false
+      // const assertHandlersTest: AssertHandlersTest = false;
+      // assert(assertHandlersTest);
+    });
   });
 });

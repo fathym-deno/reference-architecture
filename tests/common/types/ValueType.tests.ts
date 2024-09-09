@@ -51,11 +51,20 @@ Deno.test("ValueType Tests - Simple Record", async (t) => {
       $Force?: boolean;
     } & Record<string, EaCModuleHandler>;
 
+    type EaCVertexDetails = {
+      Description?: string;
+      Name?: string;
+    } & EaCMetadataBase;
+    type EaCMetadataBase =
+      | Record<string | number | symbol, unknown>
+      | undefined;
+    type EaCEnterpriseDetails = EaCVertexDetails;
     type EverythingAsCode = {
+      Details?: EaCEnterpriseDetails;
       EnterpriseLookup?: string;
       Handlers?: EaCModuleHandlers;
       ParentEnterpriseLookup?: string;
-    }; // & EaCDetails<EaCEnterpriseDetails>;
+    };
 
     type u = NonNullable<EverythingAsCode["Handlers"]>;
     type U = ValueType<u>;
