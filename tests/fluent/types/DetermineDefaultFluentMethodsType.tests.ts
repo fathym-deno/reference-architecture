@@ -105,21 +105,20 @@ Deno.test("Testing DetermineDefaultFluentMethodsType", async (t) => {
     type ComplexExample = {
       key: Record<string, unknown>;
     };
-    type x = IsRecord<ComplexExample['key']>;
-    type xx = isFluentRecord<ComplexExample['key']>;
+    type x = IsRecord<ComplexExample["key"]>;
+    type xx = isFluentRecord<ComplexExample["key"]>;
     runTest<DetermineDefaultFluentMethodsType<ComplexExample, "key">, "Record">(
       "Record",
       "Record",
     );
   });
 
-  type isFluentRecord<T> = $FluentTagExtract<T, 'Methods'> extends ['Record']
-  ? true
-  : $FluentTagExtract<T, 'Methods'> extends [never]
-  ? true extends IsRecord<T>
+  type isFluentRecord<T> = $FluentTagExtract<T, "Methods"> extends ["Record"]
     ? true
-    : false
-  : false;
+    : $FluentTagExtract<T, "Methods"> extends [never]
+      ? true extends IsRecord<T> ? true
+      : false
+    : false;
 
   await t.step("Record with Record value type with complex value type", () => {
     type ComplexExample = {

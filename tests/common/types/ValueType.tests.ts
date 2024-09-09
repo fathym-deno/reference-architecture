@@ -31,4 +31,38 @@ Deno.test("ValueType Tests - Simple Record", async (t) => {
       { key: 1, value: "1" },
     );
   });
+
+  await t.step("Complex Record with Nested Values", () => {
+    type NestedRecord = Record<string, { key: number; value: string }>;
+
+    runTest<ValueType<NestedRecord>, { key: number; value: string }>(
+      { key: 1, value: "1" },
+      { key: 1, value: "1" },
+    );
+  });
+
+  await t.step("Complex Record with Nested From EaC", () => {
+    type EaCModuleHandler = {
+      APIPath: string;
+      Order: number;
+    };
+
+    type EaCModuleHandlers = {
+      $Force?: boolean;
+    } & Record<string, EaCModuleHandler>;
+
+    type EverythingAsCode = {
+      EnterpriseLookup?: string;
+      Handlers?: EaCModuleHandlers;
+      ParentEnterpriseLookup?: string;
+    }; // & EaCDetails<EaCEnterpriseDetails>;
+
+    type u = NonNullable<EverythingAsCode["Handlers"]>;
+    type U = ValueType<u>;
+
+    runTest<U, { Order: number; APIPath: string }>(
+      { Order: 1, APIPath: "1" },
+      { Order: 1, APIPath: "1" },
+    );
+  });
 });

@@ -1,9 +1,9 @@
 // deno-lint-ignore-file no-explicit-any
-import type { SelectFluentMethods } from '../../../src/fluent/types/SelectFluentMethods.ts';
-import type { $FluentTag } from '../../../src/fluent/types/tags/$FluentTag.ts';
+import type { SelectFluentMethods } from "../../../src/fluent/types/SelectFluentMethods.ts";
+import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
 
-Deno.test('Testing SelectFluentMethods', async (t) => {
-  await t.step('Complex from EaC', () => {
+Deno.test("Testing SelectFluentMethods", async (t) => {
+  await t.step("Complex from EaC", () => {
     type EaCModuleHandler = {
       APIPath: string;
 
@@ -17,11 +17,12 @@ Deno.test('Testing SelectFluentMethods', async (t) => {
     type Example = {
       EnterpriseLookup?: string;
 
-      Handlers?: EaCModuleHandlers &
-        $FluentTag<
-          'Methods',
+      Handlers?:
+        & EaCModuleHandlers
+        & $FluentTag<
+          "Methods",
           never,
-          'handlers',
+          "handlers",
           {
             handlers: {
               Compile: () => unknown;
@@ -32,7 +33,7 @@ Deno.test('Testing SelectFluentMethods', async (t) => {
       ParentEnterpriseLookup?: string;
     };
 
-    type ResultHandlers = SelectFluentMethods<Example, any>['_Handlers'];
+    type ResultHandlers = SelectFluentMethods<Example, any>["_Handlers"];
     type Result = SelectFluentMethods<Example, any>;
 
     type x = ResultHandlers;
@@ -41,7 +42,7 @@ Deno.test('Testing SelectFluentMethods', async (t) => {
 
     c.$Force(true);
 
-    c('TestKey').APIPath('');
+    c("TestKey").APIPath("");
 
     // runTest<
     //   Result,

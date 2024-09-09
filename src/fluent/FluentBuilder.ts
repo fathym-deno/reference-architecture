@@ -1,20 +1,22 @@
 // deno-lint-ignore-file no-explicit-any
-import { jsonMapSetClone, type ValueType } from './.deps.ts';
-import type { FluentBuilderRoot } from './FluentBuilderRoot.ts';
-import type { FluentBuilderMethodsHandlers } from './types/FluentBuilderMethodsHandlers.ts';
-import type { SelectFluentMethods } from './types/SelectFluentMethods.ts';
+import { jsonMapSetClone, type ValueType } from "./.deps.ts";
+import type { FluentBuilderRoot } from "./FluentBuilderRoot.ts";
+import type { FluentBuilderMethodsHandlers } from "./types/FluentBuilderMethodsHandlers.ts";
+import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
 
 export function fluentBuilder<TBuilderModel>(
   model?: TBuilderModel,
-  handlers?: FluentBuilderMethodsHandlers
-): FluentBuilder<TBuilderModel> &
-  SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
+  handlers?: FluentBuilderMethodsHandlers,
+):
+  & FluentBuilder<TBuilderModel>
+  & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
   return new FluentBuilder<TBuilderModel>(
     [],
     model,
-    handlers
-  ) as FluentBuilder<TBuilderModel> &
-    SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
+    handlers,
+  ) as
+    & FluentBuilder<TBuilderModel>
+    & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
 }
 
 /**
@@ -33,7 +35,7 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: FluentBuilderMethodsHandlers
+    handlers?: FluentBuilderMethodsHandlers,
   ) {
     this.handlers = handlers || {};
 
@@ -63,20 +65,22 @@ export class FluentBuilder<TBuilderModel> {
       eacWorking = eacWorking[nextKey] as Record<string, unknown>;
     });
 
-    return newModel?.['Root'] as TExport;
+    return newModel?.["Root"] as TExport;
   }
 
   public With(
-    action: (x: this) => void
-  ): this &
-    SelectFluentMethods<
+    action: (x: this) => void,
+  ):
+    & this
+    & SelectFluentMethods<
       ValueType<ReturnType<typeof this.workingRecords>>,
       TBuilderModel
     > {
     action(this);
 
-    return this as this &
-      SelectFluentMethods<
+    return this as
+      & this
+      & SelectFluentMethods<
         ValueType<ReturnType<typeof this.workingRecords>>,
         TBuilderModel
       >;
@@ -91,7 +95,7 @@ export class FluentBuilder<TBuilderModel> {
   protected executeActual(
     target: this,
     prop: string | symbol,
-    receiver: any
+    receiver: any,
   ): unknown {
     return Reflect.get(target, prop, receiver);
   }
@@ -99,7 +103,7 @@ export class FluentBuilder<TBuilderModel> {
   protected executeHandlers(
     target: this,
     prop: string | symbol,
-    _receiver: any
+    _receiver: any,
   ): unknown {
     return (...args: unknown[]) => {
       return this.handlers[prop.toString()].call(target, ...args);
@@ -110,19 +114,19 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     receiver: any,
-    keys?: string[]
+    keys?: string[],
   ): unknown {
     return new Proxy(
       () => {
         throw new Deno.errors.NotSupported(
-          'The Proxy should be taking over the actual method execution.'
+          "The Proxy should be taking over the actual method execution.",
         );
       },
       {
         get(virtualTarget, virtualProp, virtualReceiver) {
           if (virtualProp in virtualTarget) {
             return Reflect.get(virtualTarget, virtualProp, virtualReceiver);
-          } else if (virtualProp.toString().startsWith('$')) {
+          } else if (virtualProp.toString().startsWith("$")) {
             return target.loadProxyHandler([
               prop.toString(),
               // virtualProp.toString(),
@@ -148,14 +152,14 @@ export class FluentBuilder<TBuilderModel> {
             target,
             prop,
             receiver,
-            args
+            args,
           );
 
           const isProp = !isRecord && !!result;
 
           if (!result) {
             throw new Error(
-              `Property '${prop.toString()}' was not properly resolved.`
+              `Property '${prop.toString()}' was not properly resolved.`,
             );
           }
 
@@ -169,7 +173,7 @@ export class FluentBuilder<TBuilderModel> {
           ];
 
           const cleanKeys: string[] = currentKeyDepth.map((k) =>
-            k.startsWith('_') ? k.slice(1).toString() : k
+            k.startsWith("_") ? k.slice(1).toString() : k
           );
 
           cleanKeys.reduce((working, key, i) => {
@@ -185,14 +189,14 @@ export class FluentBuilder<TBuilderModel> {
           return new FluentBuilder<TBuilderModel>(
             [
               ...target.keyDepth,
-              ...(keys ?? []).map((k) => (k.startsWith('_') ? k.slice(1) : k)),
+              ...(keys ?? []).map((k) => (k.startsWith("_") ? k.slice(1) : k)),
               ...result.Keys,
             ],
-            target.model['Root'],
-            target.handlers
+            target.model["Root"],
+            target.handlers,
           );
         },
-      }
+      },
     );
   }
 
@@ -200,7 +204,7 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
   ): { Keys: string[]; Prop: string; Value: unknown } | undefined {
     const newKeys: string[] = [];
 
@@ -221,13 +225,13 @@ export class FluentBuilder<TBuilderModel> {
     _target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && !prop.toString().startsWith('_')) {
+    if (args?.length && !prop.toString().startsWith("_")) {
       const [value] = args;
 
       newValue = value;
@@ -242,13 +246,13 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && prop.toString().startsWith('_')) {
+    if (args?.length && prop.toString().startsWith("_")) {
       prop = prop.toString().slice(1);
 
       const [lookup] = args as [string];

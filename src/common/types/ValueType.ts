@@ -1,4 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
+import type { ResolveIndexSignatures } from "./ResolveIndexSignatures.ts";
+
 /**
  * `ValueType<T>` extracts the value type of a `Record` type. If the input type `T` is not a record,
  * the type will resolve to `never`.
@@ -27,5 +29,8 @@
  * type NonRecord = { a: string, b: number };
  * type Value = ValueType<NonRecord>; // Value is `never`
  * ```
- */
-export type ValueType<T> = T extends Record<any, infer V> ? V : never;
+//  */
+export type ValueType<T> = ResolveIndexSignatures<
+  NonNullable<T>
+> extends Record<any, infer V> ? V
+  : never;
