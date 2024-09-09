@@ -1,486 +1,647 @@
+import { IsObjectNotNative } from '../../src/common/types/IsObjectNotNative.ts';
 import {
   type $FluentTag,
+  $FluentTagExtractDataKeys,
   type $FluentTagExtractValue,
+  DetermineEaCFluentMethods,
   fluentBuilder,
-} from "../../src/fluent/.exports.ts";
-import type { FluentBuilderMethodsHandlers } from "../../src/fluent/types/FluentBuilderMethodsHandlers.ts";
-import { assert, assertEquals, assertFalse } from "../test.deps.ts";
+} from '../../src/fluent/.exports.ts';
+import type { FluentBuilderMethodsHandlers } from '../../src/fluent/types/FluentBuilderMethodsHandlers.ts';
+import { assert, assertEquals, assertFalse } from '../test.deps.ts';
 
-Deno.test("Fluent Builder Tests", async (t) => {
-  await t.step("Basic Tests", async (t) => {
-    await t.step("Object with Property", () => {
-      const bldr = fluentBuilder<{ Hello: string }>().Root();
+Deno.test('Fluent Builder Tests', async (t) => {
+  await t.step('Starter Tests', async (t) => {
+    await t.step('Basic Tests', async (t) => {
+      await t.step('Object with Property', () => {
+        const bldr = fluentBuilder<{ Hello: string }>().Root();
 
-      const hello = bldr.Hello;
+        const hello = bldr.Hello;
 
-      const value = hello("World").Export();
+        const value = hello('World').Export();
 
-      assert(value);
-      assertEquals(value.Hello, "World");
+        assert(value);
+        assertEquals(value.Hello, 'World');
+      });
     });
-  });
 
-  await t.step("Basic", async (t) => {
-    type tempBase = { Speak: string };
+    await t.step('Basic', async (t) => {
+      type tempBase = { Speak: string };
 
-    type expandedBase = { Hello: string } & tempBase;
+      type expandedBase = { Hello: string } & tempBase;
 
-    type fluentTest = {
-      Hello: string;
-      Nested: {
-        Goodbye: string;
-      };
-      NestedProp:
-        & tempBase
-        & $FluentTag<
-          "Methods",
-          "Property",
-          "generic" | "handlers",
-          { generic: true; handlers: { Compile: (test: string) => string } }
-        >;
-      NestedRecord: Record<
-        string,
-        {
-          BringIt: boolean;
-        }
-      >;
-      NestedRecordGeneric:
-        & Record<string, tempBase>
-        & {
-          $Elevated: string[];
-        }
-        & $FluentTag<
-          "Methods",
-          "Record",
-          "generic" | "handlers",
-          { generic: true; handlers: { Compile: (test: string) => string } }
-        >;
-      Lowered: {
-        Generic:
-          & Record<string, tempBase>
-          & {
-            $Elevated: string[];
+      type fluentTest = {
+        Hello: string;
+        Nested: {
+          Goodbye: string;
+        };
+        NestedProp: tempBase &
+          $FluentTag<
+            'Methods',
+            'Property',
+            'generic' | 'handlers',
+            { generic: true; handlers: { Compile: (test: string) => string } }
+          >;
+        NestedRecord: Record<
+          string,
+          {
+            BringIt: boolean;
           }
-          & $FluentTag<
-            "Methods",
-            "Record",
-            "generic" | "handlers",
+        >;
+        NestedRecordGeneric: Record<string, tempBase> & {
+          $Elevated: string[];
+        } & $FluentTag<
+            'Methods',
+            'Record',
+            'generic' | 'handlers',
+            { generic: true; handlers: { Compile: (test: string) => string } }
+          >;
+        Lowered: {
+          Generic: Record<string, tempBase> & {
+            $Elevated: string[];
+          } & $FluentTag<
+              'Methods',
+              'Record',
+              'generic' | 'handlers',
+              { generic: true; handlers: { Compile: (test: string) => string } }
+            >;
+        };
+        PossibleUndefined?: Record<string, tempBase> & {
+          $Elevated: string[];
+        } & $FluentTag<
+            'Methods',
+            'Record',
+            'generic' | 'handlers',
             { generic: true; handlers: { Compile: (test: string) => string } }
           >;
       };
-    };
 
-    const handlers: FluentBuilderMethodsHandlers = {
-      Compile: (name: string) => `Hey ${name}`,
-    };
+      const handlers: FluentBuilderMethodsHandlers = {
+        Compile: (name: string) => `Hey ${name}`,
+      };
 
-    await t.step("Object with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
+      await t.step('Object with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
 
-      const value = bldr.Hello("World").Export();
+        const value = bldr.Hello('World').Export();
 
-      assert(value);
-      assertEquals(value.Hello, "World");
-    });
-
-    await t.step("Nested Object as Property", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
-
-      bldr.Hello("World");
-
-      const nestBldr = bldr.NestedProp<expandedBase>({
-        Speak: "Something",
-        Hello: "World",
+        assert(value);
+        assertEquals(value.Hello, 'World');
       });
 
-      const whole = bldr.Export();
+      await t.step('Nested Object as Property', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.NestedProp.Speak, "Something");
-      assertEquals((whole.NestedProp as expandedBase).Hello, "World");
-      assert(nestBldr.Compile);
-      assertEquals(nestBldr.Compile("Mike"), "Hey Mike");
+        bldr.Hello('World');
+
+        const nestBldr = bldr.NestedProp<expandedBase>({
+          Speak: 'Something',
+          Hello: 'World',
+        });
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.NestedProp.Speak, 'Something');
+        assertEquals((whole.NestedProp as expandedBase).Hello, 'World');
+        assert(nestBldr.Compile);
+        assertEquals(nestBldr.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Nested Object with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
+
+        bldr.Hello('World');
+
+        bldr.Nested().Goodbye('Friend');
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.Nested.Goodbye, 'Friend');
+
+        const partial = bldr.Nested().Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(partial.Nested.Goodbye, 'Friend');
+      });
+
+      await t.step('Nested Record as Property', () => {
+        type t = $FluentTagExtractValue<
+          fluentTest['NestedRecordGeneric'],
+          'Methods',
+          'generic'
+        >;
+
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        const config = bldr._NestedRecordGeneric<expandedBase>;
+
+        const nested = config('TestKey');
+
+        nested.Speak('Something').Hello('World');
+
+        config.$Elevated(['this-is-a-test']);
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        // assert(whole.NestedRecordGeneric.$Elevated);
+        // assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
+        assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+        assert(nested.Compile);
+        assertEquals(nested.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Nested Record with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
+
+        bldr.Hello('World');
+
+        bldr._NestedRecord('TestKey').BringIt(true);
+
+        const whole: fluentTest = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assert(whole.NestedRecord['TestKey'].BringIt);
+        assertFalse(whole.NestedRecord['@Methods']);
+
+        const partial: fluentTest = bldr._NestedRecord('TestKey').Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assert(whole.NestedRecord['TestKey'].BringIt);
+      });
+
+      await t.step('Nested Record as Property', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Speak('Something')
+          .Hello('World');
+
+        const whole: fluentTest = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const partial = bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(partial.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (partial.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const recBldr = bldr._NestedRecordGeneric<expandedBase>('TestKey');
+
+        assert(recBldr);
+        assert(recBldr.Compile);
+        assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Double Nested Record', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        const generic = bldr.Lowered()._Generic;
+
+        generic('TestKey').Speak('Something');
+
+        generic.$Elevated(['this-is-a-test']);
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
+        assert(whole.Lowered.Generic.$Elevated);
+        assertEquals(whole.Lowered.Generic.$Elevated[0], 'this-is-a-test');
+
+        const partial = bldr.Lowered()._Generic('TestKey').Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
+
+        const recBldr = bldr.Lowered()._Generic('TestKey');
+
+        assert(recBldr);
+        assert(recBldr.Compile);
+        assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Possibly Undefined', () => {
+        type t = $FluentTagExtractValue<
+          fluentTest['NestedRecordGeneric'],
+          'Methods',
+          'generic'
+        >;
+
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        const config = bldr._PossibleUndefined<expandedBase>;
+
+        bldr._PossibleUndefined<expandedBase>('TestKey');
+
+        const nested = config('TestKey');
+
+        nested.Speak('Something').Hello('World');
+
+        config.$Elevated(['this-is-a-test']);
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        // assert(whole.NestedRecordGeneric.$Elevated);
+        // assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
+        assertEquals(whole.PossibleUndefined!['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.PossibleUndefined!['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+        assert(nested.Compile);
+        assertEquals(nested.Compile('Mike'), 'Hey Mike');
+      });
     });
 
-    await t.step("Nested Object with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
+    await t.step('Additive Tags', async (t) => {
+      type tempBase = { Speak: string };
 
-      bldr.Hello("World");
+      type expandedBase = { Hello: string } & tempBase;
 
-      bldr.Nested().Goodbye("Friend");
+      type fluentTestBase = {
+        Hello: string;
+        Nested: {
+          Goodbye: string;
+        };
+        NestedProp: tempBase;
+        NestedRecord: Record<
+          string,
+          {
+            BringIt: boolean;
+          }
+        >;
+        NestedRecordGeneric: Record<string, tempBase> & {
+          $Elevated: string[];
+        };
+        Lowered: {
+          Generic: Record<string, tempBase> & {
+            $Elevated: string[];
+          };
+        };
+      };
 
-      const whole = bldr.Export();
+      type fluentTestTags = {
+        NestedProp: $FluentTag<
+          'Methods',
+          'Property',
+          'generic' | 'handlers',
+          { generic: true; handlers: { Compile: (test: string) => string } }
+        >;
+        NestedRecordGeneric: $FluentTag<
+          'Methods',
+          'Record',
+          'generic' | 'handlers',
+          { generic: true; handlers: { Compile: (test: string) => string } }
+        >;
+        Lowered: {
+          Generic: $FluentTag<
+            'Methods',
+            'Record',
+            'generic' | 'handlers',
+            { generic: true; handlers: { Compile: (test: string) => string } }
+          >;
+        };
+      };
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.Nested.Goodbye, "Friend");
+      type fluentTest = fluentTestBase & fluentTestTags;
 
-      const partial = bldr.Nested().Export();
+      type x = fluentTest['NestedProp'];
 
-      assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(partial.Nested.Goodbye, "Friend");
-    });
+      const handlers: FluentBuilderMethodsHandlers = {
+        Compile: (name: string) => `Hey ${name}`,
+      };
 
-    await t.step("Nested Record as Property", () => {
-      type t = $FluentTagExtractValue<
-        fluentTest["NestedRecordGeneric"],
-        "Methods",
-        "generic"
-      >;
+      await t.step('Object with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
 
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+        const value = bldr.Hello('World').Export();
 
-      bldr.Hello("World");
+        assert(value);
+        assertEquals(value.Hello, 'World');
+      });
 
-      const config = bldr._NestedRecordGeneric<expandedBase>;
+      await t.step('Nested Object as Property', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
-      const nested = config("TestKey");
+        bldr.Hello('World');
 
-      nested.Speak("Something").Hello("World");
+        const nestBldr = bldr.NestedProp<expandedBase>({
+          Speak: 'Something',
+          Hello: 'World',
+        });
 
-      config.$Elevated(["this-is-a-test"]);
+        const whole = bldr.Export();
 
-      const whole = bldr.Export();
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.NestedProp.Speak, 'Something');
+        assertEquals((whole.NestedProp as expandedBase).Hello, 'World');
+        assert(nestBldr.Compile);
+        assertEquals(nestBldr.Compile('Mike'), 'Hey Mike');
+      });
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      // assert(whole.NestedRecordGeneric.$Elevated);
-      // assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
-      assertEquals(whole.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (whole.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
-      assert(nested.Compile);
-      assertEquals(nested.Compile("Mike"), "Hey Mike");
-    });
+      await t.step('Nested Object with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
 
-    await t.step("Nested Record with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
+        bldr.Hello('World');
 
-      bldr.Hello("World");
+        bldr.Nested().Goodbye('Friend');
 
-      bldr._NestedRecord("TestKey").BringIt(true);
+        const whole = bldr.Export();
 
-      const whole: fluentTest = bldr.Export();
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.Nested.Goodbye, 'Friend');
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assert(whole.NestedRecord["TestKey"].BringIt);
-      assertFalse(whole.NestedRecord["@Methods"]);
+        const partial = bldr.Nested().Export();
 
-      const partial: fluentTest = bldr._NestedRecord("TestKey").Export();
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(partial.Nested.Goodbye, 'Friend');
+      });
 
-      assert(partial);
-      assertFalse(partial.Hello);
-      assert(whole.NestedRecord["TestKey"].BringIt);
-    });
+      await t.step('Nested Record as Property', () => {
+        type t = $FluentTagExtractValue<
+          fluentTest['NestedRecordGeneric'],
+          'Methods',
+          'generic'
+        >;
 
-    await t.step("Nested Record as Property", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
-      bldr.Hello("World");
+        bldr.Hello('World');
 
-      bldr
-        ._NestedRecordGeneric<expandedBase>("TestKey")
-        .Speak("Something")
-        .Hello("World");
+        const config = bldr._NestedRecordGeneric<expandedBase>;
 
-      const whole: fluentTest = bldr.Export();
+        const nested = config('TestKey');
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (whole.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
+        nested.Speak('Something').Hello('World');
 
-      const partial = bldr
-        ._NestedRecordGeneric<expandedBase>("TestKey")
-        .Export();
+        config.$Elevated(['this-is-a-test']);
 
-      assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(partial.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (partial.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
+        const whole = bldr.Export();
 
-      const recBldr = bldr._NestedRecordGeneric<expandedBase>("TestKey");
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        // assert(whole.NestedRecordGeneric.$Elevated);
+        // assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
+        assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+        assert(nested.Compile);
+        assertEquals(nested.Compile('Mike'), 'Hey Mike');
+      });
 
-      assert(recBldr);
-      assert(recBldr.Compile);
-      assertEquals(recBldr.Compile("Mike"), "Hey Mike");
-    });
+      await t.step('Nested Record with Property', () => {
+        const bldr = fluentBuilder<fluentTest>().Root();
 
-    await t.step("Double Nested Record", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+        bldr.Hello('World');
 
-      bldr.Hello("World");
+        bldr._NestedRecord('TestKey').BringIt(true);
 
-      const generic = bldr.Lowered()._Generic;
+        const whole: fluentTest = bldr.Export();
 
-      generic("TestKey").Speak("Something");
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assert(whole.NestedRecord['TestKey'].BringIt);
+        assertFalse(whole.NestedRecord['@Methods']);
 
-      generic.$Elevated(["this-is-a-test"]);
+        const partial: fluentTest = bldr._NestedRecord('TestKey').Export();
 
-      const whole = bldr.Export();
+        assert(partial);
+        assertFalse(partial.Hello);
+        assert(whole.NestedRecord['TestKey'].BringIt);
+      });
 
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
-      assert(whole.Lowered.Generic.$Elevated);
-      assertEquals(whole.Lowered.Generic.$Elevated[0], "this-is-a-test");
+      await t.step('Nested Record as Property', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
 
-      const partial = bldr.Lowered()._Generic("TestKey").Export();
+        bldr.Hello('World');
 
-      assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
+        bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Speak('Something')
+          .Hello('World');
 
-      const recBldr = bldr.Lowered()._Generic("TestKey");
+        const whole: fluentTest = bldr.Export();
 
-      assert(recBldr);
-      assert(recBldr.Compile);
-      assertEquals(recBldr.Compile("Mike"), "Hey Mike");
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const partial = bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(partial.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (partial.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const recBldr = bldr._NestedRecordGeneric<expandedBase>('TestKey');
+
+        assert(recBldr);
+        assert(recBldr.Compile);
+        assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Double Nested Record', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        const generic = bldr.Lowered()._Generic;
+
+        generic('TestKey').Speak('Something');
+
+        generic.$Elevated(['this-is-a-test']);
+
+        const whole = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
+        assert(whole.Lowered.Generic.$Elevated);
+        assertEquals(whole.Lowered.Generic.$Elevated[0], 'this-is-a-test');
+
+        const partial = bldr.Lowered()._Generic('TestKey').Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(whole.Lowered.Generic['TestKey'].Speak, 'Something');
+
+        const recBldr = bldr.Lowered()._Generic('TestKey');
+
+        assert(recBldr);
+        assert(recBldr.Compile);
+        assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
+      });
+
+      await t.step('Nested Record as Property', () => {
+        const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+
+        bldr.Hello('World');
+
+        bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Speak('Something')
+          .Hello('World');
+
+        const whole: fluentTest = bldr.Export();
+
+        assert(whole);
+        assertEquals(whole.Hello, 'World');
+        assertEquals(whole.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (whole.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const partial = bldr
+          ._NestedRecordGeneric<expandedBase>('TestKey')
+          .Export();
+
+        assert(partial);
+        assertFalse(partial.Hello);
+        assertEquals(partial.NestedRecordGeneric['TestKey'].Speak, 'Something');
+        assertEquals(
+          (partial.NestedRecordGeneric['TestKey'] as expandedBase).Hello,
+          'World'
+        );
+
+        const recBldr = bldr._NestedRecordGeneric<expandedBase>('TestKey');
+
+        assert(recBldr);
+        assert(recBldr.Compile);
+        assertEquals(recBldr.Compile('Mike'), 'Hey Mike');
+      });
     });
   });
 
-  await t.step("Additive Tags", async (t) => {
-    type tempBase = { Speak: string };
+  await t.step('Dynamic Tagging', async (t) => {
+    type EaCModuleHandler = {
+      APIPath: string;
+      Order: number;
+    };
 
-    type expandedBase = { Hello: string } & tempBase;
+    type EaCModuleHandlers = {
+      $Force?: boolean;
+    } & Record<string, EaCModuleHandler>;
 
-    type fluentTestBase = {
-      Hello: string;
-      Nested: {
-        Goodbye: string;
-      };
-      NestedProp: tempBase;
-      NestedRecord: Record<
-        string,
+    type EverythingAsCode = {
+      EnterpriseLookup?: string;
+      Handlers?: EaCModuleHandlers;
+      ParentEnterpriseLookup?: string;
+    }; // & EaCDetails<EaCEnterpriseDetails>;
+
+    type EverythingAsCodeTags<T> = true extends IsObjectNotNative<T>
+      ? EaCObjectTags<T>
+      : T;
+
+    type EaCObjectTags<T> = T & {
+      [K in keyof T]: EverythingAsCodeTags<T[K]>;
+    } 
+    & $FluentTag<
+        'Methods',
+        never,
+        'handlers',
         {
-          BringIt: boolean;
+          handlers: {
+            Compile: () => unknown;
+          };
         }
-      >;
-      NestedRecordGeneric: Record<string, tempBase> & {
-        $Elevated: string[];
-      };
-      Lowered: {
-        Generic: Record<string, tempBase> & {
-          $Elevated: string[];
-        };
-      };
-    };
+      >
+      ;
 
-    type fluentTestTags = {
-      NestedProp: $FluentTag<
-        "Methods",
-        "Property",
-        "generic" | "handlers",
-        { generic: true; handlers: { Compile: (test: string) => string } }
-      >;
-      NestedRecordGeneric: $FluentTag<
-        "Methods",
-        "Record",
-        "generic" | "handlers",
-        { generic: true; handlers: { Compile: (test: string) => string } }
-      >;
-      Lowered: {
-        Generic: $FluentTag<
-          "Methods",
-          "Record",
-          "generic" | "handlers",
-          { generic: true; handlers: { Compile: (test: string) => string } }
-        >;
-      };
-    };
+    type x = EverythingAsCodeTags<EverythingAsCode>;
 
-    type fluentTest = fluentTestBase & fluentTestTags;
+    type dataKeys = $FluentTagExtractValue<
+      x['Handlers'],
+      'Methods',
+      'handlers'
+    >;
 
-    type x = fluentTest["NestedProp"];
+    type xx = DetermineEaCFluentMethods<x, 'Handlers', EverythingAsCode>;
 
-    const handlers: FluentBuilderMethodsHandlers = {
-      Compile: (name: string) => `Hey ${name}`,
-    };
+    const c: xx = {};
 
-    await t.step("Object with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
+    c('').APIPath('');
 
-      const value = bldr.Hello("World").Export();
+    type t = IsObjectNotNative<x['Handlers']>;
 
-      assert(value);
-      assertEquals(value.Hello, "World");
-    });
+    await t.step('Handlers Test', () => {
+      const eac = fluentBuilder<x>().Root();
 
-    await t.step("Nested Object as Property", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
+      eac._Handlers.$Force(true);
 
-      bldr.Hello("World");
+      eac._Handlers('TestKey').APIPath('api/v1').Order(10);
 
-      const nestBldr = bldr.NestedProp<expandedBase>({
-        Speak: "Something",
-        Hello: "World",
-      });
-
-      const whole = bldr.Export();
+      const whole = eac.Export();
 
       assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.NestedProp.Speak, "Something");
-      assertEquals((whole.NestedProp as expandedBase).Hello, "World");
-      assert(nestBldr.Compile);
-      assertEquals(nestBldr.Compile("Mike"), "Hey Mike");
-    });
+      assertEquals(whole.Handlers!.$Force, true);
+      assertEquals(whole.Handlers!['TestKey'].APIPath, 'api/v1');
+      assertEquals(whole.Handlers!['TestKey'].Order, 10);
 
-    await t.step("Nested Object with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
-
-      bldr.Hello("World");
-
-      bldr.Nested().Goodbye("Friend");
-
-      const whole = bldr.Export();
-
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.Nested.Goodbye, "Friend");
-
-      const partial = bldr.Nested().Export();
+      const partial = eac._Handlers('TestKey').Export();
 
       assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(partial.Nested.Goodbye, "Friend");
-    });
+      assertFalse(partial.Handlers!.$Force);
+      assertEquals(partial.Handlers!['TestKey'].APIPath, 'api/v1');
+      assertEquals(partial.Handlers!['TestKey'].Order, 10);
 
-    await t.step("Nested Record as Property", () => {
-      type t = $FluentTagExtractValue<
-        fluentTest["NestedRecordGeneric"],
-        "Methods",
-        "generic"
-      >;
+      const handlerBldr = eac._Handlers('TestKey');
 
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
-
-      bldr.Hello("World");
-
-      const config = bldr._NestedRecordGeneric<expandedBase>;
-
-      const nested = config("TestKey");
-
-      nested.Speak("Something").Hello("World");
-
-      config.$Elevated(["this-is-a-test"]);
-
-      const whole = bldr.Export();
-
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      // assert(whole.NestedRecordGeneric.$Elevated);
-      // assertEquals(whole.NestedRecordGeneric.$Elevated[0], 'this-is-a-test');
-      assertEquals(whole.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (whole.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
-      assert(nested.Compile);
-      assertEquals(nested.Compile("Mike"), "Hey Mike");
-    });
-
-    await t.step("Nested Record with Property", () => {
-      const bldr = fluentBuilder<fluentTest>().Root();
-
-      bldr.Hello("World");
-
-      bldr._NestedRecord("TestKey").BringIt(true);
-
-      const whole: fluentTest = bldr.Export();
-
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assert(whole.NestedRecord["TestKey"].BringIt);
-      assertFalse(whole.NestedRecord["@Methods"]);
-
-      const partial: fluentTest = bldr._NestedRecord("TestKey").Export();
-
-      assert(partial);
-      assertFalse(partial.Hello);
-      assert(whole.NestedRecord["TestKey"].BringIt);
-    });
-
-    await t.step("Nested Record as Property", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
-
-      bldr.Hello("World");
-
-      bldr
-        ._NestedRecordGeneric<expandedBase>("TestKey")
-        .Speak("Something")
-        .Hello("World");
-
-      const whole: fluentTest = bldr.Export();
-
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (whole.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
-
-      const partial = bldr
-        ._NestedRecordGeneric<expandedBase>("TestKey")
-        .Export();
-
-      assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(partial.NestedRecordGeneric["TestKey"].Speak, "Something");
-      assertEquals(
-        (partial.NestedRecordGeneric["TestKey"] as expandedBase).Hello,
-        "World",
-      );
-
-      const recBldr = bldr._NestedRecordGeneric<expandedBase>("TestKey");
-
-      assert(recBldr);
-      assert(recBldr.Compile);
-      assertEquals(recBldr.Compile("Mike"), "Hey Mike");
-    });
-
-    await t.step("Double Nested Record", () => {
-      const bldr = fluentBuilder<fluentTest>(undefined, handlers).Root();
-
-      bldr.Hello("World");
-
-      const generic = bldr.Lowered()._Generic;
-
-      generic("TestKey").Speak("Something");
-
-      generic.$Elevated(["this-is-a-test"]);
-
-      const whole = bldr.Export();
-
-      assert(whole);
-      assertEquals(whole.Hello, "World");
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
-      assert(whole.Lowered.Generic.$Elevated);
-      assertEquals(whole.Lowered.Generic.$Elevated[0], "this-is-a-test");
-
-      const partial = bldr.Lowered()._Generic("TestKey").Export();
-
-      assert(partial);
-      assertFalse(partial.Hello);
-      assertEquals(whole.Lowered.Generic["TestKey"].Speak, "Something");
-
-      const recBldr = bldr.Lowered()._Generic("TestKey");
-
-      assert(recBldr);
-      assert(recBldr.Compile);
-      assertEquals(recBldr.Compile("Mike"), "Hey Mike");
+      assert(handlerBldr);
+      assert(handlerBldr.Compile);
+      // assertEquals(handlerBldr.Compile('Mike'), 'Hey Mike!)
     });
   });
 });

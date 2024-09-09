@@ -35,7 +35,7 @@ export type FluentMethodsRecord<
     ? SelectFluentMethods<U, TBuilderModel>
     : {});
 
-type FluentMethodsRecordReturnType<
+export type FluentMethodsRecordReturnType<
   T,
   K extends keyof T,
   TMethods,

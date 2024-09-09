@@ -19,7 +19,7 @@ export type FluentMethodsProperty<
     input: $FluentTagStrip<T[K]>,
   ) => FluentMethodsPropertyReturnType<T, K, TBuilderModel>;
 
-type FluentMethodsPropertyReturnType<
+export type FluentMethodsPropertyReturnType<
   T,
   K extends keyof T,
   TBuilderModel,

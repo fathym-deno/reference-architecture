@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import type { $FluentTag } from "../../../../src/fluent/types/tags/$FluentTag.ts";
 import type { $FluentTagExists } from "../../../../src/fluent/types/tags/$FluentTagExists.ts";
 
 Deno.test("Testing $FluentTagExists", async (t) => {
@@ -110,5 +111,33 @@ Deno.test("Testing $FluentTagExists", async (t) => {
       "nonExistentKey"
     >;
     runTest<Result, false>(false, false);
+  });
+
+  // Test for non-existent metadata in existing tag
+  await t.step("FluentTagExists with Missing Metadata in Existing Tag", () => {
+    type tagged =
+      & $FluentTag<"Methods", "Record">
+      & $FluentTag<
+        "Methods",
+        never,
+        "handlers",
+        {
+          handlers: {
+            Compile: () => unknown;
+          };
+        }
+      >;
+
+    type Result = $FluentTagExists<tagged, "Methods", "Record">;
+
+    runTest<Result, true>(true, true);
+
+    type Result2 = $FluentTagExists<tagged, "Methods", "Record", "handlers">;
+
+    runTest<Result2, true>(true, true);
+
+    type Result3 = $FluentTagExists<tagged, "Methods", "Record", "generic">;
+
+    runTest<Result3, false>(false, false);
   });
 });

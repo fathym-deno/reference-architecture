@@ -4,4 +4,5 @@
  */
 export * from './types/.exports.ts';
 export * from './FluentBuilder.ts';
+export * from './FluentBuilderRoot.ts';
 

@@ -58,7 +58,7 @@ export type $TagExists<
   > ? true
   : false;
 
-type tagCheck<
+export type tagCheck<
   TType extends string,
   TTag,
   TData extends string,

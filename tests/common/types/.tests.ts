@@ -9,6 +9,7 @@ import './IsMatched.tests.ts';
 import './IsNativeType.tests.ts';
 import './IsNotUndefined.tests.ts';
 import './IsObject.tests.ts';
+import './IsRecord.tests.ts';
 import './IsUndefined.tests.ts';
 import './IsUnion.tests.ts';
 import './MatchSwitch.tests.ts';
