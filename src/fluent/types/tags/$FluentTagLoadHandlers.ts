@@ -3,7 +3,7 @@ import type { $FluentTagExists } from "./$FluentTagExists.ts";
 import type { $FluentTagExtractValue } from "./$FluentTagExtractValue.ts";
 
 /**
- * `$FluentTagLoadHandlers<T, K>` extracts the `handlers` from a `$FluentTag` on the `T[K]` property,
+ * `$FluentTagLoadHandlers<T[K]>` extracts the `handlers` from a `$FluentTag` on the `T[K]` property,
  * if they exist, or returns an empty object if not.
  *
  * ### Parameters:
@@ -67,7 +67,6 @@ import type { $FluentTagExtractValue } from "./$FluentTagExtractValue.ts";
  */
 export type $FluentTagLoadHandlers<
   T,
-  K extends keyof T,
-> = true extends $FluentTagExists<T[K], "Methods", never, "handlers">
-  ? $FluentTagExtractValue<T[K], "Methods", "handlers">
+> = true extends $FluentTagExists<T, "Methods", never, "handlers">
+  ? $FluentTagExtractValue<T, "Methods", "handlers">
   : {};

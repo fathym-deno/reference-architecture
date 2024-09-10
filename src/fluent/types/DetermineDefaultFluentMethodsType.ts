@@ -5,10 +5,10 @@ import type {
   IsObject,
   NoPropertiesUndefined,
   ValueType,
-} from "../.deps.ts";
-import type { IsFluentRecord } from "./IsFluentRecord.ts";
-import type { $FluentTagExtract } from "./tags/$FluentTagExtract.ts";
-import type { $FluentTagMethodsOptions } from "./tags/$FluentTagOptions.ts";
+} from '../.deps.ts';
+import type { IsFluentRecord } from './IsFluentRecord.ts';
+import type { $FluentTagExtract } from './tags/$FluentTagExtract.ts';
+import type { $FluentTagMethodsOptions } from './tags/$FluentTagOptions.ts';
 
 /**
  * `DetermineDefaultFluentMethodsType<T, K>` determines the appropriate default method type
@@ -58,55 +58,57 @@ import type { $FluentTagMethodsOptions } from "./tags/$FluentTagOptions.ts";
  */
 export type DetermineDefaultFluentMethodsType<
   T,
-  K extends keyof T,
+  K extends keyof T
 > = NoPropertiesUndefined<T> extends infer U
   ? K extends keyof U
     ? false extends IsObject<U[K]>
       ? DetermineDefaultNonObjectFluentMethodsType<U, K>
-    : true extends IsNativeType<U[K]>
+      : true extends IsNativeType<U[K]>
       ? DetermineDefaultNonObjectFluentMethodsType<U, K>
-    : DetermineDefaultObjectFluentMethodsType<U, K>
-  : never
+      : DetermineDefaultObjectFluentMethodsType<U, K>
+    : never
   : T;
 
 export type DetermineDefaultNonObjectFluentMethodsType<
   T,
-  K extends keyof T,
-> = ExtractExact<$FluentTagMethodsOptions, "Property">;
+  K extends keyof T
+> = ExtractExact<$FluentTagMethodsOptions, 'Property'>;
 
 export type DetermineDefaultObjectFluentMethodsType<
   T,
-  K extends keyof T,
-> = $FluentTagExtract<T[K], "Methods"> extends [never]
+  K extends keyof T
+> = $FluentTagExtract<T[K], 'Methods'> extends [never]
   ? false extends IsFluentRecord<T[K]>
     ? DetermineDefaultNonRecordFluentMethodsType<T, K>
-  : DetermineDefaultRecordFluentMethodsType<T, K>
-  : $FluentTagExtract<T[K], "Methods">;
+    : DetermineDefaultRecordFluentMethodsType<T, K>
+  : $FluentTagExtract<T[K], 'Methods'>;
 
 export type DetermineDefaultNonRecordFluentMethodsType<
   T,
-  K extends keyof T,
-> = ExtractExact<$FluentTagMethodsOptions, "Object">;
+  K extends keyof T
+> = ExtractExact<$FluentTagMethodsOptions, 'Object'>;
 
 export type DetermineDefaultRecordFluentMethodsType<
   T,
-  K extends keyof T,
-> = false extends IsFluentRecord<ValueType<T[K]>>
-  ? ExtractExact<$FluentTagMethodsOptions, "Record">
-  : ExtractExact<$FluentTagMethodsOptions, "Object">;
+  K extends keyof T
+> = ExtractExact<$FluentTagMethodsOptions, 'Record'>;
+// TODO: Swapping in this logic make it so that records that are parents to records will resolve as objects
+// false extends IsFluentRecord<ValueType<T[K]>>
+//   ? ExtractExact<$FluentTagMethodsOptions, "Record">
+//   : ExtractExact<$FluentTagMethodsOptions, "Object">;
 
 type temp<T, K extends keyof T> = false extends IsObject<T[K]>
-  ? ExtractExact<$FluentTagMethodsOptions, "Property">
+  ? ExtractExact<$FluentTagMethodsOptions, 'Property'>
   : true extends IsObject<ValueType<T[K]>>
-    ? true extends HasIndexSignatures<ValueType<T[K]>>
-      ? $FluentTagExtract<ValueType<T[K]>, "Methods"> extends [never]
-        ? ExtractExact<$FluentTagMethodsOptions, "Object">
-      : $FluentTagExtract<ValueType<T[K]>, "Methods"> extends ["Object"]
-        ? ExtractExact<$FluentTagMethodsOptions, "Object">
-      : ExtractExact<$FluentTagMethodsOptions, "Record">
-    : ExtractExact<$FluentTagMethodsOptions, "Record">
+  ? true extends HasIndexSignatures<ValueType<T[K]>>
+    ? $FluentTagExtract<ValueType<T[K]>, 'Methods'> extends [never]
+      ? ExtractExact<$FluentTagMethodsOptions, 'Object'>
+      : $FluentTagExtract<ValueType<T[K]>, 'Methods'> extends ['Object']
+      ? ExtractExact<$FluentTagMethodsOptions, 'Object'>
+      : ExtractExact<$FluentTagMethodsOptions, 'Record'>
+    : ExtractExact<$FluentTagMethodsOptions, 'Record'>
   : true extends HasIndexSignatures<ValueType<T[K]>>
-    ? ExtractExact<$FluentTagMethodsOptions, "Object">
+  ? ExtractExact<$FluentTagMethodsOptions, 'Object'>
   : [ValueType<T[K]>] extends [unknown]
-    ? ExtractExact<$FluentTagMethodsOptions, "Record">
-  : ExtractExact<$FluentTagMethodsOptions, "Object">;
+  ? ExtractExact<$FluentTagMethodsOptions, 'Record'>
+  : ExtractExact<$FluentTagMethodsOptions, 'Object'>;

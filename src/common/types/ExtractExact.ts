@@ -22,6 +22,6 @@
  * @note This utility ensures that only the exact match is extracted from a union.
  * Non-matching or loosely matching types are excluded.
  */
-export type ExtractExact<T, TExtract> = TExtract extends T
+export type ExtractExact<T, TExtract extends T> = TExtract extends T
   ? Extract<TExtract, T>
   : never;
