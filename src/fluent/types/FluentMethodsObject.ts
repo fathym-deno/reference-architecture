@@ -19,14 +19,30 @@ export type FluentMethodsObject<
           RemoveIndexSignatures<$FluentTagStrip<TGeneric>>,
           TBuilderModel
         > &
-          $FluentTagLoadHandlers<T[K]>
+          $FluentTagLoadHandlers<U[K]>
       : () => FluentMethodsObjectReturnType<
           RemoveIndexSignatures<$FluentTagStrip<U[K]>>,
           TBuilderModel
         > &
-          $FluentTagLoadHandlers<T[K]>
+          $FluentTagLoadHandlers<U[K]>
     : never
   : T;
+// export type FluentMethodsObject2<T, TBuilderModel> =
+//   RemoveIndexSignatures<T> extends infer U
+//     ? true extends $FluentTagExtractValue<U, 'Methods', 'generic'>
+//       ? <TGeneric extends U = U>() => FluentMethodsObjectReturnType2<
+//           RemoveIndexSignatures<$FluentTagStrip<TGeneric>>,
+//           TBuilderModel
+//         > &
+//           $FluentTagLoadHandlers<U>
+//       : () => FluentMethodsObjectReturnType2<
+//           RemoveIndexSignatures<$FluentTagStrip<U>>,
+//           TBuilderModel
+//         > &
+//           $FluentTagLoadHandlers<U>
+//     : never;
 
 export type FluentMethodsObjectReturnType<T, TBuilderModel> =
   SelectFluentBuilder<TBuilderModel> & SelectFluentMethods<T, TBuilderModel>;
+// export type FluentMethodsObjectReturnType2<T, TBuilderModel> =
+//   SelectFluentBuilder<TBuilderModel> & SelectFluentMethods2<T, TBuilderModel>;

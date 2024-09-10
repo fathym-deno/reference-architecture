@@ -17,7 +17,11 @@ import { $FluentTagOptions } from './tags/$FluentTagOptions.ts';
 import type { $FluentTagStrip } from './tags/$FluentTagStrip.ts';
 import { $FluentTagTypeOptions } from './tags/$FluentTagTypeOptions.ts';
 import { FluentMethodsObjectReturnType } from './FluentMethodsObject.ts';
-import { FluentMethodsPropertyReturnType } from './FluentMethodsProperty.ts';
+import {
+  FluentMethodsProperty,
+  FluentMethodsPropertyReturnType,
+} from './FluentMethodsProperty.ts';
+import { IsFluentRecord } from './IsFluentRecord.ts';
 
 /**
  * Used for managing the property as an object, returning a fluent API for each of it's properties.
@@ -42,45 +46,77 @@ export type FluentMethodsRecord<
           TBuilderModel
         > &
           $FluentTagLoadHandlers<ValueType<U[K]>>
-    : never
-  : T) &
+    : true extends $FluentTagExtractValue<T[K], 'Methods', 'generic'>
+    ? <TGeneric extends ValueType<T[K]> = ValueType<T[K]>>(
+        key: string
+      ) => FluentMethodsRecordReturnType<T, K, TGeneric, TBuilderModel> &
+        $FluentTagLoadHandlers<TGeneric>
+    : (
+        key: string
+      ) => FluentMethodsRecordReturnType<
+        T,
+        K,
+        ValueType<T[K]>,
+        TBuilderModel
+      > &
+        $FluentTagLoadHandlers<ValueType<T[K]>>
+  : never) &
   (ExtractKeysByPrefix<T[K], '$'> extends infer U
     ? SelectFluentMethods<U, TBuilderModel>
     : {}) &
   $FluentTagLoadHandlers<T[K]>;
+
+// export type FluentMethodsRecordReturnType<
+//   T,
+//   K extends keyof T,
+//   TMethods,
+//   TBuilderModel
+// > =
+//   // SelectFluentBuilder<TBuilderModel> & SelectFluentMethods<T, TBuilderModel>;
+//   keyof TMethods extends [never]
+//     ? {}
+//     : SelectFluentBuilder<TBuilderModel> &
+//         (true extends IsObjectNotNative<TMethods>
+//           ? DetermineFluentMethodsType<T, K> extends infer MethodType
+//             ? MethodType extends ExtractExact<
+//                 $FluentTagOptions<'Methods'>,
+//                 'Object'
+//               >
+//               ? FluentMethodsObjectReturnType<TMethods, TBuilderModel>
+//               : string //DetermineEaCFluentMethods<T[K], TMethods, TBuilderModel>
+//             : false
+//           : FluentMethodsPropertyReturnType<TMethods, TBuilderModel>);
+
+type x = { [K in keyof RemoveIndexSignatures<Record<string, string>>]: true };
 
 export type FluentMethodsRecordReturnType<
   T,
   K extends keyof T,
   TMethods,
   TBuilderModel
-> =
-  SelectFluentMethods<T, TBuilderModel>;
-  // keyof TMethods extends [never]
-  //   ? {}
-  //   : SelectFluentBuilder<TBuilderModel> &
-  //       (true extends IsObjectNotNative<TMethods>
-  //         ? DetermineFluentMethodsType<T, K> extends infer MethodType
-  //           ? MethodType extends ExtractExact<
-  //               $FluentTagOptions<'Methods'>,
-  //               'Object'
-  //             >
-  //             ? FluentMethodsObjectReturnType<TMethods, TBuilderModel>
-  //             : string //DetermineEaCFluentMethods<T[K], TMethods, TBuilderModel>
-  //           : false
-  //         : FluentMethodsPropertyReturnType<TMethods, TBuilderModel>);
+> = SelectFluentBuilder<TBuilderModel> &
+  (true extends IsObjectNotNative<TMethods>
+    ? true extends IsFluentRecord<TMethods>
+      ? string extends keyof T[K]
+        ? FluentMethodsRecord<T[K], string, TBuilderModel>
+        : // ? FluentMethodsRecordReturnType<
+          //     TMethods,
+          //     string,
+          //     TMethods[string],
+          //     TBuilderModel
+          //   >
+          never
+      : SelectFluentMethods<TMethods, TBuilderModel>
+    : string extends keyof T[K]
+    ? FluentMethodsProperty<T[K], string, TBuilderModel>
+    : never) & // SelectFluentMethods<TMethods, TBuilderModel> &
+  $FluentTagLoadHandlers<T[K]>;
 
-type x = { [K in keyof RemoveIndexSignatures<Record<string, string>>]: true };
-
-//     export type FluentMethodsRecordReturnType<
-//   T,
-//   K extends keyof T,
-//   TMethods,
-//   TBuilderModel,
-// > =
-//   & SelectFluentBuilder<
-//     TBuilderModel
-//   >
-//   & SelectFluentMethods<$FluentTagStrip<TMethods>, TBuilderModel>
-//   & // SelectFluentMethods<TMethods, TBuilderModel> &
-//   $FluentTagLoadHandlers<T[K]>;
+export type FluentMethodsRecordReturnType2<
+  T,
+  K extends keyof T,
+  TMethods,
+  TBuilderModel
+> = SelectFluentBuilder<TBuilderModel> &
+  SelectFluentMethods<TMethods, TBuilderModel> &
+  $FluentTagLoadHandlers<T[K]>;

@@ -65,6 +65,19 @@ export type SelectFluentMethods<T, TBuilderModel> = T extends infer U
   >
   : T;
 
+  // export type SelectFluentMethods2<T, TBuilderModel> = T extends infer U
+  //   ? NoPropertiesUndefined<
+  //     {
+  //       [
+  //         K in keyof U as K extends string
+  //           ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
+  //           : K
+  //           : never
+  //       ]: SelectFluentMethods2<U[K], TBuilderModel>;
+  //     } & DetermineEaCFluentMethods2<U, TBuilderModel>
+  //   >
+  //   : never;
+
 // import {
 //   NoPropertiesUndefined,
 //   OptionalProperties,

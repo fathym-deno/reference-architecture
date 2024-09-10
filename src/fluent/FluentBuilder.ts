@@ -1,22 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
-import { jsonMapSetClone, type ValueType } from "./.deps.ts";
-import type { FluentBuilderRoot } from "./FluentBuilderRoot.ts";
-import type { FluentBuilderMethodsHandlers } from "./types/FluentBuilderMethodsHandlers.ts";
-import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
+import { jsonMapSetClone, type ValueType } from './.deps.ts';
+import type { FluentBuilderRoot } from './FluentBuilderRoot.ts';
+import type { FluentBuilderMethodsHandlers } from './types/FluentBuilderMethodsHandlers.ts';
+import type { SelectFluentMethods } from './types/SelectFluentMethods.ts';
 
 export function fluentBuilder<TBuilderModel>(
   model?: TBuilderModel,
-  handlers?: FluentBuilderMethodsHandlers,
-):
-  & FluentBuilder<TBuilderModel>
-  & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
+  handlers?: FluentBuilderMethodsHandlers
+): FluentBuilder<TBuilderModel> &
+  SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
   return new FluentBuilder<TBuilderModel>(
     [],
     model,
-    handlers,
-  ) as
-    & FluentBuilder<TBuilderModel>
-    & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
+    handlers
+  ) as FluentBuilder<TBuilderModel> &
+    SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
 }
 
 /**
@@ -35,13 +33,20 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: FluentBuilderMethodsHandlers,
+    handlers?: FluentBuilderMethodsHandlers
   ) {
     this.handlers = handlers || {};
 
     this.keyDepth = keyDepth || [];
 
     this.model = { Root: model || ({} as TBuilderModel) } as typeof this.model;
+
+    const callable = (...args: any[]) => {
+      // Logic to be executed when FluentBuilder is called
+    };
+
+    // Add properties to the callable function
+    Object.setPrototypeOf(callable, this);
 
     return this.createProxy();
   }
@@ -65,22 +70,20 @@ export class FluentBuilder<TBuilderModel> {
       eacWorking = eacWorking[nextKey] as Record<string, unknown>;
     });
 
-    return newModel?.["Root"] as TExport;
+    return newModel?.['Root'] as TExport;
   }
 
   public With(
-    action: (x: this) => void,
-  ):
-    & this
-    & SelectFluentMethods<
+    action: (x: this) => void
+  ): this &
+    SelectFluentMethods<
       ValueType<ReturnType<typeof this.workingRecords>>,
       TBuilderModel
     > {
     action(this);
 
-    return this as
-      & this
-      & SelectFluentMethods<
+    return this as this &
+      SelectFluentMethods<
         ValueType<ReturnType<typeof this.workingRecords>>,
         TBuilderModel
       >;
@@ -89,13 +92,24 @@ export class FluentBuilder<TBuilderModel> {
 
   // #region Helpers
   protected createProxy(): this {
-    return new Proxy(this, this.loadProxyHandler()) as this;
+    Object.assign(
+      this,
+      (...args: any[]) => {
+        return new Deno.errors.NotSupported(
+          'This method should be covered up by the proxy.'
+        );
+      },
+      this,
+      FluentBuilder.prototype
+    );
+
+    return new Proxy(this, this.loadProxyHandler() as any) as this;
   }
 
   protected executeActual(
     target: this,
     prop: string | symbol,
-    receiver: any,
+    receiver: any
   ): unknown {
     return Reflect.get(target, prop, receiver);
   }
@@ -103,7 +117,7 @@ export class FluentBuilder<TBuilderModel> {
   protected executeHandlers(
     target: this,
     prop: string | symbol,
-    _receiver: any,
+    _receiver: any
   ): unknown {
     return (...args: unknown[]) => {
       return this.handlers[prop.toString()].call(target, ...args);
@@ -114,19 +128,19 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     receiver: any,
-    keys?: string[],
+    keys?: string[]
   ): unknown {
     return new Proxy(
       () => {
         throw new Deno.errors.NotSupported(
-          "The Proxy should be taking over the actual method execution.",
+          'The Proxy should be taking over the actual method execution.'
         );
       },
       {
         get(virtualTarget, virtualProp, virtualReceiver) {
           if (virtualProp in virtualTarget) {
             return Reflect.get(virtualTarget, virtualProp, virtualReceiver);
-          } else if (virtualProp.toString().startsWith("$")) {
+          } else if (virtualProp.toString().startsWith('$')) {
             return target.loadProxyHandler([
               prop.toString(),
               // virtualProp.toString(),
@@ -136,30 +150,40 @@ export class FluentBuilder<TBuilderModel> {
           }
         },
 
-        apply(_virtualTarget, _virtualReceiver, args) {
+        apply(_virtualTarget, _virtualReceiver, virtualArgs) {
           let result: ReturnType<typeof target.executeVirtualObject> =
             undefined;
 
-          result = target.executeVirtualRecord(target, prop, receiver, args);
+          result = target.executeVirtualRecord(
+            target,
+            prop,
+            receiver,
+            virtualArgs
+          );
 
           const isRecord = !!result;
 
-          result ??= target.executeVirtualObject(target, prop, receiver, args);
+          result ??= target.executeVirtualObject(
+            target,
+            prop,
+            receiver,
+            virtualArgs
+          );
 
-          const _isObj = !isRecord && !!result;
+          const isObj = !isRecord && !!result;
 
           result ??= target.executeVirtualProperty(
             target,
             prop,
             receiver,
-            args,
+            virtualArgs
           );
 
           const isProp = !isRecord && !!result;
 
           if (!result) {
             throw new Error(
-              `Property '${prop.toString()}' was not properly resolved.`,
+              `Property '${prop.toString()}' was not properly resolved.`
             );
           }
 
@@ -173,7 +197,7 @@ export class FluentBuilder<TBuilderModel> {
           ];
 
           const cleanKeys: string[] = currentKeyDepth.map((k) =>
-            k.startsWith("_") ? k.slice(1).toString() : k
+            k.startsWith('_') ? k.slice(1).toString() : k
           );
 
           cleanKeys.reduce((working, key, i) => {
@@ -186,17 +210,79 @@ export class FluentBuilder<TBuilderModel> {
             return working[key] as any;
           }, target.workingRecords() as Record<string, unknown>);
 
-          return new FluentBuilder<TBuilderModel>(
-            [
-              ...target.keyDepth,
-              ...(keys ?? []).map((k) => (k.startsWith("_") ? k.slice(1) : k)),
-              ...result.Keys,
-            ],
-            target.model["Root"],
-            target.handlers,
+          const nextKeyDepth = [
+            ...target.keyDepth,
+            ...(keys ?? []).map((k) => (k.startsWith('_') ? k.slice(1) : k)),
+            ...result.Keys,
+          ];
+
+          const bldr = new FluentBuilder<TBuilderModel>(
+            nextKeyDepth,
+            target.model['Root'],
+            target.handlers
           );
+
+          // const nextBldrs: Record<string, FluentBuilder<TBuilderModel>> = {};
+
+          return bldr;
+          // return new Proxy(bldr, target.loadProxyHandler()) ;
+          // return true //!isRecord
+          //   ? bldr
+          //   : new Proxy(
+          //       // () => {
+          //       //   throw new Deno.errors.NotSupported(
+          //       //     'The Proxy should be taking over the actual method execution.'
+          //       //   );
+          //       // },
+          //       bldr,
+          //       {
+          //         // get(_bldrTarget, bldrProp, _bldrReceiver) {
+          //         //   const nextKeyDepth = [
+          //         //     ...target.keyDepth,
+          //         //     ...(keys ?? []).map((k) =>
+          //         //       k.startsWith('_') ? k.slice(1) : k
+          //         //     ),
+          //         //     ...result.Keys,
+          //         //     bldrProp.toString(),
+          //         //   ];
+
+          //         //   const bldr = (nextBldrs[bldrProp.toString()] =
+          //         //     nextBldrs[bldrProp.toString()] ??
+          //         //     new FluentBuilder<TBuilderModel>(
+          //         //       nextKeyDepth,
+          //         //       target.model['Root'],
+          //         //       target.handlers
+          //         //     ));
+
+          //         //   return (bldr as any)[bldrProp as string];
+          //         // },
+
+          //         apply(_bldrTarget, bldrReceiver, bldrArgs) {
+          //           // const nextKeyDepth = [
+          //           //   ...target.keyDepth,
+          //           //   ...(keys ?? []).map((k) =>
+          //           //     k.startsWith('_') ? k.slice(1) : k
+          //           //   ),
+          //           //   ...result.Keys,
+          //           // ];
+
+          //           // const bldr = new FluentBuilder<TBuilderModel>(
+          //           //   nextKeyDepth,
+          //           //   target.model['Root'],
+          //           //   target.handlers
+          //           // );
+
+          //           // return (bldr as any).apply(bldr, bldrArgs);
+          //           return target.executeVirtual(
+          //             target,
+          //             bldrArgs[0],
+          //             bldrReceiver
+          //           );
+          //         },
+          //       }
+          //     );
         },
-      },
+      }
     );
   }
 
@@ -204,7 +290,7 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[],
+    args: unknown[]
   ): { Keys: string[]; Prop: string; Value: unknown } | undefined {
     const newKeys: string[] = [];
 
@@ -225,13 +311,13 @@ export class FluentBuilder<TBuilderModel> {
     _target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[],
+    args: unknown[]
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && !prop.toString().startsWith("_")) {
+    if (args?.length && !prop.toString().startsWith('_')) {
       const [value] = args;
 
       newValue = value;
@@ -246,13 +332,13 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[],
+    args: unknown[]
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && prop.toString().startsWith("_")) {
+    if (args?.length && prop.toString().startsWith('_')) {
       prop = prop.toString().slice(1);
 
       const [lookup] = args as [string];
@@ -274,13 +360,37 @@ export class FluentBuilder<TBuilderModel> {
   protected loadProxyHandler(keys?: string[]): ProxyHandler<this> {
     return {
       get(target, prop, receiver) {
-        if (prop in target.handlers) {
+        if (prop in (target.handlers ?? {})) {
           return target.executeHandlers(target, prop, receiver);
         } else if (prop in target) {
           return target.executeActual(target, prop, receiver);
         } else {
           return target.executeVirtual(target, prop, receiver, keys);
         }
+      },
+
+      apply(target, receiver, args) {
+        // const nextKeyDepth = [
+        //   ...target.keyDepth,
+        //   ...(keys ?? []).map((k) =>
+        //     k.startsWith('_') ? k.slice(1) : k
+        //   ),
+        //   ...result.Keys,
+        // ];
+
+        // const bldr = new FluentBuilder<TBuilderModel>(
+        //   nextKeyDepth,
+        //   target.model['Root'],
+        //   target.handlers
+        // );
+
+        // return (bldr as any).apply(bldr, bldrArgs);
+        // return target.executeVirtual(
+        //   target,
+        //   bldrArgs[0],
+        //   bldrReceiver
+        // );
+        throw new Error();
       },
     };
   }

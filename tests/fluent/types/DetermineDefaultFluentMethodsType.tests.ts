@@ -125,9 +125,9 @@ Deno.test("Testing DetermineDefaultFluentMethodsType", async (t) => {
       key: Record<string, Record<string, { details: string; count: number }>>;
     };
 
-    runTest<DetermineDefaultFluentMethodsType<ComplexExample, "key">, "Object">(
-      "Object",
-      "Object",
+    runTest<DetermineDefaultFluentMethodsType<ComplexExample, "key">, "Record">(
+      "Record",
+      "Record",
     );
   });
 
