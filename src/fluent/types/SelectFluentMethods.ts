@@ -1,6 +1,5 @@
 import type { NoPropertiesUndefined } from "../.deps.ts";
 import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
-import type { DetermineFluentMethodsType } from "./DetermineFluentMethodsType.ts";
 
 /**
  * `SelectFluentMethods<T, TBuilderModel>` processes a type `T` and selects the appropriate Fluent methods based on the type of the properties.
@@ -57,26 +56,26 @@ export type SelectFluentMethods<T, TBuilderModel> = T extends infer U
     {
       [
         K in keyof U as K extends string
-          ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
-          : K
+          // ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
+          ? K
           : never
       ]: DetermineEaCFluentMethods<U, K, TBuilderModel>;
     }
   >
   : T;
 
-  // export type SelectFluentMethods2<T, TBuilderModel> = T extends infer U
-  //   ? NoPropertiesUndefined<
-  //     {
-  //       [
-  //         K in keyof U as K extends string
-  //           ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
-  //           : K
-  //           : never
-  //       ]: SelectFluentMethods2<U[K], TBuilderModel>;
-  //     } & DetermineEaCFluentMethods2<U, TBuilderModel>
-  //   >
-  //   : never;
+// export type SelectFluentMethods2<T, TBuilderModel> = T extends infer U
+//   ? NoPropertiesUndefined<
+//     {
+//       [
+//         K in keyof U as K extends string
+//           ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
+//           : K
+//           : never
+//       ]: SelectFluentMethods2<U[K], TBuilderModel>;
+//     } & DetermineEaCFluentMethods2<U, TBuilderModel>
+//   >
+//   : never;
 
 // import {
 //   NoPropertiesUndefined,

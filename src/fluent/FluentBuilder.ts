@@ -1,20 +1,22 @@
 // deno-lint-ignore-file no-explicit-any
-import { jsonMapSetClone, type ValueType } from './.deps.ts';
-import type { FluentBuilderRoot } from './FluentBuilderRoot.ts';
-import type { FluentBuilderMethodsHandlers } from './types/FluentBuilderMethodsHandlers.ts';
-import type { SelectFluentMethods } from './types/SelectFluentMethods.ts';
+import { jsonMapSetClone, type ValueType } from "./.deps.ts";
+import type { FluentBuilderRoot } from "./FluentBuilderRoot.ts";
+import type { FluentBuilderMethodsHandlers } from "./types/FluentBuilderMethodsHandlers.ts";
+import type { SelectFluentMethods } from "./types/SelectFluentMethods.ts";
 
 export function fluentBuilder<TBuilderModel>(
   model?: TBuilderModel,
-  handlers?: FluentBuilderMethodsHandlers
-): FluentBuilder<TBuilderModel> &
-  SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
+  handlers?: FluentBuilderMethodsHandlers,
+):
+  & FluentBuilder<TBuilderModel>
+  & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel> {
   return new FluentBuilder<TBuilderModel>(
     [],
     model,
-    handlers
-  ) as FluentBuilder<TBuilderModel> &
-    SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
+    handlers,
+  ) as
+    & FluentBuilder<TBuilderModel>
+    & SelectFluentMethods<FluentBuilderRoot<TBuilderModel>, TBuilderModel>;
 }
 
 /**
@@ -33,7 +35,7 @@ export class FluentBuilder<TBuilderModel> {
   constructor(
     keyDepth?: string[],
     model?: TBuilderModel,
-    handlers?: FluentBuilderMethodsHandlers
+    handlers?: FluentBuilderMethodsHandlers,
   ) {
     this.handlers = handlers || {};
 
@@ -41,7 +43,7 @@ export class FluentBuilder<TBuilderModel> {
 
     this.model = { Root: model || ({} as TBuilderModel) } as typeof this.model;
 
-    const callable = (...args: any[]) => {
+    const callable = (..._args: any[]) => {
       // Logic to be executed when FluentBuilder is called
     };
 
@@ -70,20 +72,22 @@ export class FluentBuilder<TBuilderModel> {
       eacWorking = eacWorking[nextKey] as Record<string, unknown>;
     });
 
-    return newModel?.['Root'] as TExport;
+    return newModel?.["Root"] as TExport;
   }
 
   public With(
-    action: (x: this) => void
-  ): this &
-    SelectFluentMethods<
+    action: (x: this) => void,
+  ):
+    & this
+    & SelectFluentMethods<
       ValueType<ReturnType<typeof this.workingRecords>>,
       TBuilderModel
     > {
     action(this);
 
-    return this as this &
-      SelectFluentMethods<
+    return this as
+      & this
+      & SelectFluentMethods<
         ValueType<ReturnType<typeof this.workingRecords>>,
         TBuilderModel
       >;
@@ -91,25 +95,113 @@ export class FluentBuilder<TBuilderModel> {
   // #endregion
 
   // #region Helpers
-  protected createProxy(): this {
-    Object.assign(
-      this,
-      (...args: any[]) => {
-        return new Deno.errors.NotSupported(
-          'This method should be covered up by the proxy.'
-        );
-      },
-      this,
-      FluentBuilder.prototype
+
+  protected applyVirtual(
+    applyTarget: this,
+    prop: string | symbol,
+    applyReceiver: any,
+    applyArgs: any[],
+    keys?: string[],
+    backStep?: boolean,
+  ): FluentBuilder<TBuilderModel> {
+    let result: ReturnType<typeof applyTarget.executeVirtualObject> = undefined;
+
+    result = applyTarget.executeVirtualRecord(
+      applyTarget,
+      prop,
+      applyReceiver,
+      applyArgs,
+      backStep,
     );
 
-    return new Proxy(this, this.loadProxyHandler() as any) as this;
+    const isRecord = !!result;
+
+    result ??= applyTarget.executeVirtualObject(
+      applyTarget,
+      prop,
+      applyReceiver,
+      applyArgs,
+      backStep,
+    );
+
+    const _isObj = !isRecord && !!result;
+
+    result ??= applyTarget.executeVirtualProperty(
+      applyTarget,
+      prop,
+      applyReceiver,
+      applyArgs,
+      backStep,
+    );
+
+    const isProp = !isRecord && !!result;
+
+    if (!result) {
+      throw new Error(
+        `Property '${prop.toString()}' was not properly resolved.`,
+      );
+    }
+
+    const currentKeyDepth = [
+      ...(keys ?? []),
+      ...(isProp
+        ? [result.Prop]
+        : isRecord
+        ? result.Keys.slice(0, -1)
+        : result.Keys),
+    ];
+
+    const cleanKeys: string[] = currentKeyDepth
+      .filter((k) => k)
+      .map((k) => (k.startsWith("_") ? k.slice(1).toString() : k));
+
+    cleanKeys.reduce((working, key, i) => {
+      if (i === cleanKeys.length - 1) {
+        working[key] = result.Value;
+      } else {
+        working[key] ??= {};
+      }
+
+      return working[key] as any;
+    }, applyTarget.workingRecords(backStep) as Record<string, unknown>);
+
+    const nextKeyDepth = [
+      ...applyTarget.keyDepth.slice(0, backStep ? -1 : undefined),
+      ...(keys ?? []).map((k) => (k.startsWith("_") ? k.slice(1) : k)),
+      ...result.Keys,
+    ];
+
+    const bldr = new FluentBuilder<TBuilderModel>(
+      nextKeyDepth,
+      applyTarget.model["Root"],
+      applyTarget.handlers,
+    );
+
+    return bldr;
+  }
+
+  protected createProxy(): this {
+    // Step 1: Create a function to handle the "apply" trap (function invocation)
+    const toProxy = Object.assign(
+      (..._args: any[]) => {
+        return new Deno.errors.NotSupported(
+          "This method should be covered up by the proxy.",
+        );
+      },
+      this, // Copy properties from the class instance
+    );
+
+    // Step 2: Set the prototype to FluentBuilder so that all methods are available
+    Object.setPrototypeOf(toProxy, FluentBuilder.prototype);
+
+    // Step 3: Return a Proxy that traps both "get" and "apply"
+    return new Proxy(toProxy, this.loadProxyHandler()) as this;
   }
 
   protected executeActual(
     target: this,
     prop: string | symbol,
-    receiver: any
+    receiver: any,
   ): unknown {
     return Reflect.get(target, prop, receiver);
   }
@@ -117,7 +209,7 @@ export class FluentBuilder<TBuilderModel> {
   protected executeHandlers(
     target: this,
     prop: string | symbol,
-    _receiver: any
+    _receiver: any,
   ): unknown {
     return (...args: unknown[]) => {
       return this.handlers[prop.toString()].call(target, ...args);
@@ -128,19 +220,19 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     receiver: any,
-    keys?: string[]
+    keys?: string[],
   ): unknown {
     return new Proxy(
       () => {
         throw new Deno.errors.NotSupported(
-          'The Proxy should be taking over the actual method execution.'
+          "The Proxy should be taking over the actual method execution.",
         );
       },
       {
         get(virtualTarget, virtualProp, virtualReceiver) {
           if (virtualProp in virtualTarget) {
             return Reflect.get(virtualTarget, virtualProp, virtualReceiver);
-          } else if (virtualProp.toString().startsWith('$')) {
+          } else if (virtualProp.toString().startsWith("$")) {
             return target.loadProxyHandler([
               prop.toString(),
               // virtualProp.toString(),
@@ -151,138 +243,9 @@ export class FluentBuilder<TBuilderModel> {
         },
 
         apply(_virtualTarget, _virtualReceiver, virtualArgs) {
-          let result: ReturnType<typeof target.executeVirtualObject> =
-            undefined;
-
-          result = target.executeVirtualRecord(
-            target,
-            prop,
-            receiver,
-            virtualArgs
-          );
-
-          const isRecord = !!result;
-
-          result ??= target.executeVirtualObject(
-            target,
-            prop,
-            receiver,
-            virtualArgs
-          );
-
-          const isObj = !isRecord && !!result;
-
-          result ??= target.executeVirtualProperty(
-            target,
-            prop,
-            receiver,
-            virtualArgs
-          );
-
-          const isProp = !isRecord && !!result;
-
-          if (!result) {
-            throw new Error(
-              `Property '${prop.toString()}' was not properly resolved.`
-            );
-          }
-
-          const currentKeyDepth = [
-            ...(keys ?? []),
-            ...(isProp
-              ? [result.Prop]
-              : isRecord
-              ? result.Keys.slice(0, -1)
-              : result.Keys),
-          ];
-
-          const cleanKeys: string[] = currentKeyDepth.map((k) =>
-            k.startsWith('_') ? k.slice(1).toString() : k
-          );
-
-          cleanKeys.reduce((working, key, i) => {
-            if (i === cleanKeys.length - 1) {
-              working[key] = result.Value;
-            } else {
-              working[key] ??= {};
-            }
-
-            return working[key] as any;
-          }, target.workingRecords() as Record<string, unknown>);
-
-          const nextKeyDepth = [
-            ...target.keyDepth,
-            ...(keys ?? []).map((k) => (k.startsWith('_') ? k.slice(1) : k)),
-            ...result.Keys,
-          ];
-
-          const bldr = new FluentBuilder<TBuilderModel>(
-            nextKeyDepth,
-            target.model['Root'],
-            target.handlers
-          );
-
-          // const nextBldrs: Record<string, FluentBuilder<TBuilderModel>> = {};
-
-          return bldr;
-          // return new Proxy(bldr, target.loadProxyHandler()) ;
-          // return true //!isRecord
-          //   ? bldr
-          //   : new Proxy(
-          //       // () => {
-          //       //   throw new Deno.errors.NotSupported(
-          //       //     'The Proxy should be taking over the actual method execution.'
-          //       //   );
-          //       // },
-          //       bldr,
-          //       {
-          //         // get(_bldrTarget, bldrProp, _bldrReceiver) {
-          //         //   const nextKeyDepth = [
-          //         //     ...target.keyDepth,
-          //         //     ...(keys ?? []).map((k) =>
-          //         //       k.startsWith('_') ? k.slice(1) : k
-          //         //     ),
-          //         //     ...result.Keys,
-          //         //     bldrProp.toString(),
-          //         //   ];
-
-          //         //   const bldr = (nextBldrs[bldrProp.toString()] =
-          //         //     nextBldrs[bldrProp.toString()] ??
-          //         //     new FluentBuilder<TBuilderModel>(
-          //         //       nextKeyDepth,
-          //         //       target.model['Root'],
-          //         //       target.handlers
-          //         //     ));
-
-          //         //   return (bldr as any)[bldrProp as string];
-          //         // },
-
-          //         apply(_bldrTarget, bldrReceiver, bldrArgs) {
-          //           // const nextKeyDepth = [
-          //           //   ...target.keyDepth,
-          //           //   ...(keys ?? []).map((k) =>
-          //           //     k.startsWith('_') ? k.slice(1) : k
-          //           //   ),
-          //           //   ...result.Keys,
-          //           // ];
-
-          //           // const bldr = new FluentBuilder<TBuilderModel>(
-          //           //   nextKeyDepth,
-          //           //   target.model['Root'],
-          //           //   target.handlers
-          //           // );
-
-          //           // return (bldr as any).apply(bldr, bldrArgs);
-          //           return target.executeVirtual(
-          //             target,
-          //             bldrArgs[0],
-          //             bldrReceiver
-          //           );
-          //         },
-          //       }
-          //     );
+          return target.applyVirtual(target, prop, receiver, virtualArgs, keys);
         },
-      }
+      },
     );
   }
 
@@ -290,7 +253,8 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
+    backStep?: boolean,
   ): { Keys: string[]; Prop: string; Value: unknown } | undefined {
     const newKeys: string[] = [];
 
@@ -299,7 +263,7 @@ export class FluentBuilder<TBuilderModel> {
     if (!args?.length) {
       newKeys.push(prop.toString());
 
-      newValue = target.workingRecords()[prop.toString()] ?? {};
+      newValue = target.workingRecords(backStep)[prop.toString()] ?? {};
     }
 
     return newValue
@@ -311,15 +275,16 @@ export class FluentBuilder<TBuilderModel> {
     _target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
+    _backStep?: boolean,
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && !prop.toString().startsWith('_')) {
-      const [value] = args;
+    const [value, isRecord] = args as [unknown, boolean];
 
+    if (args?.length && !isRecord) {
       newValue = value;
     }
 
@@ -332,20 +297,21 @@ export class FluentBuilder<TBuilderModel> {
     target: this,
     prop: string | symbol,
     _receiver: any,
-    args: unknown[]
+    args: unknown[],
+    backStep?: boolean,
   ): ReturnType<typeof this.executeVirtualObject> {
     const newKeys: string[] = [];
 
     let newValue: unknown = undefined;
 
-    if (args?.length && prop.toString().startsWith('_')) {
-      prop = prop.toString().slice(1);
+    const [lookup, isRecord] = args as [string, boolean];
 
-      const [lookup] = args as [string];
+    if (isRecord) {
+      prop = prop.toString();
 
       newKeys.push(...[prop, lookup]);
 
-      newValue = target.workingRecords()[prop] ?? {};
+      newValue = target.workingRecords(backStep)[prop] ?? {};
 
       if (!(lookup in (newValue as Record<string, unknown>))) {
         (newValue as Record<string, unknown>)[lookup] = {};
@@ -370,33 +336,26 @@ export class FluentBuilder<TBuilderModel> {
       },
 
       apply(target, receiver, args) {
-        // const nextKeyDepth = [
-        //   ...target.keyDepth,
-        //   ...(keys ?? []).map((k) =>
-        //     k.startsWith('_') ? k.slice(1) : k
-        //   ),
-        //   ...result.Keys,
-        // ];
-
-        // const bldr = new FluentBuilder<TBuilderModel>(
-        //   nextKeyDepth,
-        //   target.model['Root'],
-        //   target.handlers
-        // );
-
-        // return (bldr as any).apply(bldr, bldrArgs);
-        // return target.executeVirtual(
-        //   target,
-        //   bldrArgs[0],
-        //   bldrReceiver
-        // );
-        throw new Error();
+        return target.applyVirtual(
+          target,
+          target.keyDepth.slice(-1)[0],
+          receiver,
+          args,
+          keys,
+          true,
+        );
       },
     };
   }
 
-  protected workingRecords(): Record<string, unknown> {
-    return this.keyDepth.reduce((working, nextKey) => {
+  protected workingRecords(backStep?: boolean): Record<string, unknown> {
+    let toProcess = [...this.keyDepth];
+
+    if (backStep) {
+      toProcess = toProcess.slice(0, -1);
+    }
+
+    return toProcess.reduce((working, nextKey) => {
       try {
         working = working[nextKey] as Record<string, unknown>;
 
