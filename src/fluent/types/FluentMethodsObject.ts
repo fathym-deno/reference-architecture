@@ -15,9 +15,9 @@ export type FluentMethodsObject<
 > = RemoveIndexSignatures<T> extends infer U
   ? K extends keyof U
     ? true extends $FluentTagExtractValue<U[K], "Methods", "generic">
-      ? <TGeneric extends U[K] = U[K]>() =>
+      ? <TGeneric extends $FluentTagStrip<U[K]> = $FluentTagStrip<U[K]>>() =>
         & FluentMethodsObjectReturnType<
-          RemoveIndexSignatures<$FluentTagStrip<TGeneric>>,
+          RemoveIndexSignatures<TGeneric>,
           TBuilderModel
         >
         & $FluentTagLoadHandlers<U[K]>

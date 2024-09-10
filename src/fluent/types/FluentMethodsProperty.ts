@@ -12,8 +12,8 @@ export type FluentMethodsProperty<
   K extends keyof T,
   TBuilderModel,
 > = true extends $FluentTagExtractValue<T[K], "Methods", "generic">
-  ? <TGeneric extends T[K] = T[K]>(
-    input: $FluentTagStrip<TGeneric>,
+  ? <TGeneric extends $FluentTagStrip<T[K]> = $FluentTagStrip<T[K]>>(
+    input: TGeneric,
   ) =>
     & FluentMethodsPropertyReturnType<
       Omit<$FluentTagStrip<T>, K>,
