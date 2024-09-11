@@ -1,5 +1,6 @@
 import type { NoPropertiesUndefined } from "../.deps.ts";
 import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
+import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 
 /**
  * `SelectFluentMethods<T, TBuilderModel>` processes a type `T` and selects the appropriate Fluent methods based on the type of the properties.
@@ -52,15 +53,18 @@ import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
  * ```
  */
 export type SelectFluentMethods<T, TBuilderModel> = T extends infer U
-  ? NoPropertiesUndefined<
-    {
-      [
-        K in keyof U as K extends string
-          // ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
-          ? K
-          : never
-      ]: DetermineEaCFluentMethods<U, K, TBuilderModel>;
-    }
+  ? $FluentTagStrip<
+    NoPropertiesUndefined<
+      {
+        [
+          K in keyof U as K extends string
+            // ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
+            ? K
+            : never
+        ]: DetermineEaCFluentMethods<U, K, TBuilderModel>;
+      }
+    >,
+    "Methods"
   >
   : T;
 

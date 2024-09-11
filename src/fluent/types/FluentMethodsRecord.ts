@@ -9,7 +9,6 @@ import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
 import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
 import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
 import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
-import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 import type { FluentMethodsProperty } from "./FluentMethodsProperty.ts";
 import type { IsFluentRecord } from "./IsFluentRecord.ts";
 
@@ -21,13 +20,10 @@ export type FluentMethodsRecord<
   K extends keyof T,
   TBuilderModel,
 > =
-  & (RemoveIndexSignatures<$FluentTagStrip<T>> extends infer U
+  & (RemoveIndexSignatures<T> extends infer U
     ? K extends keyof U
-      ? true extends $FluentTagExtractValue<U[K], "Methods", "generic"> ? <
-          TGeneric extends $FluentTagStrip<ValueType<U[K]>> = $FluentTagStrip<
-            ValueType<U[K]>
-          >,
-        >(
+      ? true extends $FluentTagExtractValue<U[K], "Methods", "generic">
+        ? <TGeneric extends ValueType<U[K]> = ValueType<U[K]>>(
           key: string,
           isRecord: true,
         ) =>
@@ -40,15 +36,12 @@ export type FluentMethodsRecord<
         & FluentMethodsRecordReturnType<
           U,
           K,
-          $FluentTagStrip<ValueType<U[K]>>,
+          ValueType<U[K]>,
           TBuilderModel
         >
         & $FluentTagLoadHandlers<ValueType<U[K]>>
-    : true extends $FluentTagExtractValue<T[K], "Methods", "generic"> ? <
-        TGeneric extends $FluentTagStrip<ValueType<T[K]>> = $FluentTagStrip<
-          ValueType<T[K]>
-        >,
-      >(
+    : true extends $FluentTagExtractValue<T[K], "Methods", "generic">
+      ? <TGeneric extends ValueType<T[K]> = ValueType<T[K]>>(
         key: string,
         isRecord: true,
       ) =>
@@ -58,12 +51,7 @@ export type FluentMethodsRecord<
       key: string,
       isRecord: true,
     ) =>
-      & FluentMethodsRecordReturnType<
-        T,
-        K,
-        $FluentTagStrip<ValueType<T[K]>>,
-        TBuilderModel
-      >
+      & FluentMethodsRecordReturnType<T, K, ValueType<T[K]>, TBuilderModel>
       & $FluentTagLoadHandlers<ValueType<T[K]>>
     : never)
   & (ExtractKeysByPrefix<T[K], "$"> extends infer U
@@ -82,16 +70,11 @@ export type FluentMethodsRecordReturnType<
     ? true extends IsFluentRecord<TMethods>
       ? string extends keyof T[K]
         ? FluentMethodsRecord<T[K], string, TBuilderModel>
-        // ? FluentMethodsRecordReturnType<
-        //     TMethods,
-        //     string,
-        //     TMethods[string],
-        //     TBuilderModel
-        //   >
-      : never
+        //T[K]//FluentMethodsRecord<T[K], any, TBuilderModel>
+      : SelectFluentMethods<TMethods, TBuilderModel>
+      //true
     : SelectFluentMethods<TMethods, TBuilderModel>
     : string extends keyof T[K]
       ? FluentMethodsProperty<T[K], string, TBuilderModel>
     : never)
-  & // SelectFluentMethods<TMethods, TBuilderModel> &
-  $FluentTagLoadHandlers<T[K]>;
+  & $FluentTagLoadHandlers<T[K]>; // SelectFluentMethods<TMethods, TBuilderModel> &

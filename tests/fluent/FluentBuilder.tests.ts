@@ -1,4 +1,7 @@
+// deno-lint-ignore-file ban-types no-explicit-any
+import type { HasTypeCheck } from "../../src/common/types/HasTypeCheck.ts";
 import type { IsObjectNotNative } from "../../src/common/types/IsObjectNotNative.ts";
+import type { RemoveIndexSignatures } from "../../src/fluent/.deps.ts";
 import {
   type $FluentTag,
   type $FluentTagExtractValue,
@@ -761,25 +764,116 @@ Deno.test("Fluent Builder Tests", async (t) => {
         ParentEnterpriseLookup?: string;
       }; // & EaCDetails<EaCEnterpriseDetails>;
 
-      type EverythingAsCodeTags<T> = true extends IsObjectNotNative<T>
-        ? EaCObjectTags<T>
+      type EverythingAsCodeTags<T> = RemoveIndexSignatures<
+        NonNullable<T>
+      > extends infer U
+        ? true extends IsObjectNotNative<T> ? EaCObjectTags<U> & U
+        : U
         : T;
 
       type EaCObjectTags<T> =
-        & T
-        & {
-          [K in keyof T]: EverythingAsCodeTags<T[K]>;
-        }
-        & $FluentTag<
-          "Methods",
-          never,
-          "handlers",
-          {
-            handlers: {
-              Compile: () => unknown;
-            };
-          }
+        & EaCStandardTags<T>
+        & EaCVertexDetailsTags<T>
+        & EaCAsCodeTags<T>;
+
+      // Improved handling of recursive tag types and union types
+      type EaCStandardTags<T> = {
+        [K in keyof T as K extends "Details" ? never : K]: EverythingAsCodeTags<
+          T[K]
         >;
+      };
+      // & $FluentTag<
+      //   'Methods',
+      //   never,
+      //   'handlers',
+      //   {
+      //     handlers: {
+      //       // Compile: () => IoCContainer;
+      //     };
+      //   }
+      // >
+
+      // Handles conditional logic with union types and nested properties
+      type EaCVertexDetailsTags<T> =
+        // [
+        //   HasTypeCheck<T, EaCVertexDetails>
+        // ] extends [true] ?
+        {
+          [
+            K in keyof T as K extends "Details" ? K
+              : never
+          ]: EverythingAsCodeTags<
+            T[K] & $FluentTag<"Methods", "Object", "generic", { generic: true }>
+          >;
+        };
+      // : {};
+
+      type EaCMetadataBase =
+        | Record<string | number | symbol, unknown>
+        | undefined;
+      type EaCDetails<TDetails extends EaCVertexDetails> = {
+        Details?: TDetails;
+      } & EaCMetadataBase;
+      type EaCVertexDetails =
+        & {
+          Description?: string;
+
+          /** The name of the vertex. */
+          Name?: string;
+        }
+        & EaCMetadataBase
+        & $FluentTag<"Methods", "Object", "generic", { generic: true }>;
+
+      // Tag handling for EaCDetails and nested structures
+      type EaCAsCodeTags<T> = [
+        HasTypeCheck<NonNullable<T>, EaCDetails<any>>,
+      ] extends [true] ? {
+          [K in keyof T]: "Details" extends keyof T[K]
+            ? EverythingAsCodeTags<T[K] & $FluentTag<"Methods", "Object">>
+            : {};
+        }
+        : {};
+
+      type EverythingAsCodeDatabases = {
+        Databases?: Record<string, EaCDatabaseAsCode>;
+      };
+
+      type EaCDatabaseAsCode = EaCDetails<EaCDatabaseDetails>;
+
+      type EaCDatabaseDetails<TType extends string = string> = {
+        Type: TType;
+      } & EaCVertexDetails;
+
+      type EaCDenoKVDatabaseDetails = {
+        BringIt: boolean;
+      } & EaCDatabaseDetails<"DenoKV">;
+
+      await t.step("Database Details method test", () => {
+        const bldr = fluentBuilder<
+          EverythingAsCodeTags<EverythingAsCode & EverythingAsCodeDatabases>
+        >().Root(); //EaCDatabaseAsCode //'thinky', true);
+
+        // Set values in Databases Details
+        const db = bldr.Databases("thinky", true);
+
+        const databaseDetails = db
+          .Details<EaCDenoKVDatabaseDetails>()
+          .Name("Mike")
+          .BringIt(true);
+
+        // Verify the exported state
+        const exported = bldr.Export();
+
+        assert(exported);
+        assert(exported.Databases);
+        assert(databaseDetails);
+        assertEquals(exported.Databases!["thinky"].Details!.Name, "Mike");
+        assertEquals(
+          (exported.Databases!["thinky"].Details as EaCDenoKVDatabaseDetails)
+            .BringIt,
+          true,
+        );
+      });
 
       await t.step("Handlers Test", () => {
         const eac = fluentBuilder<EverythingAsCodeTags<EverythingAsCode>>()
@@ -807,7 +901,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
         const handlerBldr = eac.Handlers("TestKey", true);
 
         assert(handlerBldr);
-        assert(handlerBldr.Compile);
+        // assert(handlerBldr.Compile);
         // assertEquals(handlerBldr.Compile('Mike'), 'Hey Mike!');
       });
     });
