@@ -212,7 +212,7 @@ export class FluentBuilder<TBuilderModel> {
     _receiver: any,
   ): unknown {
     return (...args: unknown[]) => {
-      return this.handlers[prop.toString()].call(target, ...args);
+      return this.handlers[prop.toString()].call(target, ...[...args, this]);
     };
   }
 
