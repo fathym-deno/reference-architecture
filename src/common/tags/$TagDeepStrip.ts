@@ -18,8 +18,7 @@ import type { IsRecord, RemoveIndexSignatures } from "./.deps.ts";
  * @template TTag - The specific tag to match (optional, default is `never`).
  */
 export type $TagDeepStrip<T, TType extends string, TTag = never> = $TagStrip<
-  $TagStrip<T, TType, TTag> extends infer U
-    ? U extends any[] ? $TagDeepStripArray<U, TType, TTag> // Handle arrays by delegating to $TagDeepStripArray
+  T extends infer U ? U extends any[] ? $TagDeepStripArray<U, TType, TTag> // Handle arrays by delegating to $TagDeepStripArray
     : U extends [infer F, ...infer R] ? $TagDeepStripTuple<U, TType, TTag> // Handle tuples by delegating to $TagDeepStripTuple
     : U extends object ? $TagDeepStripObject<U, TType, TTag> // Handle objects by delegating to $TagDeepStripObject
     : $TagStrip<U, TType, TTag> // Handle primitive types using $TagStrip
@@ -86,16 +85,16 @@ export type $TagDeepStripObject<
   T extends object,
   TType extends string,
   TTag = never,
-> =
-  & (RemoveIndexSignatures<T> extends infer U ? {
-      [K in keyof $TagStrip<U, TType, TTag>]: $TagDeepStrip<
-        $TagStrip<U, TType, TTag>[K],
-        TType,
-        TTag
-      >;
-    }
-    : {})
-  & FluentTagDeepStripIndexSignature<T, TType, TTag>;
+> = RemoveIndexSignatures<T> extends infer U ? {
+    [K in keyof $TagStrip<U, TType, TTag>]: $TagDeepStrip<
+      $TagStrip<U, TType, TTag>[K],
+      TType,
+      TTag
+    >;
+  }
+  : {};
+//  &
+// FluentTagDeepStripIndexSignature<T, TType, TTag>;
 
 /**
  * `FluentTagDeepStripIndexSignature<T, TType, TTag>` recursively removes `$Tag` metadata
