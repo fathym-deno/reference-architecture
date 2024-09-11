@@ -260,7 +260,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
       };
 
       const handlers: FluentBuilderMethodsHandlers = {
-        Compile: (name: string) => `Hey ${name}`,
+        Compile: (_thisArg: any, name: string) => `Hey ${name}`,
       };
 
       await t.step("Object with Property", () => {
@@ -530,7 +530,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
       type x = fluentTest["NestedProp"];
 
       const handlers: FluentBuilderMethodsHandlers = {
-        Compile: (name: string) => `Hey ${name}`,
+        Compile: (_thisArg: any, name: string) => `Hey ${name}`,
       };
 
       await t.step("Object with Property", () => {
