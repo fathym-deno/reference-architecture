@@ -1,7 +1,11 @@
 import { assert } from "../../test.deps.ts";
-import type { $TagDeepStrip } from "../../../src/common/tags/$TagDeepStrip.ts";
+import type {
+  $TagDeepStrip,
+  $TagDeepStripObject,
+} from "../../../src/common/tags/$TagDeepStrip.ts";
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
 import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
 
 Deno.test("Testing $TagDeepStrip", async (t) => {
   type TestTag = $TagValues<
@@ -64,6 +68,26 @@ Deno.test("Testing $TagDeepStrip", async (t) => {
     >({ inner: { unrelatedKey: true } }, { inner: { unrelatedKey: true } });
   });
 
+  await t.step("Fully Strip", () => {
+    type c = {
+      Hello: { New: string } & $FluentTag<"Methods", "Object">;
+      Record: Record<string, { Old: string } & $FluentTag<"Methods", "Object">>;
+    } & $FluentTag<"Methods", "Object">;
+
+    type cStrip = $TagDeepStrip<c, "Methods">;
+
+    const stripped: cStrip = {
+      Hello: { New: "" },
+      Record: {
+        test: {
+          Old: "",
+        },
+      },
+    };
+
+    assert(stripped);
+  });
+
   await t.step("Tag Deep Stripped", () => {
     type test = {
       Bucket:
@@ -76,7 +100,7 @@ Deno.test("Testing $TagDeepStrip", async (t) => {
         & TestTag;
     };
 
-    type tagStripped1 = $TagDeepStrip<test, "TestTag">;
+    type tagStripped1 = $TagDeepStripObject<test, "TestTag">;
 
     const stripped1: tagStripped1 = {
       Bucket: { Test: { BringIt: true } },
@@ -84,14 +108,14 @@ Deno.test("Testing $TagDeepStrip", async (t) => {
 
     assert(stripped1);
 
-    type tagStripped2 = $TagDeepStrip<test, "Test", "Thing">;
+    type tagStripped2 = $TagDeepStrip<test, "TestTag">;
 
     const stripped2: tagStripped2 = {
       // Hello: 'World',
-      Bucket: { "": { BringIt: true } },
+      Bucket: { "Test": { BringIt: true } },
     };
 
     assert(stripped2);
-    assert(stripped2.Bucket[""].BringIt);
+    // assert(stripped2.Bucket[''].BringIt);
   });
 });

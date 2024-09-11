@@ -1,5 +1,6 @@
 import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
 import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
+import type { $FluentTagDeepStrip } from "./tags/$FluentTagDeepStrip.ts";
 import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
 import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
 import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
@@ -16,7 +17,7 @@ export type FluentMethodsProperty<
   : NonGenericMethod<T, K, TBuilderModel>;
 
 type GenericMethod<T, K extends keyof T, TBuilderModel> = <
-  TGeneric extends $FluentTagStrip<T[K]>,
+  TGeneric extends $FluentTagDeepStrip<T[K], "Methods">,
 >(
   input: TGeneric,
 ) =>

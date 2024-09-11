@@ -4,5 +4,8 @@ export type {
   HasKeys,
   HasTypeCheck,
   IsObject,
+  IsRecord,
   NoPropertiesUndefined,
+  RemoveIndexSignatures,
+  ResolveIndexSignatures
 } from '../types/.exports.ts';

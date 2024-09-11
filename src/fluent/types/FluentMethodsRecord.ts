@@ -11,7 +11,7 @@ import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
 import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
 import type { FluentMethodsProperty } from "./FluentMethodsProperty.ts";
 import type { IsFluentRecord } from "./IsFluentRecord.ts";
-import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
+import type { $FluentTagDeepStrip } from "./tags/$FluentTagDeepStrip.ts";
 
 /**
  * Used for managing the property as an object, returning a fluent API for each of it's properties.
@@ -43,7 +43,7 @@ type NonGenericMethod<T, K extends keyof T, TBuilderModel> = (
   & $FluentTagLoadHandlers<ValueType<T[K]>>;
 
 type GenericMethod<T, K extends keyof T, TBuilderModel> = <
-  TGeneric extends $FluentTagStrip<ValueType<T[K]>>, // = ValueType<T[K]>
+  TGeneric extends $FluentTagDeepStrip<ValueType<T[K]>, "Methods">, // = ValueType<T[K]>
 >(
   key: string,
   isRecord: true,
