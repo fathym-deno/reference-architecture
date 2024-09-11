@@ -15,37 +15,31 @@ export type FluentMethodsObject<
 > = RemoveIndexSignatures<T> extends infer U
   ? K extends keyof U
     ? true extends $FluentTagExtractValue<U[K], "Methods", "generic">
-      ? <TGeneric extends $FluentTagStrip<U[K]> = $FluentTagStrip<U[K]>>() =>
-        & FluentMethodsObjectReturnType<
-          RemoveIndexSignatures<TGeneric>,
-          TBuilderModel
-        >
-        & $FluentTagLoadHandlers<U[K]>
-    : () =>
-      & FluentMethodsObjectReturnType<
-        RemoveIndexSignatures<$FluentTagStrip<U[K]>>,
-        TBuilderModel
-      >
-      & $FluentTagLoadHandlers<U[K]>
+      ? GenericMethod<T, K, TBuilderModel>
+    : NonGenericMethod<T, K, TBuilderModel>
   : never
   : T;
-// export type FluentMethodsObject2<T, TBuilderModel> =
-//   RemoveIndexSignatures<T> extends infer U
-//     ? true extends $FluentTagExtractValue<U, 'Methods', 'generic'>
-//       ? <TGeneric extends U = U>() => FluentMethodsObjectReturnType2<
-//           RemoveIndexSignatures<$FluentTagStrip<TGeneric>>,
-//           TBuilderModel
-//         > &
-//           $FluentTagLoadHandlers<U>
-//       : () => FluentMethodsObjectReturnType2<
-//           RemoveIndexSignatures<$FluentTagStrip<U>>,
-//           TBuilderModel
-//         > &
-//           $FluentTagLoadHandlers<U>
-//     : never;
+
+type GenericMethod<T, K extends keyof T, TBuilderModel> = <
+  TGeneric extends $FluentTagStrip<T[K]>,
+>() =>
+  & FluentMethodsObjectReturnType<
+    RemoveIndexSignatures<TGeneric>,
+    TBuilderModel
+  >
+  & $FluentTagLoadHandlers<T[K]>;
+
+type NonGenericMethod<
+  T,
+  K extends keyof T,
+  TBuilderModel,
+> = () =>
+  & FluentMethodsObjectReturnType<
+    RemoveIndexSignatures<$FluentTagStrip<T[K]>>,
+    TBuilderModel
+  >
+  & $FluentTagLoadHandlers<T[K]>;
 
 export type FluentMethodsObjectReturnType<T, TBuilderModel> =
   & SelectFluentBuilder<TBuilderModel>
   & SelectFluentMethods<T, TBuilderModel>;
-// export type FluentMethodsObjectReturnType2<T, TBuilderModel> =
-//   SelectFluentBuilder<TBuilderModel> & SelectFluentMethods2<T, TBuilderModel>;

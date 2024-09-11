@@ -861,6 +861,8 @@ Deno.test("Fluent Builder Tests", async (t) => {
           .Name("Mike")
           .BringIt(true);
 
+        bldr.Databases("eac", true).Details().Name("Pete");
+
         // Verify the exported state
         const exported = bldr.Export();
 
@@ -873,6 +875,7 @@ Deno.test("Fluent Builder Tests", async (t) => {
             .BringIt,
           true,
         );
+        assertEquals(exported.Databases!["eac"].Details!.Name, "Pete");
       });
 
       await t.step("Handlers Test", () => {
