@@ -1,10 +1,10 @@
-import type { RemoveIndexSignatures } from "../.deps.ts";
-import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
-import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
-import type { $FluentTagDeepStrip } from "./tags/$FluentTagDeepStrip.ts";
-import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
-import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
-import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
+import type { RemoveIndexSignatures } from '../.deps.ts';
+import type { SelectFluentBuilder } from './SelectFluentBuilder.ts';
+import type { SelectFluentMethods } from './SelectFluentMethods.ts';
+import type { $FluentTagDeepStrip } from './tags/$FluentTagDeepStrip.ts';
+import type { $FluentTagExtractValue } from './tags/$FluentTagExtractValue.ts';
+import type { $FluentTagLoadHandlers } from './tags/$FluentTagLoadHandlers.ts';
+import type { $FluentTagStrip } from './tags/$FluentTagStrip.ts';
 
 /**
  * `FluentMethodsObject` manages an object property by returning a fluent API for each of its properties.
@@ -58,13 +58,13 @@ import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
 export type FluentMethodsObject<
   T,
   K extends keyof T,
-  TBuilderModel,
+  TBuilderModel
 > = RemoveIndexSignatures<T> extends infer U
   ? K extends keyof U
-    ? true extends $FluentTagExtractValue<U[K], "Methods", "generic">
-      ? GenericMethod<T, K, TBuilderModel>
-    : NonGenericMethod<T, K, TBuilderModel>
-  : never
+    ? true extends $FluentTagExtractValue<U[K], 'Methods', 'generic'>
+      ? FluentMethodsObjectGenericMethod<T, K, TBuilderModel>
+      : FluentMethodsObjectNonGenericMethod<T, K, TBuilderModel>
+    : never
   : never;
 
 /**
@@ -77,14 +77,14 @@ export type FluentMethodsObject<
  *
  * This method enables defining a generic method on the object and its properties.
  */
-type GenericMethod<T, K extends keyof T, TBuilderModel> = <
-  TGeneric extends $FluentTagDeepStrip<T[K], "Methods">,
->() =>
-  & FluentMethodsObjectReturnType<
-    RemoveIndexSignatures<TGeneric>,
-    TBuilderModel
-  >
-  & $FluentTagLoadHandlers<T[K]>;
+export type FluentMethodsObjectGenericMethod<
+  T,
+  K extends keyof T,
+  TBuilderModel
+> = <
+  TGeneric extends $FluentTagDeepStrip<T[K], 'Methods'>
+>() => FluentMethodsObjectReturnType<TGeneric, TBuilderModel> &
+  $FluentTagLoadHandlers<T[K]>;
 
 /**
  * `NonGenericMethod` returns the fluent API for a non-generic method in an object property.
@@ -96,16 +96,15 @@ type GenericMethod<T, K extends keyof T, TBuilderModel> = <
  *
  * This method enables returning non-generic methods for the object properties.
  */
-type NonGenericMethod<
+export type FluentMethodsObjectNonGenericMethod<
   T,
   K extends keyof T,
-  TBuilderModel,
-> = () =>
-  & FluentMethodsObjectReturnType<
-    RemoveIndexSignatures<$FluentTagStrip<T[K]>>,
-    TBuilderModel
-  >
-  & $FluentTagLoadHandlers<T[K]>;
+  TBuilderModel
+> = () => FluentMethodsObjectReturnType<
+  RemoveIndexSignatures<$FluentTagStrip<T[K]>>,
+  TBuilderModel
+> &
+  $FluentTagLoadHandlers<T[K]>;
 
 /**
  * `FluentMethodsObjectReturnType` returns a combination of the `SelectFluentBuilder`
@@ -118,5 +117,4 @@ type NonGenericMethod<
  * This type provides access to fluent methods for object properties.
  */
 export type FluentMethodsObjectReturnType<T, TBuilderModel> =
-  & SelectFluentBuilder<TBuilderModel>
-  & SelectFluentMethods<T, TBuilderModel>;
+  SelectFluentBuilder<TBuilderModel> & SelectFluentMethods<T, TBuilderModel>;
