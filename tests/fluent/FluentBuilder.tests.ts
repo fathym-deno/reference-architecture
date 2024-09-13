@@ -1,7 +1,6 @@
 // deno-lint-ignore-file ban-types no-explicit-any
 import type { HasTypeCheck } from "../../src/common/types/HasTypeCheck.ts";
 import type { IsObjectNotNative } from "../../src/common/types/IsObjectNotNative.ts";
-import type { RemoveIndexSignatures } from "../../src/fluent/.deps.ts";
 import {
   type $FluentTag,
   type $FluentTagExtractValue,
@@ -764,14 +763,12 @@ Deno.test("Fluent Builder Tests", async (t) => {
         ParentEnterpriseLookup?: string;
       }; // & EaCDetails<EaCEnterpriseDetails>;
 
-      type EverythingAsCodeTags<T> = RemoveIndexSignatures<
-        NonNullable<T>
-      > extends infer U
-        ? true extends IsObjectNotNative<T> ? EaCObjectTags<U> & U
-        : U
+      type EverythingAsCodeTags<T> = true extends IsObjectNotNative<T>
+        ? EaCObjectTags<T>
         : T;
 
       type EaCObjectTags<T> =
+        & T
         & EaCStandardTags<T>
         & EaCVertexDetailsTags<T>
         & EaCAsCodeTags<T>;
@@ -782,31 +779,33 @@ Deno.test("Fluent Builder Tests", async (t) => {
           T[K]
         >;
       };
-      // & $FluentTag<
-      //   'Methods',
-      //   never,
-      //   'handlers',
-      //   {
-      //     handlers: {
-      //       // Compile: () => IoCContainer;
-      //     };
-      //   }
-      // >
 
       // Handles conditional logic with union types and nested properties
-      type EaCVertexDetailsTags<T> =
-        // [
-        //   HasTypeCheck<T, EaCVertexDetails>
-        // ] extends [true] ?
-        {
+      type EaCVertexDetailsTags<T> = [
+        HasTypeCheck<NonNullable<T>, EaCVertexDetails>,
+      ] extends [true] ? {
           [
             K in keyof T as K extends "Details" ? K
               : never
           ]: EverythingAsCodeTags<
-            T[K] & $FluentTag<"Methods", "Object", "generic", { generic: true }>
+            & T[K]
+            & $FluentTag<"Methods", "Object", "generic", { generic: true }>
           >;
-        };
-      // : {};
+        }
+        : {};
+
+      // Tag handling for EaCDetails and nested structures
+      type EaCAsCodeTags<T> = [
+        HasTypeCheck<NonNullable<T>, EaCDetails<any>>,
+      ] extends [true] ? {
+          [
+            K in keyof T as K extends string ? K
+              : never
+          ]: "Details" extends keyof T[K]
+            ? EverythingAsCodeTags<T[K] & $FluentTag<"Methods", "Object">>
+            : {};
+        }
+        : {};
 
       type EaCMetadataBase =
         | Record<string | number | symbol, unknown>
@@ -825,14 +824,6 @@ Deno.test("Fluent Builder Tests", async (t) => {
         & $FluentTag<"Methods", "Object", "generic", { generic: true }>;
 
       // Tag handling for EaCDetails and nested structures
-      type EaCAsCodeTags<T> = [
-        HasTypeCheck<NonNullable<T>, EaCDetails<any>>,
-      ] extends [true] ? {
-          [K in keyof T]: "Details" extends keyof T[K]
-            ? EverythingAsCodeTags<T[K] & $FluentTag<"Methods", "Object">>
-            : {};
-        }
-        : {};
 
       type EverythingAsCodeDatabases = {
         Databases?: Record<string, EaCDatabaseAsCode>;
@@ -848,9 +839,43 @@ Deno.test("Fluent Builder Tests", async (t) => {
         BringIt: boolean;
       } & EaCDatabaseDetails<"DenoKV">;
 
+      type EverythingAsCodeSynapticTags<T> = true extends IsObjectNotNative<T>
+        ? SynapticObjectTags<T>
+        : T;
+
+      type SynapticObjectTags<T> = T & SynapticStandardTags<T>;
+
+      // Improved handling of recursive tag types and union types
+      type SynapticStandardTags<T> = {
+        [K in keyof T]: EverythingAsCodeSynapticTags<T>;
+      };
+      // & $FluentTag<
+      //   'Methods',
+      //   never,
+      //   'handlers',
+      //   {
+      //     handlers: {
+      //       Compile: (ioc?: IoCContainer, plugins?: EaCRuntimePlugin[]) => IoCContainer;
+      //     };
+      //   }
+      // >
+
+      type EverythingAsCodeSynaptic =
+        & {
+          Circuits?: {
+            $handlers?: Array<string>;
+            $neurons?: Record<string, EaCModuleHandler>;
+            $remotes?: Record<string, string>;
+          } & Record<string, EaCModuleHandler>;
+        }
+        & EverythingAsCode
+        & EverythingAsCodeDatabases;
+
       await t.step("Database Details method test", () => {
         const bldr = fluentBuilder<
-          EverythingAsCodeTags<EverythingAsCode & EverythingAsCodeDatabases>
+          EverythingAsCodeSynapticTags<
+            EverythingAsCodeTags<EverythingAsCodeSynaptic>
+          >
         >().Root(); //EaCDatabaseAsCode //'thinky', true);
 
         // Set values in Databases Details
@@ -906,6 +931,16 @@ Deno.test("Fluent Builder Tests", async (t) => {
         assert(handlerBldr);
         // assert(handlerBldr.Compile);
         // assertEquals(handlerBldr.Compile('Mike'), 'Hey Mike!');
+      });
+
+      await t.step("Circuits from Synaptic Test", () => {
+        const eacBldr = fluentBuilder<
+          EverythingAsCodeSynapticTags<
+            EverythingAsCodeTags<EverythingAsCodeSynaptic>
+          >
+        >().Root();
+
+        eacBldr.Circuits.$neurons("$pass", true);
       });
     });
   });
