@@ -1,10 +1,12 @@
-import type { FluentMethodsMap } from "./FluentMethodsMap.ts";
+import type { FluentMethodsMap } from './FluentMethodsMap.ts';
 
 /**
  * The default Fluent Methods type.
  */
 export type DefaultFluentMethods<
   T,
-  K extends keyof T,
+  TParent,
+  TKey extends keyof TParent,
   TBuilderModel,
-> = FluentMethodsMap<T, K, TBuilderModel>["Property"];
+  Depth extends number
+> = FluentMethodsMap<T, TParent, TKey, TBuilderModel, Depth>['Property'];

@@ -13,6 +13,7 @@ export * from './HasKeys.ts';
 export * from './HasTypeCheck.ts';
 export * from './IsMatched.ts';
 export * from './IsNativeType.ts';
+export * from './IncrementDepth.ts';
 export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsObjectNotNative.ts';
@@ -23,7 +24,19 @@ export * from './MatchSwitch.ts';
 export * from './NoPropertiesUndefined.ts';
 export * from './NormalizeNever.ts';
 export * from './NullableArrayOrObject.ts';
+export * from './ObjectPropertiesToIntersection.ts';
 export * from './RemoveIndexSignatures.ts';
 export * from './ResolveIndexSignatures.ts';
 export * from './UnionToIntersection.ts';
 export * from './ValueType.ts';
+
+/**
+ * A utility type to ensure primitives like boolean, string, and number aren't expanded into their union types.
+ */
+export type NormalizePrimitive<T> = T extends boolean
+  ? boolean
+  : T extends string
+  ? string
+  : T extends number
+  ? number
+  : T;

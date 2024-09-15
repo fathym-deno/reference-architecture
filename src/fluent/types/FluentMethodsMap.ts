@@ -1,6 +1,6 @@
-import type { FluentMethodsObject } from "./FluentMethodsObject.ts";
-import type { FluentMethodsProperty } from "./FluentMethodsProperty.ts";
-import type { FluentMethodsRecord } from "./FluentMethodsRecord.ts";
+import type { FluentMethodsObject } from './FluentMethodsObject.ts';
+import type { FluentMethodsProperty } from './FluentMethodsProperty.ts';
+import type { FluentMethodsRecord } from './FluentMethodsRecord.ts';
 
 /**
  * `FluentMethodsMap<T, K, TBuilderModel>` is a mapping of method types (Object, Property, Record)
@@ -51,12 +51,15 @@ import type { FluentMethodsRecord } from "./FluentMethodsRecord.ts";
  */
 export type FluentMethodsMap<
   T,
-  K extends keyof T,
+  TParent,
+  TKey extends keyof TParent,
   TBuilderModel,
-> = T extends infer U ? K extends keyof U ? {
-      Object: FluentMethodsObject<U, K, TBuilderModel>;
-      Property: FluentMethodsProperty<U, K, TBuilderModel>;
-      Record: FluentMethodsRecord<U, K, TBuilderModel>;
+  Depth extends number
+> = T extends infer U
+  ? {
+      Object: FluentMethodsObject<U, TBuilderModel, Depth>;
+      Property: FluentMethodsProperty<U, TParent, TKey, TBuilderModel, Depth>;
+      Record: FluentMethodsObject<U, TBuilderModel, Depth>;
+      // Record: FluentMethodsRecord<U, TBuilderModel, Depth>;
     }
-  : never
   : never;

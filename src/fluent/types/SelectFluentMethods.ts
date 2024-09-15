@@ -1,6 +1,12 @@
-import type { NoPropertiesUndefined } from "../.deps.ts";
-import type { DetermineEaCFluentMethods } from "./DetermineEaCFluentMethods.ts";
-import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
+// deno-lint-ignore-file ban-types
+import type {
+  IncrementDepth,
+  NoPropertiesUndefined,
+  NormalizeNever,
+  RemoveIndexSignatures,
+} from '../.deps.ts';
+import type { DetermineEaCFluentMethods } from './DetermineEaCFluentMethods.ts';
+import type { $FluentTagStrip } from './tags/$FluentTagStrip.ts';
 
 /**
  * `SelectFluentMethods<T, TBuilderModel>` processes a type `T` and selects the appropriate Fluent methods based on the type of the properties.
@@ -52,64 +58,50 @@ import type { $FluentTagStrip } from "./tags/$FluentTagStrip.ts";
  * // }
  * ```
  */
-export type SelectFluentMethods<T, TBuilderModel> = T extends infer U
-  ? $FluentTagStrip<
-    NoPropertiesUndefined<
-      {
-        [
-          K in keyof U as K extends string
-            // ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
-            ? K
-            : never
-        ]: DetermineEaCFluentMethods<U, K, TBuilderModel>;
-      }
-    >,
-    "Methods"
-  >
-  : T;
+export type SelectFluentMethods<
+  T,
+  TBuilderModel,
+  Depth extends number = 0,
+  TParent = never,
+  TKey extends keyof TParent = never,
+  TKeys extends keyof T = keyof T
+> = NormalizeNever<
+  Depth extends 10
+    ? never // Stop recursion if depth exceeds 20
+    : T extends infer U
+    ? TKeys extends keyof U
+      ? $FluentTagStrip<
+          NoPropertiesUndefined<
+            DetermineEaCFluentMethods<
+              T,
+              TParent,
+              TKey,
+              TBuilderModel,
+              IncrementDepth<Depth>
+            >
+          >,
+          'Methods'
+        >
+      : never
+    : never,
+  {}
+>;
 
-// export type SelectFluentMethods2<T, TBuilderModel> = T extends infer U
-//   ? NoPropertiesUndefined<
-//     {
-//       [
-//         K in keyof U as K extends string
-//           ? DetermineFluentMethodsType<U, K> extends "Record" ? `_${K}`
-//           : K
-//           : never
-//       ]: SelectFluentMethods2<U[K], TBuilderModel>;
-//     } & DetermineEaCFluentMethods2<U, TBuilderModel>
-//   >
-//   : never;
-
-// import {
-//   NoPropertiesUndefined,
-//   OptionalProperties,
-//   RequiredProperties,
-// } from "../.deps.ts";
-
-// export type EaCFluentProperties<T> = RequiredProperties<T> & {
-//   Optional: NoPropertiesUndefined<OptionalProperties<T>>;
-// };
-
-// type c = IsUndefined<EaCAIDetails['Name']>;
-// type cc = IsRequiredProperty<EaCAIDetails, 'Name'>;
-
-// type x = NoPropertiesUndefined<RequiredProperties<EverythingAsCodeSynaptic>>;
-// type xx = NoPropertiesUndefined<RequiredProperties<EaCAIAsCode>>;
-// type xxx = NoPropertiesUndefined<RequiredProperties<EaCAIDetails>>;
-
-// type y = NoPropertiesUndefined<OptionalProperties<EverythingAsCodeSynaptic>>;
-// type yy = NoPropertiesUndefined<OptionalProperties<EaCAIAsCode>>;
-// type yyy = NoPropertiesUndefined<OptionalProperties<EaCAIDetails>>;
-
-// export type SelectEaCFluentMethods<T, TEaC extends EverythingAsCode> = {
-//   [K in keyof NoPropertiesUndefined<RequiredProperties<T>> as K extends string
-//     ? K
-//     : never]: DetermineEaCFluentMethods<T, K, TEaC>;
-// } & {
-//   $Optional: {
-//     [K in keyof NoPropertiesUndefined<OptionalProperties<T>> as K extends string
-//       ? K
-//       : never]: DetermineEaCFluentMethods<T, K, TEaC>;
-//   };
-// };
+export type SelectFluentMethodsForKeys<
+  T,
+  TBuilderModel,
+  Depth extends number
+  // TKeys extends keyof T = keyof T
+> = T extends infer U
+  ? // ? TKeys extends keyof U
+    {
+      [K in keyof U as K extends [never] ? never : K]: NonNullable<SelectFluentMethods<
+      U[K],
+      TBuilderModel,
+      IncrementDepth<Depth>,
+      U,
+      K
+    >>;
+    }
+  : // : never
+    never;

@@ -1,8 +1,7 @@
 import type {
   DetermineDefaultFluentMethodsType,
-  DetermineDefaultFluentMethodsType2,
-} from "./DetermineDefaultFluentMethodsType.ts";
-import type { $FluentTagExtract } from "./tags/$FluentTagExtract.ts";
+} from './DetermineDefaultFluentMethodsType.ts';
+import type { $FluentTagExtract } from './tags/$FluentTagExtract.ts';
 
 /**
  * `DetermineFluentMethodsType<T, K>` determines the Fluent Methods type by checking if a `FluentTag` has been assigned
@@ -43,15 +42,8 @@ import type { $FluentTagExtract } from "./tags/$FluentTagExtract.ts";
  * // Result: "Object"
  * ```
  */
-export type DetermineFluentMethodsType<
-  T,
-  K extends keyof T,
-> = $FluentTagExtract<T[K], "Methods"> extends [never]
-  ? DetermineDefaultFluentMethodsType<T, K>
-  : $FluentTagExtract<T[K], "Methods">;
-
-export type DetermineFluentMethodsType2<T> = $FluentTagExtract<
-  T,
-  "Methods"
-> extends [never] ? DetermineDefaultFluentMethodsType2<T>
-  : $FluentTagExtract<T, "Methods">;
+export type DetermineFluentMethodsType<T> = T extends infer U
+  ? $FluentTagExtract<U, 'Methods'> extends [never]
+    ? DetermineDefaultFluentMethodsType<U>
+    : $FluentTagExtract<U, 'Methods'>
+  : never;

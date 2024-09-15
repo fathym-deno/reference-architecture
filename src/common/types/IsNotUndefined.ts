@@ -31,3 +31,4 @@ import type { IsUndefined } from "./IsUndefined.ts";
  * @returns `true` if `T` is not `undefined`, otherwise `false`.
  */
 export type IsNotUndefined<T> = true extends IsUndefined<T> ? false : true;
+

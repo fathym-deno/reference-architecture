@@ -2,11 +2,12 @@ import type {
   ExtractExact,
   IsNativeType,
   IsObject,
+  IsObjectNotNative,
   NoPropertiesUndefined,
-} from "../.deps.ts";
-import type { IsFluentRecord } from "./IsFluentRecord.ts";
-import type { $FluentTagExtract } from "./tags/$FluentTagExtract.ts";
-import type { $FluentTagMethodsOptions } from "./tags/$FluentTagOptions.ts";
+} from '../.deps.ts';
+import type { IsFluentRecord } from './IsFluentRecord.ts';
+import type { $FluentTagExtract } from './tags/$FluentTagExtract.ts';
+import type { $FluentTagMethodsOptions } from './tags/$FluentTagOptions.ts';
 
 /**
  * `DetermineDefaultFluentMethodsType<T, K>` determines the appropriate default method type
@@ -54,67 +55,69 @@ import type { $FluentTagMethodsOptions } from "./tags/$FluentTagOptions.ts";
  * // Result: "Property"
  * ```
  */
-export type DetermineDefaultFluentMethodsType<
-  T,
-  K extends keyof T,
-> = NoPropertiesUndefined<T> extends infer U
-  ? K extends keyof U
-    ? false extends IsObject<U[K]>
-      ? DetermineDefaultNonObjectFluentMethodsType<U, K>
-    : true extends IsNativeType<U[K]>
-      ? DetermineDefaultNonObjectFluentMethodsType<U, K>
-    : DetermineDefaultObjectFluentMethodsType<U, K>
-  : never
-  : T;
-export type DetermineDefaultFluentMethodsType2<T> =
-  NoPropertiesUndefined<T> extends infer U
-    ? false extends IsObject<U> ? DetermineDefaultNonObjectFluentMethodsType2<U>
-    : true extends IsNativeType<U>
-      ? DetermineDefaultNonObjectFluentMethodsType2<U>
-    : DetermineDefaultObjectFluentMethodsType2<U>
-    : T;
+// export type _DetermineDefaultFluentMethodsType<
+//   T,
+//   K extends keyof T,
+// > = NoPropertiesUndefined<T> extends infer U
+//   ? K extends keyof U
+//     ? false extends IsObject<U[K]>
+//       ? DetermineDefaultNonObjectFluentMethodsType<U, K>
+//     : true extends IsNativeType<U[K]>
+//       ? DetermineDefaultNonObjectFluentMethodsType<U, K>
+//     : DetermineDefaultObjectFluentMethodsType<U, K>
+//   : never
+//   : T;
+export type DetermineDefaultFluentMethodsType<T> = T extends infer U
+  ? NoPropertiesUndefined<U> extends infer V
+    ? false extends IsObjectNotNative<V>
+      ? DetermineDefaultNonObjectFluentMethodsType<V>
+      : DetermineDefaultObjectFluentMethodsType<V>
+    : never
+  : never;
 
-export type DetermineDefaultNonObjectFluentMethodsType<
-  T,
-  K extends keyof T,
-> = ExtractExact<$FluentTagMethodsOptions, "Property">;
-export type DetermineDefaultNonObjectFluentMethodsType2<T> = ExtractExact<
+// export type DetermineDefaultNonObjectFluentMethodsType<
+//   T,
+//   K extends keyof T,
+// > = ExtractExact<$FluentTagMethodsOptions, "Property">;
+export type DetermineDefaultNonObjectFluentMethodsType<T> = ExtractExact<
   $FluentTagMethodsOptions,
-  "Property"
+  'Property'
 >;
 
-export type DetermineDefaultObjectFluentMethodsType<
+// export type DetermineDefaultObjectFluentMethodsType<
+//   T,
+//   K extends keyof T,
+// > = $FluentTagExtract<T[K], "Methods"> extends [never]
+//   ? false extends IsFluentRecord<T[K]>
+//     ? DetermineDefaultNonRecordFluentMethodsType<T, K>
+//   : DetermineDefaultRecordFluentMethodsType<T, K>
+//   : $FluentTagExtract<T[K], "Methods">;
+export type DetermineDefaultObjectFluentMethodsType<T> = $FluentTagExtract<
   T,
-  K extends keyof T,
-> = $FluentTagExtract<T[K], "Methods"> extends [never]
-  ? false extends IsFluentRecord<T[K]>
-    ? DetermineDefaultNonRecordFluentMethodsType<T, K>
-  : DetermineDefaultRecordFluentMethodsType<T, K>
-  : $FluentTagExtract<T[K], "Methods">;
-export type DetermineDefaultObjectFluentMethodsType2<T> = $FluentTagExtract<
-  T,
-  "Methods"
+  'Methods'
 > extends [never]
   ? false extends IsFluentRecord<T>
-    ? DetermineDefaultNonRecordFluentMethodsType2<T>
-  : DetermineDefaultRecordFluentMethodsType2<T>
-  : $FluentTagExtract<T, "Methods">;
+    ? DetermineDefaultNonRecordFluentMethodsType<T>
+    : DetermineDefaultRecordFluentMethodsType<T>
+  : $FluentTagExtract<T, 'Methods'>;
 
-export type DetermineDefaultNonRecordFluentMethodsType<
-  T,
-  K extends keyof T,
-> = ExtractExact<$FluentTagMethodsOptions, "Object">;
-export type DetermineDefaultNonRecordFluentMethodsType2<
-  T,
-> = ExtractExact<$FluentTagMethodsOptions, "Object">;
+// export type DetermineDefaultNonRecordFluentMethodsType<
+//   T,
+//   K extends keyof T,
+// > = ExtractExact<$FluentTagMethodsOptions, "Object">;
+export type DetermineDefaultNonRecordFluentMethodsType<T> = ExtractExact<
+  $FluentTagMethodsOptions,
+  'Object'
+>;
 
-export type DetermineDefaultRecordFluentMethodsType<
-  T,
-  K extends keyof T,
-> = ExtractExact<$FluentTagMethodsOptions, "Record">;
-export type DetermineDefaultRecordFluentMethodsType2<
-  T,
-> = ExtractExact<$FluentTagMethodsOptions, "Record">;
+// export type DetermineDefaultRecordFluentMethodsType<
+//   T,
+//   K extends keyof T,
+// > = ExtractExact<$FluentTagMethodsOptions, "Record">;
+export type DetermineDefaultRecordFluentMethodsType<T> = ExtractExact<
+  $FluentTagMethodsOptions,
+  'Record'
+>;
 // TODO: Swapping in this logic make it so that records that are parents to records will resolve as objects
 // false extends IsFluentRecord<ValueType<T[K]>>
 //   ? ExtractExact<$FluentTagMethodsOptions, "Record">

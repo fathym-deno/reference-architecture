@@ -1,7 +1,7 @@
-import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
+import type { $FluentTag } from '../../../src/fluent/types/tags/$FluentTag.ts';
 
-Deno.test("Testing SelectFluentMethods", async (t) => {
-  await t.step("Complex from EaC", () => {
+Deno.test('Testing SelectFluentMethods', async (t) => {
+  await t.step('Complex from EaC', () => {
     type EaCModuleHandler = {
       APIPath: string;
 
@@ -12,15 +12,22 @@ Deno.test("Testing SelectFluentMethods", async (t) => {
       $Force?: boolean;
     } & Record<string, EaCModuleHandler>;
 
+    type x = (() => string) &
+      ((bringIt: boolean) => string) &
+      ((hello: string) => boolean);
+
+      const c: x = {};
+
+      c()
+
     type Example = {
       EnterpriseLookup?: string;
 
-      Handlers?:
-        & EaCModuleHandlers
-        & $FluentTag<
-          "Methods",
+      Handlers?: EaCModuleHandlers &
+        $FluentTag<
+          'Methods',
           never,
-          "handlers",
+          'handlers',
           {
             handlers: {
               Compile: () => unknown;

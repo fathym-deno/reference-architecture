@@ -1,25 +1,35 @@
-import type { DefaultFluentMethods } from "./DefaultFluentMethods.ts";
-import type { DetermineFluentMethodsType } from "./DetermineFluentMethodsType.ts";
-import type { FluentMethodsMap } from "./FluentMethodsMap.ts";
+// deno-lint-ignore-file ban-types
+import type { ExtractKeysByPrefix } from '../../common/types/ExtractKeysByPrefix.ts';
+import type { DefaultFluentMethods } from './DefaultFluentMethods.ts';
+import type { DetermineFluentMethodsType } from './DetermineFluentMethodsType.ts';
+import type { FluentMethodsMap } from './FluentMethodsMap.ts';
+import { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
+import type { SelectFluentMethods } from './SelectFluentMethods.ts';
+import type { $FluentTagLoadHandlers } from './tags/$FluentTagLoadHandlers.ts';
 
 export type DetermineEaCFluentMethods<
   T,
-  K extends keyof T,
+  TParent,
+  TKey extends keyof TParent,
   TBuilderModel,
+  Depth extends number
 > = T extends infer U
-  ? K extends keyof U
-    ? DetermineFluentMethodsType<U, K> extends infer MethodType
-      ? MethodType extends keyof FluentMethodsMap<U, K, TBuilderModel>
-        ? FluentMethodsMap<U, K, TBuilderModel>[MethodType]
-      : DefaultFluentMethods<U, K, TBuilderModel>
-    : DefaultFluentMethods<U, K, TBuilderModel>
-  : never
-  : T;
-
-// export type DetermineEaCFluentMethods2<T, TBuilderModel> = T extends infer U
-// ? DetermineFluentMethodsType2<U> extends infer MethodType
-//   ? MethodType extends keyof FluentMethodsMap2<U, K, TBuilderModel>
-//     ? FluentMethodsMap2<U, K, TBuilderModel>[MethodType]
-//     : DefaultFluentMethods2<U, K, TBuilderModel>
-//   : DefaultFluentMethods2<U, K, TBuilderModel>
-// : never;
+  ? (DetermineFluentMethodsType<U> extends infer MethodType
+      ? MethodType extends keyof FluentMethodsMap<
+          U,
+          TParent,
+          TKey,
+          TBuilderModel,
+          Depth
+        >
+        ? FluentMethodsMap<U, TParent, TKey, TBuilderModel, Depth>[MethodType]
+        : DefaultFluentMethods<U, TParent, TKey, TBuilderModel, Depth>
+      : DefaultFluentMethods<U, TParent, TKey, TBuilderModel, Depth>) &
+      // SelectFluentBuilder<TBuilderModel> &
+      // (ExtractKeysByPrefix<T, '$'> extends infer TKey
+      //   ? TKey extends keyof T
+      //     ? SelectFluentMethods<T, TBuilderModel, Depth, TKey>
+      //     : {}
+      //   : {}) &
+      $FluentTagLoadHandlers<T>
+  : never;

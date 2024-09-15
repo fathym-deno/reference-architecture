@@ -1,72 +1,87 @@
 // deno-lint-ignore-file ban-types
 import type {
-  ExtractKeysByPrefix,
-  IsObjectNotNative,
-  RemoveIndexSignatures,
-  ValueType,
-} from "../.deps.ts";
-import type { SelectFluentBuilder } from "./SelectFluentBuilder.ts";
-import type { SelectFluentMethods } from "./SelectFluentMethods.ts";
-import type { $FluentTagExtractValue } from "./tags/$FluentTagExtractValue.ts";
-import type { $FluentTagLoadHandlers } from "./tags/$FluentTagLoadHandlers.ts";
-import type { FluentMethodsProperty } from "./FluentMethodsProperty.ts";
-import type { IsFluentRecord } from "./IsFluentRecord.ts";
-import type { $FluentTagDeepStrip } from "./tags/$FluentTagDeepStrip.ts";
+  HasIndexSignatures,
+  NormalizeNever,
+  ObjectPropertiesToIntersection,
+  ResolveIndexSignatures,
+  UnionToIntersection,
+} from '../.deps.ts';
+import type { SelectFluentBuilder } from './SelectFluentBuilder.ts';
+import type {
+  SelectFluentMethods,
+  SelectFluentMethodsForKeys,
+} from './SelectFluentMethods.ts';
+import type { $FluentTagExtractValue } from './tags/$FluentTagExtractValue.ts';
+import type { $FluentTagLoadHandlers } from './tags/$FluentTagLoadHandlers.ts';
 
 /**
  * Used for managing the property as an object, returning a fluent API for each of it's properties.
  */
 export type FluentMethodsRecord<
   T,
-  K extends keyof T,
   TBuilderModel,
-> =
-  & (RemoveIndexSignatures<T> extends infer U
-    ? K extends keyof U
-      ? true extends $FluentTagExtractValue<U[K], "Methods", "generic">
-        ? GenericMethod<T, K, TBuilderModel>
-      : NonGenericMethod<T, K, TBuilderModel>
-    : true extends $FluentTagExtractValue<T[K], "Methods", "generic">
-      ? GenericMethod<T, K, TBuilderModel>
-    : NonGenericMethod<T, K, TBuilderModel>
-    : never)
-  & (ExtractKeysByPrefix<T[K], "$"> extends infer U
-    ? SelectFluentMethods<U, TBuilderModel>
-    : {})
-  & $FluentTagLoadHandlers<T[K]>;
+  Depth extends number
+> = T extends infer U
+  ? NormalizeNever<
+      ResolveIndexSignatures<U> extends infer V
+        ? true extends HasIndexSignatures<V>
+          ? ObjectPropertiesToIntersection<{
+              [K in keyof V]: true extends $FluentTagExtractValue<
+                V[K],
+                'Methods',
+                'generic'
+              >
+                ? FluentMethodsRecordGenericMethod<
+                    V[K],
+                    K,
+                    U,
+                    TBuilderModel,
+                    Depth
+                  >
+                : FluentMethodsRecordNonGenericMethod<
+                    V[K],
+                    K,
+                    U,
+                    TBuilderModel,
+                    Depth
+                  >;
+            }>
+          : {}
+        : {},
+      {}
+    >
+  : never;
 
-type NonGenericMethod<T, K extends keyof T, TBuilderModel> = (
-  key: string,
-  isRecord: true,
-) =>
-  & FluentMethodsRecordReturnType<T, K, ValueType<T[K]>, TBuilderModel>
-  & $FluentTagLoadHandlers<ValueType<T[K]>>;
+export type FluentMethodsRecordNonGenericMethod<
+  T,
+  TKey,
+  TParent,
+  TBuilderModel,
+  Depth extends number
+> = (
+  key: TKey,
+  isRecord: true
+) => FluentMethodsRecordReturnType<T, TParent, TBuilderModel, Depth>;
 
-type GenericMethod<T, K extends keyof T, TBuilderModel> = <
-  TGeneric extends $FluentTagDeepStrip<ValueType<T[K]>, "Methods">, // = ValueType<T[K]>
+export type FluentMethodsRecordGenericMethod<
+  T,
+  TKey,
+  TParent,
+  TBuilderModel,
+  Depth extends number
+> = <
+  TGeneric extends T //$FluentTagDeepStrip<ValueType<T[K]>, 'Methods'>
 >(
-  key: string,
-  isRecord: true,
-) =>
-  & FluentMethodsRecordReturnType<T, K, TGeneric, TBuilderModel>
-  & $FluentTagLoadHandlers<TGeneric>;
+  key: TKey,
+  isRecord: true
+) => FluentMethodsRecordReturnType<TGeneric, TParent, TBuilderModel, Depth>;
 
 export type FluentMethodsRecordReturnType<
   T,
-  K extends keyof T,
-  TMethods,
+  THandle,
   TBuilderModel,
-> =
-  & SelectFluentBuilder<TBuilderModel>
-  & (true extends IsObjectNotNative<TMethods>
-    ? true extends IsFluentRecord<TMethods>
-      ? string extends keyof T[K]
-        ? FluentMethodsRecord<T[K], string, TBuilderModel>
-        //T[K]//FluentMethodsRecord<T[K], any, TBuilderModel>
-      : SelectFluentMethods<TMethods, TBuilderModel>
-      //true
-    : SelectFluentMethods<TMethods, TBuilderModel>
-    : string extends keyof T[K]
-      ? FluentMethodsProperty<T[K], string, TBuilderModel>
-    : never)
-  & $FluentTagLoadHandlers<T[K]>; // SelectFluentMethods<TMethods, TBuilderModel> &
+  Depth extends number
+> = SelectFluentBuilder<TBuilderModel> &
+  SelectFluentMethods<T, TBuilderModel, Depth> &
+  SelectFluentMethodsForKeys<T, TBuilderModel, Depth> &
+  $FluentTagLoadHandlers<THandle>;
