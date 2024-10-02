@@ -2,6 +2,14 @@ import { getLogger, type LogConfig, type Logger, setup } from "./.deps.ts";
 import { getPackageLogger, getPackageLoggerSync } from "./getPackageLogger.ts";
 
 export class LoggingProvider {
+  public get Default(): Logger {
+    return this.LoggerSync();
+  }
+
+  public get Package(): Logger {
+    return this.LoggerSync(undefined, true);
+  }
+
   constructor(
     protected importMeta: ImportMeta,
     protected setupConfig: LogConfig,

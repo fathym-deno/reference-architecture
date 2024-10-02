@@ -10,14 +10,7 @@ export async function getPackageLogger(
   importMeta: ImportMeta,
   path?: string,
 ): Promise<Logger> {
-  const moduleUrl = new URL(importMeta.url);
-
-  const moduleDir = moduleUrl.pathname.substring(
-    0,
-    moduleUrl.pathname.lastIndexOf("/"),
-  );
-
-  const denoJsonPath = `${moduleDir}/deno.json`;
+  const denoJsonPath = importMeta.resolve(`/deno.jsonc`);
 
   const denoJsoncStr = await Deno.readTextFile(denoJsonPath);
 
@@ -36,14 +29,7 @@ export function getPackageLoggerSync(
   importMeta: ImportMeta,
   path?: string,
 ): Logger {
-  const moduleUrl = new URL(importMeta.url);
-
-  const moduleDir = moduleUrl.pathname.substring(
-    0,
-    moduleUrl.pathname.lastIndexOf("/"),
-  );
-
-  const denoJsonPath = `${moduleDir}/deno.json`;
+  const denoJsonPath = importMeta.resolve(`/deno.jsonc`);
 
   const denoJsoncStr = Deno.readTextFileSync(denoJsonPath);
 
