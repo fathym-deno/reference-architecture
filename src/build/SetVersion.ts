@@ -1,4 +1,4 @@
-import { getPackageLogger, getPackageLoggerSync, parseArgs } from "./.deps.ts";
+import { parseArgs } from "./.deps.ts";
 import { loadDenoConfig } from "./loadDenoConfig.ts";
 
 /**
@@ -56,7 +56,7 @@ export class SetVersion {
    * ```
    */
   constructor(denoArgsVersion?: string[] | string) {
-    const logger = getPackageLoggerSync(import.meta);
+    // const logger = getPackageLoggerSync(import.meta);
 
     if (typeof denoArgsVersion === "string") {
       this.version = denoArgsVersion;
@@ -72,7 +72,7 @@ export class SetVersion {
     }
 
     if (!this.version || typeof this.version !== "string") {
-      logger.error("Please provide a version number.");
+      console.error("Please provide a version number.");
 
       throw new Deno.errors.NotFound("Please provide a version number.");
     }
@@ -93,7 +93,7 @@ export class SetVersion {
    * ```
    */
   public async Configure(denoCfgPath?: string): Promise<string> {
-    const logger = await getPackageLogger(import.meta, "build");
+    // const logger = await getPackageLogger(import.meta, "build");
 
     try {
       const { Config: config, DenoConfigPath: dcp } = await loadDenoConfig(
@@ -111,7 +111,7 @@ export class SetVersion {
       // Write the updated JSON back to the file
       await Deno.writeTextFile(denoCfgPath, updatedData);
 
-      logger.debug(`Version updated to ${this.version}`);
+      console.debug(`Version updated to ${this.version}`);
 
       return config.version;
     } catch (error) {
