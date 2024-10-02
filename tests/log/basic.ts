@@ -71,4 +71,19 @@ Deno.test("Basic Logging", async (t) => {
     logger.error("THIS SHOULD NOT SHOW");
     logger.critical("THIS SHOULD NOT SHOW");
   });
+
+  await t.step("Package Logger - Time Check", () => {
+    console.time("package-logger-time-check");
+    console.time("package-logger-time-check: package");
+    console.time("package-logger-time-check: log");
+
+    const logger = logging.Package;
+
+    console.timeEnd("package-logger-time-check: package");
+
+    logger.debug("This is a debug message");
+
+    console.timeEnd("package-logger-time-check");
+    console.timeEnd("package-logger-time-check: log");
+  });
 });

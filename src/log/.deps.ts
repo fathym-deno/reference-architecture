@@ -1,4 +1,5 @@
 export { type DenoConfig } from '../build/.exports.ts';
+export { resolvePackageRoot } from '../common/path/.exports.ts';
 export { jsonMapSetStringify } from '../common/iterables/json-map-set/.exports.ts';
 
 export * as Colors from 'jsr:@std/fmt@1.0.1/colors';

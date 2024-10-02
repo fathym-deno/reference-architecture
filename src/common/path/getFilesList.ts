@@ -1,5 +1,4 @@
 import type { FileListRequest } from "./FileListRequest.ts";
-
 /**
  * Retrieves a list of files in the specified directory, optionally filtering by extension. Use the meta to give the file list current context.
  *
