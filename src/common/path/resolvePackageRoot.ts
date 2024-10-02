@@ -1,6 +1,6 @@
 import { dirname, join } from "./.deps.ts";
 
-export function resolvePackageRoot(importMeta: ImportMeta): string {
+export function resolvePackageRoot(importMeta: ImportMeta): string | undefined {
   // Resolve the current file path
   let currentDir = new URL(".", importMeta.url).pathname;
 
@@ -35,9 +35,7 @@ export function resolvePackageRoot(importMeta: ImportMeta): string {
 
     // Stop if we reach the root directory without finding the package root
     if (parentDir === currentDir) {
-      currentDir = `@fathym/default`;
-
-      return currentDir;
+      return undefined;
     }
 
     currentDir = parentDir;

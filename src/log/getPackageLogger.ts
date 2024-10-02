@@ -13,16 +13,22 @@ export async function getPackageLogger(
 ): Promise<Logger> {
   const packageRoot = resolvePackageRoot(importMeta);
 
-  const denoJsonPath = `${packageRoot}/deno.jsonc`;
+  let name;
 
-  const denoJsoncStr = await Deno.readTextFile(denoJsonPath);
+  if (packageRoot) {
+    const denoJsonPath = `${packageRoot}/deno.jsonc`;
 
-  const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
+    const denoJsoncStr = await Deno.readTextFile(denoJsonPath);
 
-  let name = denoConfig?.name;
+    const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
-  if (path) {
-    name = name ? `${name}/${path}` : path;
+    let name = denoConfig?.name;
+
+    if (path) {
+      name = name ? `${name}/${path}` : path;
+    }
+  } else {
+    name = "@fathym/default";
   }
 
   return getLogger(name);
@@ -34,16 +40,22 @@ export function getPackageLoggerSync(
 ): Logger {
   const packageRoot = resolvePackageRoot(importMeta);
 
-  const denoJsonPath = `${packageRoot}/deno.jsonc`;
+  let name;
 
-  const denoJsoncStr = Deno.readTextFileSync(denoJsonPath);
+  if (packageRoot) {
+    const denoJsonPath = `${packageRoot}/deno.jsonc`;
 
-  const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
+    const denoJsoncStr = Deno.readTextFileSync(denoJsonPath);
 
-  let name = denoConfig?.name;
+    const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
-  if (path) {
-    name = name ? `${name}/${path}` : path;
+    name = denoConfig?.name;
+
+    if (path) {
+      name = name ? `${name}/${path}` : path;
+    }
+  } else {
+    name = "@fathym/default";
   }
 
   return getLogger(name);
