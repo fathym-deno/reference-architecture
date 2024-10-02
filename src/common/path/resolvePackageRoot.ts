@@ -9,8 +9,6 @@ export function resolvePackageRoot(importMeta: ImportMeta): string {
     currentDir = currentDir.slice(1);
   }
 
-  console.log(currentDir);
-
   // Traverse up to find the root, assuming 'deno.json' or 'deno.jsonc' is in the root of the package
   while (true) {
     // Construct the possible paths for deno.json and deno.jsonc
