@@ -35,9 +35,9 @@ export function resolvePackageRoot(importMeta: ImportMeta): string {
 
     // Stop if we reach the root directory without finding the package root
     if (parentDir === currentDir) {
-      throw new Error(
-        "Could not find deno.json or deno.jsonc in any parent directory.",
-      );
+      currentDir = `@fathym/default`;
+
+      return currentDir;
     }
 
     currentDir = parentDir;
