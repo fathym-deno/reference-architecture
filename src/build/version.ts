@@ -16,7 +16,7 @@ import { SetVersion } from "./SetVersion.ts";
  */
 let version: string = "";
 
-const logger = await getPackageLogger("build");
+const logger = await getPackageLogger(import.meta, "build");
 
 try {
   const setVersion: SetVersion = new SetVersion();

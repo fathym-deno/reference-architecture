@@ -21,7 +21,7 @@ import { exists, existsSync } from "./exists.ts";
  * ```
  */
 export async function createIfNotExists(path: string): Promise<void> {
-  const logger = await getPackageLogger("path");
+  const logger = await getPackageLogger(import.meta, "path");
 
   const dir = dirname(path);
 
@@ -52,7 +52,7 @@ export async function createIfNotExists(path: string): Promise<void> {
  * ```
  */
 export function createIfNotExistsSync(path: string): void {
-  const logger = getPackageLoggerSync("path");
+  const logger = getPackageLoggerSync(import.meta, "path");
 
   const dir = dirname(path);
 

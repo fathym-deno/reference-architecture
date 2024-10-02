@@ -11,7 +11,7 @@ export async function hasKvEntry(
   denoKv: Deno.Kv,
   key: Deno.KvKey,
 ): Promise<boolean> {
-  const logger = await getPackageLogger("deno-kv");
+  const logger = await getPackageLogger(import.meta, "deno-kv");
 
   try {
     const entry = await denoKv.get(key);

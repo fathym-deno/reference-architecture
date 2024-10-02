@@ -56,7 +56,7 @@ export class SetVersion {
    * ```
    */
   constructor(denoArgsVersion?: string[] | string) {
-    const logger = getPackageLoggerSync();
+    const logger = getPackageLoggerSync(import.meta);
 
     if (typeof denoArgsVersion === "string") {
       this.version = denoArgsVersion;
@@ -93,7 +93,7 @@ export class SetVersion {
    * ```
    */
   public async Configure(denoCfgPath?: string): Promise<string> {
-    const logger = await getPackageLogger("build");
+    const logger = await getPackageLogger(import.meta, "build");
 
     try {
       const { Config: config, DenoConfigPath: dcp } = await loadDenoConfig(
