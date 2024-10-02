@@ -1,8 +1,13 @@
-import { join } from "./.deps.ts";
+import { dirname, join } from "./.deps.ts";
 
 export function resolvePackageRoot(importMeta: ImportMeta): string {
   // Resolve the current file path
-  let currentDir = new URL(".", importMeta.url).pathname.slice(1);
+  let currentDir = new URL(".", importMeta.url).pathname;
+
+  // Remove the leading slash for Windows compatibility
+  if (Deno.build.os === "windows" && currentDir.startsWith("/")) {
+    currentDir = currentDir.slice(1);
+  }
 
   console.log(currentDir);
 
@@ -28,7 +33,7 @@ export function resolvePackageRoot(importMeta: ImportMeta): string {
     }
 
     // Navigate up one directory level
-    const parentDir = new URL("..", `file:///${currentDir}`).pathname.slice(1);
+    const parentDir = dirname(currentDir);
 
     // Stop if we reach the root directory without finding the package root
     if (parentDir === currentDir) {
