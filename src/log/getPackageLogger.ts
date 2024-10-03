@@ -23,7 +23,7 @@ export async function getPackageLogger(
 
       const denoConfig = parseJsonc(denoJsoncStr) as DenoConfig;
 
-      let name = denoConfig?.name;
+      name = denoConfig?.name;
 
       if (path) {
         name = name ? `${name}/${path}` : path;
