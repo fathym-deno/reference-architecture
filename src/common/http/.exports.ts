@@ -1,14 +1,14 @@
 /**
  * Helpers to assist with HTTP operations.
  * @module
- * 
+ *
  * @example Establish headers from direct import
  * ```typescript
  * import { establishHeaders } from "@fathym/common/http";
  *
  * const headers = establishHeaders(req.headers, { 'Content-Type': 'application/json' });
  * ```
- * 
+ *
  * @example Process cach control headers from direct import
  * ```typescript
  * import { processCacheControlHeaders } from "@fathym/common/http";
@@ -34,7 +34,9 @@
  * ```
  */
 
-export * from './establishHeaders.ts'
-export * from './processCacheControlHeaders.ts'
-export * from './proxyRequest.ts'
-export * from './redirectRequest.ts'
+export * from './buildURLMatch.ts';
+export * from './establishHeaders.ts';
+export * from './processCacheControlHeaders.ts';
+export * from './proxyRequest.ts';
+export * from './redirectRequest.ts';
+export * from './URLMatch.ts';
