@@ -1,5 +1,5 @@
 import type { NullableArrayOrObject } from "../../../src/common/types/NullableArrayOrObject.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("NullableArrayOrObject Tests", async (t) => {
   // Test for a simple object with primitive properties and arrays

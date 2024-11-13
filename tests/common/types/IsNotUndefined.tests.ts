@@ -1,5 +1,5 @@
 import type { IsNotUndefined } from "../../../src/common/types/IsNotUndefined.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("IsNotUndefined Tests", async (t) => {
   await t.step("Basic Checks", async (t) => {

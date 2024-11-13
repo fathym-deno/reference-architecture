@@ -1,6 +1,6 @@
 import type { IsMatched } from "../../../src/common/types/IsMatched.ts";
 import type { NormalizeNever } from "../../../src/common/types/NormalizeNever.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("IsMatched Tests", async (t) => {
   await t.step("Match All - Ensure all are true", async (t) => {

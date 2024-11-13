@@ -1,5 +1,5 @@
 import type { $FluentTagStrip } from "../../../../src/fluent/types/tags/$FluentTagStrip.ts";
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 
 Deno.test("Testing $FluentTagStrip", async (t) => {
   // Basic Test: Strip a single FluentTag

@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import type { FluentBuilderMethodsHandlers } from "../../../src/fluent/types/FluentBuilderMethodsHandlers.ts";
 
 Deno.test("Testing FluentBuilderMethodsHandlers", async (t) => {

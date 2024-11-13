@@ -1,5 +1,5 @@
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import { assert, assertEquals } from "../../test.deps.ts";
 
 Deno.test("$TagValues Type Tests", async (t) => {

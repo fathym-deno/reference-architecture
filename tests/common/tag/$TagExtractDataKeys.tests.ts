@@ -1,6 +1,6 @@
 import { assert, assertEquals } from "../../test.deps.ts";
 import type { $TagExtractDataKeys } from "../../../src/common/tags/$TagExtractDataKeys.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 // Example $Tag types for testing
 type TestTag = {

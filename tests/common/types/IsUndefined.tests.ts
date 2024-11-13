@@ -1,6 +1,6 @@
 // deno-lint-ignore-file ban-types
 import type { IsUndefined } from "../../../src/common/types/IsUndefined.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("IsUndefined Tests", async (t) => {
   await t.step("Simple Types", async (t) => {

@@ -1,7 +1,7 @@
 // deno-lint-ignore-file ban-types
 
 import type { HasKeys } from "../../../src/common/types/HasKeys.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("HasKeys Tests", async (t) => {
   await t.step("Simple Records", async (t) => {

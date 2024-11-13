@@ -1,5 +1,5 @@
 // deno-lint-ignore-file ban-types
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 import type { $FluentTagLoadHandlers } from "../../../../src/fluent/types/tags/$FluentTagLoadHandlers.ts";
 
 Deno.test("Testing $FluentTagLoadHandlers", async (t) => {

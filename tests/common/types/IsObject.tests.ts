@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import type { IsObject } from "../../../src/common/types/IsObject.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("IsObject Tests with infer U", async (t) => {
   await t.step("Basic Object Checks", async (t) => {

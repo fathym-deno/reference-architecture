@@ -1,7 +1,10 @@
-import type { LevelName } from "jsr:@std/log@0.224.6/levels";
-import { ConsoleHandler } from "../../src/log/.deps.ts";
+import {
+  ConsoleHandler,
+  type LevelName,
+  type Logger,
+  type LoggerConfig,
+} from "../../src/log/.deps.ts";
 import { LoggingProvider } from "../../src/log/LoggingProvider.ts";
-import type { Logger, LoggerConfig } from "jsr:@std/log@0.224.6/logger";
 
 class TestLoggingProvider extends LoggingProvider {
   public get PackageFake(): Logger {

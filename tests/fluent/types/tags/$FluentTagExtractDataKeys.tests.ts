@@ -1,4 +1,4 @@
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 import type { $FluentTagExtractDataKeys } from "../../../../src/fluent/types/tags/$FluentTagExtractDataKeys.ts";
 
 // Example FluentTag types for testing

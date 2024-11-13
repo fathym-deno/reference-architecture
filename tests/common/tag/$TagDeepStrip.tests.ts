@@ -4,7 +4,7 @@ import type {
   $TagDeepStripObject,
 } from "../../../src/common/tags/$TagDeepStrip.ts";
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
 
 Deno.test("Testing $TagDeepStrip", async (t) => {

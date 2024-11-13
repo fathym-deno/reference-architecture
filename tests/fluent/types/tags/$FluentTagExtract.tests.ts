@@ -1,4 +1,4 @@
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 import type { $FluentTagExtract } from "../../../../src/fluent/types/tags/$FluentTagExtract.ts";
 import type { $FluentTag } from "../../../../src/fluent/types/tags/$FluentTag.ts";
 

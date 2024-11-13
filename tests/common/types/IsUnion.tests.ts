@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import type { IsUnion } from "../../../src/common/types/IsUnion.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("IsUnion Tests", async (t) => {
   // Basic tests for union and non-union types

@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 import type { $FluentTag } from "../../../../src/fluent/types/tags/$FluentTag.ts";
 import type { $FluentTagExists } from "../../../../src/fluent/types/tags/$FluentTagExists.ts";
 

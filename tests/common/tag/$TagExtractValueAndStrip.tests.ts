@@ -1,6 +1,6 @@
 import type { $TagExtractValueAndStrip } from "../../../src/common/tags/$TagExtractValueAndStrip.ts";
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("Testing $TagExtractValueAndStrip", async (t) => {
   type TestTag =

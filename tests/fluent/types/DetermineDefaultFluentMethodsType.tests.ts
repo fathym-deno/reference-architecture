@@ -1,5 +1,5 @@
 import type { IsRecord } from "../../../src/common/types/IsRecord.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import type { ValueType } from "../../../src/common/types/ValueType.ts";
 import type { DetermineDefaultFluentMethodsType } from "../../../src/fluent/types/DetermineDefaultFluentMethodsType.ts";
 import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";

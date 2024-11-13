@@ -1,6 +1,6 @@
 import type { $Tag } from "../../../src/common/tags/$Tag.ts";
 import type { $TagExtract } from "../../../src/common/tags/$TagExtract.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("Testing $TagExtract", async (t) => {
   type TestTag = $Tag<"TestTag", "tag">;

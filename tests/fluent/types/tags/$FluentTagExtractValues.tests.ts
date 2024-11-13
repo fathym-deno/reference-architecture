@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { runTest } from "../../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../../src/common/testing/runTest.ts";
 import type { $FluentTagExtractValues } from "../../../../src/fluent/types/tags/$FluentTagExtractValues.ts";
 
 Deno.test("Testing $FluentTagExtractValues", async (t) => {

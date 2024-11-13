@@ -1,6 +1,6 @@
 // deno-lint-ignore-file ban-types
 import type { $Tag } from "../../../src/common/tags/$Tag.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 
 Deno.test("$Tag Type Tests", async (t) => {
   // Test with basic types

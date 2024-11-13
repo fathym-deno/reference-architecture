@@ -1,7 +1,7 @@
 // deno-lint-ignore-file no-explicit-any
 import type { IsMatched } from "../../../src/common/types/IsMatched.ts";
 import type { IsRecord } from "../../../src/common/types/IsRecord.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import type { $FluentTag } from "../../../src/fluent/types/tags/$FluentTag.ts";
 
 Deno.test("Testing IsRecord<T>", async (t) => {

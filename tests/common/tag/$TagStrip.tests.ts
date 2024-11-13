@@ -1,6 +1,6 @@
 import type { $TagStrip } from "../../../src/common/tags/$TagStrip.ts";
 import type { $TagValues } from "../../../src/common/tags/$TagValues.ts";
-import { runTest } from "../../../src/common/types/testing/runTest.ts";
+import { runTest } from "../../../src/common/testing/runTest.ts";
 import { assert, assertEquals, assertFalse } from "../../test.deps.ts";
 
 Deno.test("Testing $TagStrip", async (t) => {
