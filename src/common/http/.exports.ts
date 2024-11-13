@@ -36,6 +36,7 @@
 
 export * from './buildURLMatch.ts';
 export * from './establishHeaders.ts';
+export * from './KnownMethod.ts';
 export * from './processCacheControlHeaders.ts';
 export * from './proxyRequest.ts';
 export * from './redirectRequest.ts';
