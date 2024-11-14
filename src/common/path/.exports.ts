@@ -39,5 +39,7 @@
 export * from './createIfNotExists.ts';
 export * from './exists.ts';
 export * from './FileListRequest.ts';
+export * from './generateDirectoryHash.ts';
 export * from './getFilesList.ts';
 export * from './resolvePackageRoot.ts';
+
