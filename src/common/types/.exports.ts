@@ -16,6 +16,7 @@ export * from './IsNativeType.ts';
 export * from './IsNotUndefined.ts';
 export * from './IsObject.ts';
 export * from './IsObjectNotNative.ts';
+export * from './isPromise.ts';
 export * from './IsRecord.ts';
 export * from './IsUndefined.ts';
 export * from './IsUnion.ts';
