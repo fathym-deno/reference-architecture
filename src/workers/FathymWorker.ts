@@ -22,14 +22,16 @@ export abstract class FathymWorker<
 
     this.workerMessageHandlers = this.loadWorkerMessageHandlers();
 
-    this.sendMessage({
-      Type: FathymWorkerMessageTypes.Ping,
-      CorrelationID: crypto.randomUUID(),
-    } as TMessage);
+    if (typeof worker.postMessage === "function") {
+      this.sendMessage({
+        Type: FathymWorkerMessageTypes.Ping,
+        CorrelationID: crypto.randomUUID(),
+      } as TMessage);
 
-    worker.addEventListener("message", (event: MessageEvent<TMessage>) => {
-      this.handleWorkerMessage(event);
-    });
+      worker.addEventListener("message", (event: MessageEvent<TMessage>) => {
+        this.handleWorkerMessage(event);
+      });
+    }
   }
 
   // deno-lint-ignore no-explicit-any
