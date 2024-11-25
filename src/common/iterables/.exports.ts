@@ -84,6 +84,7 @@
  * const arr = [1, 2, 3, 4, 5];
  *
  * const sliced = outerSlice(arr, 2, 2);
+ * 
  * console.log(sliced); // [1, 2, 4, 5]
  * ```
  */
