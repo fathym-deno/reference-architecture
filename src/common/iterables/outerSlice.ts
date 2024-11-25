@@ -7,7 +7,7 @@
  * @param toEnd The number of elements to take from the end of the array.
  * @returns A new array containing the non-overlapping sliced elements.
  *
- * @example
+ * @example From direct import
  * ```typescript
  * const arr = [1, 2, 3, 4, 5];
  *
