@@ -77,7 +77,7 @@
  * stack.IsEmpty(); // Output: true
  * ```
  * 
- * @example outerSlice
+ * @example outerSlice from direct import
  * import { outerSlice } from "@fathym/common/iterables";
  *
  * ```typescript
