@@ -16,7 +16,11 @@
  * console.log(sliced); // [1, 2, 4, 5]
  * ```
  */
-export function outerSlice<T>(arr: T[], fromStart: number, toEnd: number): T[] {
+export function outerSlice<T>(
+  arr: T[] | undefined | null,
+  fromStart: number,
+  toEnd: number,
+): T[] {
   if (!arr?.length) {
     return [];
   }
