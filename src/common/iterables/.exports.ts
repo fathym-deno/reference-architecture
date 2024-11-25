@@ -76,10 +76,21 @@
  *
  * stack.IsEmpty(); // Output: true
  * ```
+ * 
+ * @example outerSlice
+ * import { outerSlice } from "@fathym/common/iterables";
+ *
+ * ```typescript
+ * const arr = [1, 2, 3, 4, 5];
+ *
+ * const sliced = outerSlice(arr, 2, 2);
+ * console.log(sliced); // [1, 2, 4, 5]
+ * ```
  */
 
 export * from './json-map-set/.exports.ts';
 export * from './concatUint8Arrays.ts';
 export * from './convertAsyncIterable.ts';
+export * from './outerSlice.ts';
 export * from './Stack.ts';
 export * from './Queue.ts';
