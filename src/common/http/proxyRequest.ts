@@ -47,13 +47,13 @@ export async function proxyRequest(
   cacheControl?: Record<string, string>,
   forceCache?: boolean,
 ): Promise<Response> {
-  const originalUrl = new URL(`${base}${path}`);
+  const originalUrl = new URL(path, base);
 
   originalUrl.hash = hash || "";
 
   originalUrl.search = search || "";
 
-  const proxyUrl = new URL(`${proxyRoot}${path}`);
+  const proxyUrl = new URL(path, proxyRoot);
 
   for (const queryParam of originalUrl.searchParams.keys()) {
     const queryValues = originalUrl.searchParams.getAll(queryParam);
