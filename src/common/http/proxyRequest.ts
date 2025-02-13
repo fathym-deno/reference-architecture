@@ -53,7 +53,7 @@ export async function proxyRequest(
 
   originalUrl.search = search || "";
 
-  const proxyUrl = new URL(path, proxyRoot);
+  const proxyUrl = new URL(`${proxyRoot}${path}`.replace("//", "/"));
 
   for (const queryParam of originalUrl.searchParams.keys()) {
     const queryValues = originalUrl.searchParams.getAll(queryParam);
