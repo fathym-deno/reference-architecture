@@ -27,7 +27,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
   ).href;
 
   return {
-    Base: base.endsWith("/") ? base : `${base}/`,
+    Base: base,
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,
