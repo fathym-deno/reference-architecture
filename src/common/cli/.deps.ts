@@ -1,10 +1,10 @@
-export { merge } from '../merge/.exports.ts';
-
-export * as Colors from 'jsr:@std/fmt@1.0.3/colors';
-export { toText } from 'jsr:@std/streams@1.0.8';
+export * as Colors from 'jsr:@std/fmt@1.0.5/colors';
+export { toText } from 'jsr:@std/streams@1.0.9';
 export {
   writeAll,
   writeAllSync,
   type Writer,
   type WriterSync,
-} from 'jsr:@std/io@0.225.0';
+} from 'jsr:@std/io@0.225.2';
+
+export { merge } from '../merge/.exports.ts';

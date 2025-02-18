@@ -1,1 +1,1 @@
-export { STATUS_CODE } from "jsr:@std/http@1.0.9/status";
+export { STATUS_CODE } from "jsr:@std/http@1.0.13/status";
