@@ -29,11 +29,15 @@
  * console.log(concatenated); // [4, 5, 6, 1, 2, 3]
  * ```
  */
-export function concatUint8Arrays(a: Uint8Array, b: Uint8Array): Uint8Array {
-  const c = new Uint8Array(a.length + b.length);
+export function concatUint8Arrays(
+  a: Uint8Array,
+  b: Uint8Array,
+): Uint8Array<ArrayBuffer> {
+  const length = a.length + b.length;
+
+  const c = new Uint8Array(new ArrayBuffer(length));
 
   c.set(a, 0);
-
   c.set(b, a.length);
 
   return c;
