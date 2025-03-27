@@ -31,7 +31,7 @@ export function loadJwtConfig(): JWTConfig {
 
       return [header, payload as T, signature];
     },
-    ExpirationTime: 60 * 60 * 24 * 365 * 5, // 5 years
+    ExpirationTime: 60 * 60 * 24 * 365 * 10, // 10 years
     Header: "Authorization",
     JWK: jwk,
     KeyUsages: ["sign", "verify"] as KeyUsage[],
