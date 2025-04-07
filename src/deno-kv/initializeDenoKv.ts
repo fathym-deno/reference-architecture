@@ -24,10 +24,8 @@ export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
       try {
         await Deno.mkdir(denoKvDir);
       } catch (err) {
-        logger.warn(
-          `There was an issure ensuring the directory: ${denoKvDir}`,
-          err,
-        );
+        logger.warn(`There was an issure ensuring the directory: ${denoKvDir}`);
+        logger.warn(err);
       }
     }
   }

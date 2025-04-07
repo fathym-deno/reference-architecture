@@ -23,7 +23,8 @@ try {
 
   version = await setVersion.Configure();
 } catch (error) {
-  console.error("There was an error while setting the version.", error);
+  console.error("There was an error while setting the version.");
+  console.error(error);
 }
 
 export { version };
