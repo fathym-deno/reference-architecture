@@ -30,7 +30,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/tky-runtime.ts",
+        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json"
       ],
       "console": "integratedTerminal",
