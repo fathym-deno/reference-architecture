@@ -24,12 +24,14 @@
     "build": "npx rimraf cov && deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",
     "build:fmt": "deno fmt",
     "build:lint": "deno lint --fix",
+    "build:tky-cli": "deno compile --allow-all --output=tky-cli ./src/common/cli/tky-runtime.ts",
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "deploy": "deno task build && ftm git",
     "npm:build": "deno run -A scripts/npm.build.ts",
     "npm:publish": "npm publish ./build --access public",
     "publish:check": "deno publish --dry-run --allow-dirty",
     "test": "npx rimraf cov && deno test -A ./tests/tests.ts --coverage=cov",
+    "test:cli": "deno run -A ./src/common/cli/tky-runtime.ts C:\\Fathym\\source\\github\\o-industrial\\o-industrial\\src\\cli\\.cli.json",
     "version": "deno run -A ./src/build/version.ts"
   },
   "imports": {
