@@ -8,6 +8,10 @@ import {
 } from './.deps.ts';
 import { DefaultHelp } from './DefaultHelp.ts';
 
+export interface Command {
+  Run(): Promise<void | number>;
+}
+
 export type CLIConfig = {
   Name: string;
   Version: string;
@@ -20,9 +24,7 @@ export type CLIConfig = {
 };
 
 export type CommandModule = {
-  default: new (params: CommandParams<any, any>) => {
-    Run(): Promise<void | number>;
-  };
+  default: new (params: CommandParams<any, any>) => Command;
   CmdParams?: new (
     flags: Record<string, unknown>,
     args: unknown[]
@@ -140,7 +142,7 @@ export class CLI {
           }
         })();
 
-    const instance = new Cmd(params);
+    const instance: Command = new Cmd(params);
 
     console.log(`🚀 ${config.Name}: running "${key}"`);
 
