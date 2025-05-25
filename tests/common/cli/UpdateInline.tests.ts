@@ -1,5 +1,5 @@
 import { assert, assertEquals, delay } from "../../test.deps.ts";
-import { UpdateInline } from "../../../src/common/cli/UpdateInline.ts";
+import { UpdateInline } from "../../../src/common/cli/styling/UpdateInline.ts";
 import { showCursor } from "../../../src/common/cli/utils/showCursor.ts";
 import { hideCursor } from "../../../src/common/cli/utils/hideCursor.ts";
 import { Spinner } from "jsr:@std/cli/spinner";

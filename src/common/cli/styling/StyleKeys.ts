@@ -1,4 +1,4 @@
-import type { Colors } from "./.deps.ts";
+import type { Colors } from "../.deps.ts";
 
 type RGB8Styles = Pick<typeof Colors, "rgb8" | "bgRgb8">;
 

@@ -1,5 +1,5 @@
-import type { StyleOptions } from "../StyleKeys.ts";
-import type { TextContent } from "../TextContent.ts";
+import type { StyleOptions } from "../styling/StyleKeys.ts";
+import type { TextContent } from "../styling/TextContent.ts";
 import { appendStyles } from "./appendStyles.ts";
 
 export function buildTextContent(

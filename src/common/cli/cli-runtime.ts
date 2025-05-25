@@ -1,4 +1,4 @@
-import { CLI } from './CLI.ts';
+import { CLI } from "./CLI.ts";
 
 const cli = new CLI();
 

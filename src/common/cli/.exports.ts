@@ -2,11 +2,13 @@
  * Helpers for delivering quality, interactive CLI experiences.
  * @module
  */
+export * from './commands/.exports.ts';
 export * from './spinners/.exports.ts';
 export * from './utils/.exports.ts';
 export * from './CLI.ts';
+export * from './CLIConfig.ts';
 export * from './DefaultHelp.ts';
-export * from './StyleKeys.ts';
-export * from './TextContent.ts';
-export * from './UpdateInline.ts';
-export * from './UpdateInlineOptions.ts';
+export * from './styling/StyleKeys.ts';
+export * from './styling/TextContent.ts';
+export * from './styling/UpdateInline.ts';
+export * from './styling/UpdateInlineOptions.ts';

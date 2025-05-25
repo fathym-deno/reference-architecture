@@ -5,36 +5,24 @@ import {
   resolve,
   toFileUrl,
   walk,
+  type ZodSchema,
 } from './.deps.ts';
+import { CLIConfig } from "./CLIConfig.ts";
+import type { CommandModule } from "./commands/CommandModule.ts";
 import { DefaultHelp } from './DefaultHelp.ts';
 
+// 🔹 Main command contract
 export interface Command {
-  Run(): Promise<void | number>;
+  Init?(): void | Promise<void>;
+  Run(): void | number | Promise<void | number>;
+  DryRun?(): void | number | Promise<void | number>;
+  Cleanup?(): void | Promise<void>;
 }
 
-export type CLIConfig = {
-  Name: string;
-  Version: string;
-  Description?: string;
-  Commands: string;
-  Help?: {
-    Usage?: string;
-    Examples?: string[];
-  };
-};
-
-export type CommandModule = {
-  default: new (params: CommandParams<any, any>) => Command;
-  CmdParams?: new (
-    flags: Record<string, unknown>,
-    args: unknown[]
-  ) => CommandParams<any, any>;
-  Metadata?: {
-    Name: string;
-    Description?: string;
-    Usage?: string;
-    Examples?: string[];
-  };
+// 🔹 Optional command suggestions for shell autocomplete
+export type CommandSuggestions = {
+  Flags?: string[] | Record<string, string[]>;
+  Args?: string[];
 };
 
 export abstract class CommandParams<
@@ -42,6 +30,10 @@ export abstract class CommandParams<
   A extends unknown[] = []
 > {
   constructor(public readonly Flags: F, public readonly Args: A) {}
+
+  public get DryRun(): boolean {
+    return !!this.Flag('dry-run');
+  }
 
   protected Arg<Index extends keyof A & number>(
     Index: Index
@@ -117,8 +109,8 @@ export class CLI {
       Deno.exit(1);
     }
 
-    const Cmd = mod.default;
-    const CmdParams = mod.CmdParams;
+    const Cmd = mod.Command;
+    const CmdParams = mod.Params;
 
     if (!Cmd || typeof Cmd !== 'function') {
       console.error(
@@ -147,7 +139,21 @@ export class CLI {
     console.log(`🚀 ${config.Name}: running "${key}"`);
 
     try {
-      const result = await instance.Run();
+      if (typeof instance.Init === 'function') {
+        await Promise.resolve(instance.Init());
+      }
+
+      const useDryRun =
+        typeof instance.DryRun === 'function' && (params as any).DryRun;
+
+      const result = useDryRun
+        ? await Promise.resolve(instance.DryRun?.())
+        : await Promise.resolve(instance.Run());
+
+      if (typeof instance.Cleanup === 'function') {
+        await Promise.resolve(instance.Cleanup());
+      }
+
       if (typeof result === 'number') Deno.exit(result);
     } catch (err) {
       console.error(`💥 Error during "${key}" execution:\n`, err);

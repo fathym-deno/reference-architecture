@@ -1,5 +1,5 @@
 import { Colors } from "../.deps.ts";
-import type { RGBStyleKeys, StyleKeys, StyleOptions } from "../StyleKeys.ts";
+import type { RGBStyleKeys, StyleKeys, StyleOptions } from "../styling/StyleKeys.ts";
 
 export function appendStyles(text: string, styleKey: StyleOptions): string {
   let append: (txt: string) => string;
