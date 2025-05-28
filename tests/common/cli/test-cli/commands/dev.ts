@@ -1,83 +1,71 @@
-import { z } from 'zod';
-import { Command, CommandModule, CommandParams } from '@fathym/common/cli';
+import {
+  Command,
+  CommandParams,
+  defineCommandModule,
+} from '@fathym/common/cli';
+import { z } from '../../../../test.deps.ts';
 
-// 🔹 Define Zod schema for the fully-resolved, public CLI interface
-export const DevParamsSchema = z.object({
+// 🔹 Flag and argument schemas
+export const DevFlagsSchema = z.object({
   Verbose: z.boolean().optional().describe('Enable verbose logging'),
   Docker: z.boolean().optional().describe('Run in Docker'),
-  Workspace: z.string().default('default').describe('Target workspace'),
+  'dry-run': z.boolean().optional().describe('Run without side effects'),
 });
 
-// 🔹 This type represents fully computed command parameters
-export type DevParamsSchema = z.infer<typeof DevParamsSchema>;
+export const DevArgsSchema = z.tuple([
+  z.string().optional().describe('Target workspace'),
+]);
 
-// 🔹 Classic flags and args (used internally, if needed)
-type DevFlags = {
-  Verbose?: boolean;
-  Docker?: boolean;
-  'dry-run'?: boolean;
-};
-
-type DevArgs = [Workspace?: string];
-
-// 🔹 CLI metadata — optionally overridable, but can also be derived
-export const Metadata = {
-  Name: 'dev',
-  Description: 'Run Open Industrial in dev mode',
-  Usage: 'oi dev [workspace] [--Verbose] [--Docker]',
-};
-
-// 🔹 Fully resolved param object — hydrated using DevParamsSchema
-export class DevCommandParams
-  extends CommandParams<DevFlags, DevArgs>
-  implements DevParamsSchema
-{
-  public static Schema = DevParamsSchema;
-
+// 🔹 CLI parameter class — direct flag/arg accessors
+export class DevCommandParams extends CommandParams<
+  z.infer<typeof DevFlagsSchema>,
+  z.infer<typeof DevArgsSchema>
+> {
   public get Verbose(): boolean {
-    return !!this.Flag('Verbose');
+    return this.Flag('Verbose') ?? false;
   }
 
   public get Docker(): boolean {
-    return !!this.Flag('Docker');
+    return this.Flag('Docker') ?? false;
   }
 
   public get Workspace(): string {
     return this.Arg(0) ?? 'default';
   }
-
-  public ToResolved(): DevParamsSchema {
-    return DevParamsSchema.parse({
-      Verbose: this.Verbose,
-      Docker: this.Docker,
-      Workspace: this.Workspace,
-    });
-  }
 }
 
-// 🔹 The command class using resolved params
-export class DevCommand implements Command {
-  constructor(public Params: DevCommandParams) {}
+// 🔹 Command implementation — CLI logic + inferred metadata
+export class DevCommand extends Command<DevCommandParams> {
+  constructor(params: DevCommandParams) {
+    super(params, DevArgsSchema, DevFlagsSchema);
+  }
 
-  public Run(): void {
-    const resolved = this.Params.ToResolved();
-
-    if (resolved.Verbose) {
+  public async Run(): Promise<void> {
+    if (this.Params.Verbose) {
       console.log('📣 Verbose mode enabled');
     }
 
-    console.log(`🔧 Running Open Industrial in dev mode...`);
-    console.log(`📁 Workspace: ${resolved.Workspace}`);
+    console.log('🔧 Running Open Industrial in dev mode...');
+    console.log(`📁 Workspace: ${this.Params.Workspace}`);
 
-    if (resolved.Docker) {
-      console.log('🐳 Running in Docker...');
+    if (this.Params.Docker) {
+      console.log('🐳 Launching in Docker...');
     } else {
-      console.log('🧪 Running locally...');
+      console.log('🧪 Launching in local dev mode...');
     }
+  }
+
+  public BuildMetadata() {
+    return this.buildMetadataFromSchemas(
+      'Development Mode',
+      'Run Open Industrial in dev mode'
+    );
   }
 }
 
-export default {
+export default defineCommandModule({
+  FlagsSchema: DevFlagsSchema,
+  ArgsSchema: DevArgsSchema,
   Command: DevCommand,
   Params: DevCommandParams,
-} as CommandModule;
+});

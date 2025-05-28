@@ -14,5 +14,15 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "denoland.vscode-deno"
-  }
+  },
+  "json.schemas": [
+    {
+      "fileMatch": [".cli.json"],
+      "url": "./schemas/CLIConfig.schema.json"
+    },
+    {
+      "fileMatch": [".metadata.json"],
+      "url": "./schemas/CommandModuleMetadata.schema.json"
+    }
+  ]
 }

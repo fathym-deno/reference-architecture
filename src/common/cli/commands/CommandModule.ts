@@ -1,7 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema } from '../.deps.ts';
-import type { CommandParams, Command, CommandSuggestions } from '../CLI.ts';
-import type { CommandModuleMetadata } from '../commands/CommandModuleMetadata.ts';
+import type { ZodSchema, ZodType, ZodTypeDef } from '../.deps.ts';
+import type { Command } from './Command.ts';
+import type {
+  CommandParamConstructor,
+  CommandParams,
+} from './CommandParams.ts';
 
 /**
  * Represents a complete, executable CLI command module.
@@ -26,23 +29,35 @@ export type CommandModule = {
   FlagsSchema: ZodSchema;
 
   /**
-   * Metadata about the command — name, description, usage, examples.
-   * Used in CLI help, docs, and command listings.
-   */
-  Metadata: CommandModuleMetadata;
-
-  /**
    * Optional parameter class that provides typed access to flags and args.
    * Used to construct the `params` passed into the command at runtime.
    */
-  Params?: new (
-    flags: Record<string, unknown>,
-    args: unknown[]
-  ) => CommandParams<any, any>;
-
-  /**
-   * Optional static suggestions to power autocomplete for flags and args.
-   * If omitted, suggestions may be derived from the provided schemas.
-   */
-  Suggestions: CommandSuggestions;
+  Params?: CommandParamConstructor;
 };
+
+/**
+ * Typed helper to define a CLI CommandModule cleanly.
+ * Ensures type safety while hiding generic coercion.
+ */
+export function defineCommandModule<
+  F extends Record<string, unknown>,
+  A extends unknown[],
+  CP extends CommandParams<F, A>,
+  CC extends new (params: CP) => Command<CP>,
+  FS extends ZodType<F, ZodTypeDef, F>,
+  AS extends ZodType<A, ZodTypeDef, A>
+>(def: {
+  FlagsSchema: FS;
+  ArgsSchema: AS;
+  Command: CC;
+  Params: new (flags: F, args: A) => CP;
+}): CommandModule {
+  return {
+    FlagsSchema: def.FlagsSchema,
+    ArgsSchema: def.ArgsSchema,
+    Command: def.Command as unknown as new (
+      params: CommandParams<any, any>
+    ) => Command<any>,
+    Params: def.Params as unknown as CommandParamConstructor,
+  };
+}

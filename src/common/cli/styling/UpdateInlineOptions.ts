@@ -1,5 +1,5 @@
 import type { WriterSync } from "../.deps.ts";
-import { Spinner } from "../spinners/Spinner.ts";
+import type { Spinner } from "../spinners/Spinner.ts";
 import type { StyleOptions } from "./StyleKeys.ts";
 import type { TextContent } from "./TextContent.ts";
 

@@ -1,0 +1,44 @@
+{
+  "$ref": "#/definitions/CLIConfig",
+  "definitions": {
+    "CLIConfig": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "A user-facing, friendly name for the CLI. Shown in help output and documentation headers."
+        },
+        "Tokens": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "description": "All valid CLI tokens (aliases) that can invoke this tool. Examples: [\"openindustrial\", \"oi\"]"
+        },
+        "Version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The current version of the CLI. Used in logs, help, and update flows."
+        },
+        "Description": {
+          "type": "string",
+          "description": "Optional description for the CLI. Shown in help output."
+        },
+        "Commands": {
+          "type": "string",
+          "default": "./commands",
+          "description": "Relative or absolute path to the root folder of command modules. Defaults to \"./commands\"."
+        }
+      },
+      "required": [
+        "Name",
+        "Tokens",
+        "Version"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

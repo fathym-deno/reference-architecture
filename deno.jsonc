@@ -14,6 +14,7 @@
     "./iterables/json-map-set": "./src/common/iterables/json-map-set/.exports.ts",
     "./jwt": "./src/common/jwt/.exports.ts",
     "./log": "./src/log/.exports.ts",
+    "./matches": "./src/common/matches/.exports.ts",
     "./merge": "./src/common/merge/.exports.ts",
     "./oauth": "./src/oauth/.exports.ts",
     "./path": "./src/common/path/.exports.ts",
@@ -25,7 +26,7 @@
     "build": "npx rimraf cov && deno task build:schema && deno task build:fmt && deno task build:lint && deno task publish:check && deno task test",
     "build:fmt": "deno fmt",
     "build:lint": "deno lint --fix",
-    "build:schema": "deno run -A ./src/common/cli/cli-emitCLIConfigSchema.ts",
+    "build:schema": "deno run -A ./scripts/emit-cli-schemas.ts",
     "build:tky-cli": "deno compile --allow-all --output=tky-cli ./src/common/cli/tky-runtime.ts",
     "check": "deno fmt --check && deno lint && deno check **/*.ts && deno check **/*.tsx",
     "deploy": "deno task build && ftm git",
@@ -33,7 +34,7 @@
     "npm:publish": "npm publish ./build --access public",
     "publish:check": "deno publish --dry-run --allow-dirty",
     "test": "npx rimraf cov && deno test -A ./tests/tests.ts --coverage=cov",
-    "test:cli": "deno run -A ./src/common/cli/tky-runtime.ts C:\\Fathym\\source\\github\\o-industrial\\o-industrial\\src\\cli\\.cli.json",
+    "test:cli": "deno run -A ./src/common/cli/cli-runtime.ts ./tests/common/cli/test-cli/.cli.json",
     "version": "deno run -A ./src/build/version.ts"
   },
   "imports": {

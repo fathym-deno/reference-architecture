@@ -4,7 +4,7 @@ export { walk } from 'jsr:@std/fs@1.0.17';
 export { toText } from 'jsr:@std/streams@1.0.9';
 export { dirname, resolve, relative, toFileUrl } from 'jsr:@std/path@1.0.9';
 
-export { z, ZodSchema } from "npm:zod@3.25.28";
+export { z, ZodSchema,ZodType, type ZodTypeDef } from "npm:zod@3.25.28";
 export { zodToJsonSchema } from "npm:zod-to-json-schema@3.24.5";
 
 export {
@@ -14,4 +14,5 @@ export {
   type WriterSync,
 } from 'jsr:@std/io@0.225.2';
 
+export { findClosestMatch } from "../matches/.exports.ts";
 export { merge } from '../merge/.exports.ts';
