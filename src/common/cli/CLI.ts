@@ -1,140 +1,153 @@
-import {
-  dirname,
-  parseArgs,
-  relative,
-  resolve,
-  toFileUrl,
-  walk,
-} from './.deps.ts';
-
-import type { CLIConfig } from './CLIConfig.ts';
-import type { CLIHelp } from './CLIHelp.ts';
+// CLI.ts
+import { CLIInvocationParser } from './CLIInvocationParser.ts';
+import { CLICommandResolver } from './CLICommandResolver.ts';
+import { CLIHelp } from './CLIHelp.ts';
 import { DefaultCLIHelp } from './DefaultCLIHelp.ts';
-import type { Command } from './commands/Command.ts';
-import type { CommandModule } from './commands/CommandModule.ts';
-import { CommandParams } from './commands/CommandParams.ts';
+import { DefaultCLIInvocationParser } from './DefaultCLIInvocationParser.ts';
+import { resolve, toFileUrl } from "./.deps.ts";
+import { Command, CommandModuleMetadata } from "./.exports.ts";
+import { CLIConfig } from "./CLIConfig.ts";
+import { CLIResolvedEntry } from "./CLIResolvedEntry.ts";
 
-/**
- * The main CLI runner.
- * Loads config, resolves commands, and executes CLI requests.
- */
+export interface CLIOptions {
+  help?: CLIHelp;
+  resolver?: CLICommandResolver;
+  parser?: CLIInvocationParser;
+}
+
 export class CLI {
-  constructor(protected Help: CLIHelp = new DefaultCLIHelp()) {}
+  protected help: CLIHelp;
+  protected resolver: CLICommandResolver;
+  protected parser: CLIInvocationParser;
 
+  /**
+   * CLI constructor that uses options for dynamic configuration.
+   * @param options - Configuration object for CLI setup.
+   */
+  constructor(options: CLIOptions = {}) {
+    // Set defaults and override if provided in options
+    this.help = options.help ?? new DefaultCLIHelp();
+    this.resolver = options.resolver ?? new CLICommandResolver();
+    this.parser = options.parser ?? new DefaultCLIInvocationParser();
+  }
+
+  /**
+   * Runs the CLI based on the provided configuration file path and arguments.
+   * @param cliConfigPath - Path to the CLI config file.
+   * @param args - Command-line arguments passed to the CLI.
+   */
   public async RunFromConfig(cliConfigPath: string, args: string[]) {
-    const configText = await Deno.readTextFile(cliConfigPath);
-    const config = JSON.parse(configText) as CLIConfig;
+    const { flags, positional, head, tail, rest, key, baseCommandDir, config } =
+      await this.parser.ParseInvocation(cliConfigPath, args);
 
-    const parsed = parseArgs(args, { boolean: true });
-    const positional = parsed._ as string[];
-    const { _, ...flags } = parsed;
+    const commandMap = await this.resolver.ResolveCommandMap(baseCommandDir);
 
-    const [head, tail, ...rest] = positional;
-    const resolvedCliPath = resolve(cliConfigPath);
-    const cliConfigDir = dirname(resolvedCliPath);
-    const commandsPath = resolve(cliConfigDir, config.Commands ?? './commands');
-
-    const commandMap = await this.resolveCommandMap(commandsPath);
-    const key = tail ? `${head}/${tail}` : head;
-
-    const verbose = flags.verbose || Deno.env.get('DENO_DEBUG');
-    if (verbose) {
-      console.debug(`📦 CLI Invocation`);
-      console.debug(`    Positional:`, positional);
-      console.debug(`    Flags:`, flags);
-      console.debug(`    Command Key: ${key}`);
-    }
-
-    if (!head || flags.help) {
-      await this.Help.ShowRoot(config, commandMap);
+    if (!head) {
+      await this.handleHelp(config, baseCommandDir, key, commandMap);
       Deno.exit(0);
     }
 
     const match = commandMap.get(key);
     if (!match) {
-      this.Help.ShowUnknown(key, commandMap);
-      await this.Help.ShowRoot(config, commandMap);
+      this.help.ShowUnknown(key, commandMap);
+      await this.help.ShowRoot(config, commandMap);
       Deno.exit(1);
     }
 
-    const { Path } = match;
-
     try {
-      const mod: CommandModule = (await import(toFileUrl(Path).href)).default;
-      const Cmd = mod.Command;
-      const CmdParams = mod.Params;
+      const [command] = match;
+      const { Path } = command ?? {}; // Use Path from resolved entry
 
-      if (!Cmd || typeof Cmd !== 'function') {
-        throw new Error(`Command at ${Path} is invalid or missing Command export.`);
-      }
-
-      const resolvedArgs = tail ? rest : positional;
-      const params = CmdParams
-        ? new CmdParams(flags, resolvedArgs)
-        : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-            constructor() {
-              super(flags, resolvedArgs);
-            }
-          })();
-
-      const instance: Command = new Cmd(params);
+      const instance = await this.resolver.LoadCommandInstance(
+        Path,
+        flags,
+        tail ? rest : positional
+      );
 
       if (flags.help) {
-        this.Help.ShowCommand(key, instance.BuildMetadata());
+        this.help.ShowCommand(key, instance.BuildMetadata());
         Deno.exit(0);
       }
 
       console.log(`🚀 ${config.Name}: running "${key}"`);
+      const result = await this.runCommandLifecycle(instance);
+      if (typeof result === 'number') Deno.exit(result);
 
-      if (typeof instance.Init === 'function') {
-        await instance.Init();
-      }
-
-      const result = typeof instance.DryRun === 'function' && instance.Params.DryRun
-        ? await instance.DryRun()
-        : await instance.Run();
-
-      if (typeof instance.Cleanup === 'function') {
-        await instance.Cleanup();
-      }
-
-      if (typeof result === 'number') {
-        Deno.exit(result);
-      }
+      console.log(`✅ ${config.Name}: "${key}" completed`);
     } catch (err) {
       console.error(`💥 Error during "${key}" execution:\n`, err);
       Deno.exit(1);
     }
-
-    console.log(`✅ ${config.Name}: "${key}" completed`);
   }
 
   /**
-   * Scans the command directory and maps CLI keys to command module paths.
+   * Runs the command lifecycle (Init, Run, Cleanup).
+   * @param cmd - The command to execute.
+   * @returns The result of the command execution.
    */
-  protected async resolveCommandMap(baseDir: string) {
-    const map = new Map<string | number, { Path: string }>();
+  protected async runCommandLifecycle(cmd: Command): Promise<void | number> {
+    if (typeof cmd.Init === 'function') await cmd.Init();
 
-    for await (const entry of walk(baseDir, {
-      includeDirs: false,
-      exts: ['.ts'],
-    })) {
-      if (entry.name === '.metadata.ts') continue;
+    const result =
+      typeof cmd.DryRun === 'function' && cmd.Params.DryRun
+        ? await cmd.DryRun()
+        : await cmd.Run();
 
-      const rel = relative(baseDir, entry.path)
-        .replace(/\\/g, '/')
-        .replace(/\/index$/, '');
-      const key = rel.replace(/\.ts$/, '');
-      const absPath = resolve(entry.path);
+    if (typeof cmd.Cleanup === 'function') await cmd.Cleanup();
 
-      if (map.has(key)) {
-        console.warn(`⚠️ Duplicate command key detected: "${key}"`);
-        continue;
+    return result;
+  }
+
+  /**
+   * Handles displaying help information based on the parsed command.
+   */
+  protected async handleHelp(
+    config: CLIConfig,
+    baseCommandDir: string,
+    key: string,
+    commandMap: Map<string, CLIResolvedEntry>
+  ) {
+    const groupKeys = [...commandMap.keys()].filter((k) =>
+      k.startsWith(`${key}/`)
+    );
+    if (groupKeys.length > 0) {
+      await this.showGroupHelp(config, baseCommandDir, key, groupKeys, commandMap);
+    } else {
+      await this.help.ShowRoot(config, commandMap);
+    }
+  }
+
+  /**
+   * Displays help information for the command group.
+   */
+  protected async showGroupHelp(
+    config: CLIConfig,
+    baseCommandDir: string,
+    group: string,
+    subcommands: string[],
+    commandMap: Map<string, CLIResolvedEntry>
+  ) {
+    const scoped = new Map<string, CLIResolvedEntry>();
+
+    for (const key of subcommands) {
+      const sub = key.split('/')[1]; // Extract the subcommand from the group/command structure
+      const resolvedEntry = commandMap.get(key);
+
+      if (resolvedEntry) {
+        scoped.set(sub, resolvedEntry); // Add the tuple (command, metadata) to scoped
       }
-
-      map.set(key, { Path: absPath });
     }
 
-    return map;
+    let metadata: CommandModuleMetadata | undefined;
+    try {
+      // Load metadata for the group (if available)
+      const metaPath = resolve(baseCommandDir, group, '.metadata.ts');
+      metadata = (await import(toFileUrl(metaPath).href)).Metadata;
+    } catch {
+      // optional: if metadata is missing, we skip it
+    }
+
+    // Show group help using the scoped commands and metadata
+    await this.help.ShowGroup(group, config, scoped, metadata);
   }
 }

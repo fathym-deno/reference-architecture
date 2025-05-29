@@ -1,25 +1,29 @@
-import type { CLIHelp } from "./CLIHelp.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
-import type { CommandModuleMetadata } from "./commands/CommandModuleMetadata.ts";
-import { findClosestMatch, toFileUrl } from "./.deps.ts";
-import type { CommandModule } from "./commands/CommandModule.ts";
+import { findClosestMatch } from './.deps.ts';
+import type { CommandModuleMetadata } from './.exports.ts';
+import type { CLIConfig } from './CLIConfig.ts';
+import type { CLIHelp } from './CLIHelp.ts';
+import type { CLIResolvedEntry } from './CLIResolvedEntry.ts';
+import { loadModuleMetadata } from './loadModuleMetadata.ts';
 
-/**
- * Default implementation for CLI help rendering.
- */
 export class DefaultCLIHelp implements CLIHelp {
-  public async ShowRoot(config: CLIConfig, commands: Map<string, { Path: string }>) {
+  /**
+   * Displays the help UI for the root CLI context.
+   */
+  public async ShowRoot(
+    config: CLIConfig,
+    commands: Map<string, CLIResolvedEntry>
+  ) {
     console.log(`\n📘 ${config.Name} CLI v${config.Version}`);
 
     if (config.Description) {
       console.log(config.Description);
     }
 
-    const token = config.Tokens?.[0] ?? config.Name.toLowerCase().replace(/\s+/g, "-");
-
+    const token =
+      config.Tokens?.[0] ?? config.Name.toLowerCase().replace(/\s+/g, '-');
     console.log(`\nUsage:\n  ${token} <command> [options]`);
 
-    const exampleList = await collectExamples(commands);
+    const exampleList = await this.collectExamples(commands);
     if (exampleList.length) {
       console.log(`\nExamples:`);
       for (const ex of exampleList) {
@@ -27,20 +31,13 @@ export class DefaultCLIHelp implements CLIHelp {
       }
     }
 
-    const seen = new Set<string>();
-    console.log(`\nAvailable Commands:`);
-
-    for (const key of commands.keys()) {
-      const top = key.split("/")[0];
-      if (!seen.has(top)) {
-        seen.add(top);
-        console.log(`  ${top}`);
-      }
-    }
-
-    console.log(`\nUse '--help' with any command to view details.\n`);
+    // Display available commands
+    await this.renderCommandsList(config, commands, undefined);
   }
 
+  /**
+   * Displays the help UI for a specific command using its metadata.
+   */
   public ShowCommand(key: string, metadata: CommandModuleMetadata) {
     console.log(`\n📘 Help: ${metadata?.Name ?? key}`);
 
@@ -57,10 +54,45 @@ export class DefaultCLIHelp implements CLIHelp {
       }
     }
 
-    console.log("");
+    console.log('');
   }
 
-  public ShowUnknown(key: string, commands: Map<string, { Path: string }>) {
+  /**
+   * Displays the help UI for a specific group of commands.
+   */
+  public async ShowGroup(
+    group: string,
+    config: CLIConfig,
+    subcommands: Map<string, CLIResolvedEntry>,
+    metadata?: CommandModuleMetadata
+  ) {
+    const token =
+      config.Tokens?.[0] ?? config.Name.toLowerCase().replace(/\s+/g, '-');
+
+    console.log(`\n📘 ${config.Name} – Group: ${metadata?.Name ?? group}`);
+
+    if (metadata?.Description) {
+      console.log(metadata.Description);
+    }
+
+    console.log(`\nUsage:\n  ${token} ${group} <command> [options]`);
+
+    const exampleList = await this.collectExamples(subcommands);
+    if (exampleList.length) {
+      console.log(`\nExamples:`);
+      for (const ex of exampleList) {
+        console.log(`  ${token} ${group} ${ex}`);
+      }
+    }
+
+    // Display available subcommands
+    await this.renderCommandsList(config, subcommands, group);
+  }
+
+  /**
+   * Displays the help UI for an unknown command.
+   */
+  public ShowUnknown(key: string, commands: Map<string, CLIResolvedEntry>) {
     console.error(`❌ Unknown command: ${key}`);
 
     const guess = findClosestMatch(key, [...commands.keys()]);
@@ -68,26 +100,59 @@ export class DefaultCLIHelp implements CLIHelp {
       console.log(`💡 Did you mean: ${guess}?`);
     }
   }
-}
 
-/**
- * Lazily loads command modules to collect usage examples for CLI root help.
- */
-async function collectExamples(commands: Map<string, { Path: string }>): Promise<string[]> {
-  const examples: string[] = [];
+  /**
+   * Collect examples from the modules and commands.
+   */
+  private async collectExamples(
+    commands: Map<string, CLIResolvedEntry>
+  ): Promise<string[]> {
+    const examples: string[] = [];
 
-  for (const [_, { Path }] of commands.entries()) {
-    try {
-      const mod: CommandModule = (await import(toFileUrl(Path).href)).default;
-      const instance = new mod.Command(new mod.Params!({}, []));
-      const metadata = instance.BuildMetadata();
-      if (metadata?.Examples?.length) {
-        examples.push(...metadata.Examples);
+    for (const [_, entry] of commands.entries()) {
+      try {
+        const { Path } = entry[0]!; // Access the Path from the first part of the tuple
+
+        if (Path) {
+          // Load the module and collect examples
+          const mod = await loadModuleMetadata(Path);
+          if (mod?.Examples?.length) {
+            examples.push(...mod.Examples);
+          }
+        }
+      } catch (err) {
+        console.warn(
+          `Failed to collect examples for command at ${entry[0]!.Path}`
+        );
       }
-    } catch {
-      // Ignore broken or missing modules
     }
+
+    return examples;
   }
 
-  return examples;
+  /**
+   * Helper to display commands (both for root and group views)
+   */
+  private async renderCommandsList(
+    config: CLIConfig,
+    commands: Map<string, CLIResolvedEntry>,
+    groupKey: string | undefined
+  ) {
+    const token =
+      config.Tokens?.[0] ?? config.Name.toLowerCase().replace(/\s+/g, '-');
+    console.log(`\nAvailable Commands:`);
+
+    const seen = new Set<string>();
+    for (const [key, entry] of commands.entries()) {
+      if (groupKey && !key.startsWith(groupKey)) continue; // Only show subcommands if in the group
+
+      const group = key.split('/')[0]; // Group identifier
+      if (!seen.has(group)) {
+        seen.add(group);
+        console.log(`  ${group}`);
+      }
+    }
+
+    console.log(`\nUse '--help' with any command to view details.\n`);
+  }
 }
