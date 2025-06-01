@@ -14,9 +14,6 @@ export type CLIParsedResult = {
   parsed: Record<string, unknown>;
   flags: Record<string, unknown>;
   positional: string[];
-  head: string | undefined;
-  tail: string | undefined;
-  rest: string[];
   key: string | undefined;
   config: CLIConfig;
   baseCommandDir: string;

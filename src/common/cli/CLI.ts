@@ -24,7 +24,7 @@ export class CLI {
   }
 
   public async RunFromConfig(cliConfigPath: string, args: string[]) {
-    const { flags, positional, tail, rest, key, baseCommandDir, config } =
+    const { flags, positional, key, baseCommandDir, config } =
       await this.parser.ParseInvocation(cliConfigPath, args);
 
     const commandMap = await this.resolver.ResolveCommandMap(baseCommandDir);
@@ -34,9 +34,7 @@ export class CLI {
       commandMap,
       key,
       flags,
-      positional,
-      tail,
-      rest
+      positional
     );
 
     await this.executeCommand(config, command, key);
@@ -47,16 +45,17 @@ export class CLI {
     commandMap: Map<string, CLICommandEntry>,
     key: string | undefined,
     flags: Record<string, unknown>,
-    positional: string[],
-    tail: string | undefined,
-    rest: string[]
+    positional: string[]
   ): Promise<Command | undefined> {
     let match = key ? commandMap.get(key) : undefined;
 
     if (!match && key) {
-      const deeperKey = [...commandMap.keys()].find(
-        (k) => k.startsWith(`${key}/`) && commandMap.get(k)?.CommandPath
-      );
+      const deeperKey = [...commandMap.keys()]
+        .filter(
+          (k) => k.startsWith(`${key}/`) && commandMap.get(k)?.CommandPath
+        )
+        .sort((a, b) => b.length - a.length)[0];
+
       if (deeperKey) {
         match = commandMap.get(deeperKey);
         key = deeperKey;
@@ -69,23 +68,32 @@ export class CLI {
             ? this.resolver.LoadCommandInstance(
                 match.CommandPath,
                 flags,
-                tail ? rest : positional
+                positional
               )
             : undefined,
           match.GroupPath
             ? this.resolver.LoadCommandInstance(
                 match.GroupPath,
                 flags,
-                tail ? rest : positional
+                positional
               )
             : undefined,
         ])
       : [undefined, undefined];
 
-    const shouldShowHelp = flags.help || !key || (!cmdInst && !groupInst);
+    const isGroupOnly = !cmdInst && groupInst;
+    const isHelpRequested = flags.help === true;
 
-    if (!shouldShowHelp && (cmdInst || groupInst)) {
-      return cmdInst ?? groupInst!;
+    // 🛠️ FINAL CONDITIONAL — help should show if:
+    // - No key
+    // - Help was explicitly requested
+    // - The key resolves only to a group (not a command)
+    const shouldShowHelp =
+      isHelpRequested || !key || isGroupOnly || (!cmdInst && !groupInst);
+
+    // ✅ If we’re NOT in a help case and have a runnable command, execute it.
+    if (!shouldShowHelp && cmdInst) {
+      return cmdInst;
     }
 
     const helpCtx = await this.buildHelpContextIfNeeded(
@@ -113,11 +121,18 @@ export class CLI {
     const sections: HelpContext['Sections'] = [];
 
     const formatItem = (
-      item: CommandModuleMetadata & { Token: string }
+      item: CommandModuleMetadata & { Token: string },
+      baseKey: string
     ): CommandModuleMetadata => {
       const { Token, Name, Description, ...rest } = item;
+
+      // Remove redundant prefix from token
+      const tokenParts = Token.split('/');
+      const baseParts = baseKey ? baseKey.split('/') : [];
+      const trimmed = tokenParts.slice(baseParts.length).join(' ');
+
       return {
-        Name: `${Token} - ${Name}`,
+        Name: `${trimmed} - ${Name}`,
         Description,
         ...rest,
       };
@@ -125,11 +140,23 @@ export class CLI {
 
     if (key) {
       if (groupInst) {
-        sections.push({ type: 'GroupDetails', ...groupInst.BuildMetadata() });
+        const grpMd = groupInst.BuildMetadata();
+
+        sections.push({
+          type: 'GroupDetails',
+          ...grpMd,
+          Name: `Group: ${grpMd.Name}`,
+        });
       }
 
       if (cmdInst) {
-        sections.push({ type: 'CommandDetails', ...cmdInst.BuildMetadata() });
+        const cmdMd = cmdInst.BuildMetadata();
+
+        sections.push({
+          type: 'CommandDetails',
+          ...cmdMd,
+          Name: `Command: ${cmdMd.Name}`,
+        });
       }
 
       if (groupInst) {
@@ -138,7 +165,7 @@ export class CLI {
           sections.push({
             type: 'CommandList',
             title: 'Available Commands',
-            items: childCmds.map(formatItem),
+            items: childCmds.map((item) => formatItem(item, key)),
           });
         }
 
@@ -147,7 +174,7 @@ export class CLI {
           sections.push({
             type: 'GroupList',
             title: 'Available Groups',
-            items: childGrps.map(formatItem),
+            items: childGrps.map((item) => formatItem(item, key)),
           });
         }
       }
@@ -177,7 +204,7 @@ export class CLI {
         sections.push({
           type: 'CommandList',
           title: 'Available Commands',
-          items: rootCmds.map(formatItem),
+          items: rootCmds.map((item) => formatItem(item, '')),
         });
       }
 
@@ -186,7 +213,7 @@ export class CLI {
         sections.push({
           type: 'GroupList',
           title: 'Available Groups',
-          items: rootGrps.map(formatItem),
+          items: rootGrps.map((item) => formatItem(item, '')),
         });
       }
     }

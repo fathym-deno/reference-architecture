@@ -3,7 +3,7 @@ import { toFileUrl } from './.deps.ts';
 import {
   CommandParams,
   type CommandModuleMetadata,
-  type Command,
+  Command,
   type CLICommandResolver,
 } from './.exports.ts';
 import type { CLICommandEntry } from './CLICommandEntry.ts';
@@ -92,11 +92,32 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
 
       return new Cmd(params);
     } else {
-      return {
-        BuildMetadata() {
-          return mod as unknown as CommandModuleMetadata;
-        },
-      } as Command;
+      return new (class extends Command {
+        constructor() {
+          super(
+            new (class extends CommandParams<
+              Record<string, unknown>,
+              unknown[]
+            > {
+              constructor() {
+                super({}, []);
+              }
+            })()
+          );
+        }
+
+        public Run(): void {
+          throw new Error(
+            'This is a metadata-only command and cannot be executed.'
+          );
+        }
+
+        public override BuildMetadata(): CommandModuleMetadata {
+          const m = mod as unknown as CommandModuleMetadata;
+
+          return this.buildMetadataFromSchemas(m.Name, m.Description);
+        }
+      })();
     }
   }
 }

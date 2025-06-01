@@ -32,8 +32,10 @@
         "-A",
         "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json",
-        // "scaffold",
-        // "--help"
+        "scaffold",
+        "cloud",
+        "aws",
+        "--help"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
