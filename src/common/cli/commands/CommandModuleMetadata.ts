@@ -1,10 +1,32 @@
 import { z } from '../.deps.ts';
 
 /**
- * Zod schema representing the metadata for a single CLI command module.
- * Used for validation, docs, help output, and .metadata.json governance.
+ * Represents the metadata for a single CLI command module.
+ * This metadata includes the command's name, description, usage, and examples.
  */
-export const CommandModuleMetadata = z.object({
+export type CommandModuleMetadata = {
+  Name: string;
+  Description?: string;
+  Usage?: string;
+  Examples?: string[];
+};
+
+/**
+ * Zod schema to validate the structure of the CommandModuleMetadata.
+ * This schema ensures that the Name is required, and other properties are optional.
+ */
+export const CommandModuleMetadataSchema: z.ZodObject<
+  {
+    Name: z.ZodString;
+    Description: z.ZodOptional<z.ZodString>;
+    Usage: z.ZodOptional<z.ZodString>;
+    Examples: z.ZodOptional<z.ZodArray<z.ZodString, 'many'>>;
+  },
+  'strip',
+  z.ZodTypeAny,
+  CommandModuleMetadata,
+  CommandModuleMetadata
+> = z.object({
   Name: z
     .string()
     .min(1, 'Command name is required.')
@@ -35,7 +57,9 @@ export const CommandModuleMetadata = z.object({
 });
 
 /**
- * Inferred runtime type from the CommandModuleMetadata schema.
- * Used for programmatic access, editing, and validation.
+ * Type inferred from the CommandModuleMetadataSchema, providing type safety when working with
+ * command metadata in the application.
  */
-export type CommandModuleMetadata = z.infer<typeof CommandModuleMetadata>;
+export type CommandModuleMetadataSchema = z.infer<
+  typeof CommandModuleMetadataSchema
+>;

@@ -35,5 +35,5 @@ export function jsonMapSetClone<T>(value: T): T {
     value = (value as any).$target;
   }
 
-  return value ? jsonMapSetParse(jsonMapSetStringify(value)) : value;
+  return value ? jsonMapSetParse(jsonMapSetStringify(value))! : value;
 }

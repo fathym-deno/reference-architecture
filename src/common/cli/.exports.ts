@@ -9,8 +9,6 @@ export * from './CLI.ts';
 export * from './CLICommandResolver.ts';
 export * from './CLICommandEntry.ts';
 export * from './CLIConfig.ts';
-export * from './CLIResolvedEntry.ts';
-export * from './DefaultCLIHelp.ts';
 export * from './emitSchema.ts';
 export * from './styling/StyleKeys.ts';
 export * from './styling/TextContent.ts';

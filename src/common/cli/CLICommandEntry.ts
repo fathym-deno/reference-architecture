@@ -1,5 +1,7 @@
-
 export type CLICommandEntry = {
-  Path: string;
-  Group?: string;
+  CommandPath?: string;
+
+  GroupPath?: string;
+
+  ParentGroup?: string;
 };

@@ -32,7 +32,8 @@
         "-A",
         "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json",
-        ""
+        // "scaffold",
+        // "--help"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
