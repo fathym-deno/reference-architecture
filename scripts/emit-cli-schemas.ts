@@ -1,16 +1,16 @@
 // src/common/cli/emit-cli-schemas.ts
 
-import { CLIConfig } from '../src/common/cli/CLIConfig.ts';
-import { CommandModuleMetadata } from '../src/common/cli/commands/CommandModuleMetadata.ts';
-import { emitSchema } from '../src/common/cli/emitSchema.ts';
+import { CLIConfigSchema } from "../src/common/cli/CLIConfig.ts";
+import { CommandModuleMetadataSchema } from "../src/common/cli/commands/CommandModuleMetadata.ts";
+import { emitSchema } from "../src/common/cli/emitSchema.ts";
 
 // Run directly as a Deno script
 if (import.meta.main) {
-  console.log('📤 Emitting CLI-related JSON Schemas...\n');
+  console.log("📤 Emitting CLI-related JSON Schemas...\n");
 
-  await emitSchema(CLIConfig, 'CLIConfig');
+  await emitSchema(CLIConfigSchema, "CLIConfig");
 
-  await emitSchema(CommandModuleMetadata, 'CommandModuleMetadata');
+  await emitSchema(CommandModuleMetadataSchema, "CommandModuleMetadata");
 
-  console.log('\n✅ All schemas written to ./schemas/');
+  console.log("\n✅ All schemas written to ./schemas/");
 }

@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema, ZodType, ZodTypeDef } from '../.deps.ts';
-import type { Command } from './Command.ts';
+import type { ZodSchema, ZodType, ZodTypeDef } from "../.deps.ts";
+import type { Command } from "./Command.ts";
 import type {
   CommandParamConstructor,
   CommandParams,
-} from './CommandParams.ts';
+} from "./CommandParams.ts";
 
 /**
  * Represents a complete, executable CLI command module.
@@ -45,7 +45,7 @@ export function defineCommandModule<
   CP extends CommandParams<F, A>,
   CC extends new (params: CP) => Command<CP>,
   FS extends ZodType<F, ZodTypeDef, F>,
-  AS extends ZodType<A, ZodTypeDef, A>
+  AS extends ZodType<A, ZodTypeDef, A>,
 >(def: {
   FlagsSchema: FS;
   ArgsSchema: AS;
@@ -56,7 +56,7 @@ export function defineCommandModule<
     FlagsSchema: def.FlagsSchema,
     ArgsSchema: def.ArgsSchema,
     Command: def.Command as unknown as new (
-      params: CommandParams<any, any>
+      params: CommandParams<any, any>,
     ) => Command<any>,
     Params: def.Params as unknown as CommandParamConstructor,
   };

@@ -1,9 +1,9 @@
 // tests/common/cli/cli-exec.test.ts
 
-import { fromFileUrl } from 'jsr:@std/path@^1.0.9';
-import { CLI } from '../../../src/common/cli/CLI.ts';
-import { assertMatch } from '../../test.deps.ts';
-import { stripColor } from 'jsr:@std/fmt@^0.221.0/colors';
+import { fromFileUrl } from "jsr:@std/path@^1.0.9";
+import { CLI } from "../../../src/common/cli/CLI.ts";
+import { assertMatch } from "../../test.deps.ts";
+import { stripColor } from "jsr:@std/fmt@^0.221.0/colors";
 
 function createTestCLI() {
   return new CLI({});
@@ -11,10 +11,10 @@ function createTestCLI() {
 
 function captureLogs(fn: () => Promise<void>): Promise<string> {
   const originalLog = console.log;
-  let output = '';
+  let output = "";
 
   console.log = (...args: unknown[]) => {
-    output += args.map((a) => String(a)).join(' ') + '\n';
+    output += args.map((a) => String(a)).join(" ") + "\n";
   };
 
   return fn()
@@ -24,13 +24,13 @@ function captureLogs(fn: () => Promise<void>): Promise<string> {
     .then(() => output);
 }
 
-Deno.test('Test CLI – Execution Coverage', async (t) => {
-  const configPath = fromFileUrl(import.meta.resolve('./test-cli/.cli.json'));
+Deno.test("Test CLI – Execution Coverage", async (t) => {
+  const configPath = fromFileUrl(import.meta.resolve("./test-cli/.cli.json"));
   const cli = createTestCLI();
 
-  await t.step('Execute: scaffold/cloud/aws', async () => {
+  await t.step("Execute: scaffold/cloud/aws", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ['scaffold/cloud/aws'])
+      cli.RunFromConfig(configPath, ["scaffold/cloud/aws"])
     );
     const text = stripColor(logs);
 
@@ -38,9 +38,9 @@ Deno.test('Test CLI – Execution Coverage', async (t) => {
     assertMatch(text, /✅.*completed/i);
   });
 
-  await t.step('Execute: scaffold/cloud/azure', async () => {
+  await t.step("Execute: scaffold/cloud/azure", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ['scaffold/cloud/azure'])
+      cli.RunFromConfig(configPath, ["scaffold/cloud/azure"])
     );
     const text = stripColor(logs);
 
@@ -48,9 +48,9 @@ Deno.test('Test CLI – Execution Coverage', async (t) => {
     assertMatch(text, /✅.*completed/i);
   });
 
-  await t.step('Execute: scaffold/connection', async () => {
+  await t.step("Execute: scaffold/connection", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ['scaffold/connection'])
+      cli.RunFromConfig(configPath, ["scaffold/connection"])
     );
     const text = stripColor(logs);
 
@@ -58,9 +58,9 @@ Deno.test('Test CLI – Execution Coverage', async (t) => {
     assertMatch(text, /✅.*completed/i);
   });
 
-  await t.step('Execute: dev', async () => {
+  await t.step("Execute: dev", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ['dev'])
+      cli.RunFromConfig(configPath, ["dev"])
     );
     const text = stripColor(logs);
 

@@ -1,13 +1,17 @@
-import { findClosestMatch, toFileUrl } from './.deps.ts';
-import { CLIInvocationParser } from './CLIInvocationParser.ts';
-import { CLICommandResolver } from './CLICommandResolver.ts';
-import { DefaultCLIInvocationParser } from './DefaultCLIInvocationParser.ts';
-import { DefaultCLICommandResolver } from './DefaultCLICommandResolver.ts';
-import { CLICommandEntry, Command, CommandModuleMetadata } from './.exports.ts';
-import { CLIConfig } from './CLIConfig.ts';
-import { CommandParams } from './commands/CommandParams.ts';
-import { HelpContext } from './HelpContext.ts';
-import { HelpCommand, HelpCommandParams } from './HelpCommand.ts';
+import { findClosestMatch } from "./.deps.ts";
+import type { CLIInvocationParser } from "./CLIInvocationParser.ts";
+import type { CLICommandResolver } from "./CLICommandResolver.ts";
+import { DefaultCLIInvocationParser } from "./DefaultCLIInvocationParser.ts";
+import { DefaultCLICommandResolver } from "./DefaultCLICommandResolver.ts";
+import type {
+  CLICommandEntry,
+  Command,
+  CommandModuleMetadata,
+} from "./.exports.ts";
+import type { CLIConfig } from "./CLIConfig.ts";
+import type { CommandParams } from "./commands/CommandParams.ts";
+import type { HelpContext } from "./HelpContext.ts";
+import { HelpCommand, HelpCommandParams } from "./HelpCommand.ts";
 
 export interface CLIOptions {
   resolver?: CLICommandResolver;
@@ -24,8 +28,8 @@ export class CLI {
   }
 
   public async RunFromConfig(cliConfigPath: string, args: string[]) {
-    const { flags, positional, key, baseCommandDir, config } =
-      await this.parser.ParseInvocation(cliConfigPath, args);
+    const { flags, positional, key, baseCommandDir, config } = await this.parser
+      .ParseInvocation(cliConfigPath, args);
 
     const commandMap = await this.resolver.ResolveCommandMap(baseCommandDir);
 
@@ -34,7 +38,7 @@ export class CLI {
       commandMap,
       key,
       flags,
-      positional
+      positional,
     );
 
     await this.executeCommand(config, command, key);
@@ -45,14 +49,14 @@ export class CLI {
     commandMap: Map<string, CLICommandEntry>,
     key: string | undefined,
     flags: Record<string, unknown>,
-    positional: string[]
+    positional: string[],
   ): Promise<Command | undefined> {
     let match = key ? commandMap.get(key) : undefined;
 
     if (!match && key) {
       const deeperKey = [...commandMap.keys()]
         .filter(
-          (k) => k.startsWith(`${key}/`) && commandMap.get(k)?.CommandPath
+          (k) => k.startsWith(`${key}/`) && commandMap.get(k)?.CommandPath,
         )
         .sort((a, b) => b.length - a.length)[0];
 
@@ -64,21 +68,21 @@ export class CLI {
 
     const [cmdInst, groupInst] = match
       ? await Promise.all([
-          match.CommandPath
-            ? this.resolver.LoadCommandInstance(
-                match.CommandPath,
-                flags,
-                positional
-              )
-            : undefined,
-          match.GroupPath
-            ? this.resolver.LoadCommandInstance(
-                match.GroupPath,
-                flags,
-                positional
-              )
-            : undefined,
-        ])
+        match.CommandPath
+          ? this.resolver.LoadCommandInstance(
+            match.CommandPath,
+            flags,
+            positional,
+          )
+          : undefined,
+        match.GroupPath
+          ? this.resolver.LoadCommandInstance(
+            match.GroupPath,
+            flags,
+            positional,
+          )
+          : undefined,
+      ])
       : [undefined, undefined];
 
     const isGroupOnly = !cmdInst && groupInst;
@@ -88,8 +92,8 @@ export class CLI {
     // - No key
     // - Help was explicitly requested
     // - The key resolves only to a group (not a command)
-    const shouldShowHelp =
-      isHelpRequested || !key || isGroupOnly || (!cmdInst && !groupInst);
+    const shouldShowHelp = isHelpRequested || !key || isGroupOnly ||
+      (!cmdInst && !groupInst);
 
     // ✅ If we’re NOT in a help case and have a runnable command, execute it.
     if (!shouldShowHelp && cmdInst) {
@@ -102,7 +106,7 @@ export class CLI {
       key,
       flags,
       cmdInst,
-      groupInst
+      groupInst,
     );
 
     return helpCtx
@@ -114,22 +118,22 @@ export class CLI {
     config: CLIConfig,
     commandMap: Map<string, CLICommandEntry>,
     key: string | undefined,
-    flags: Record<string, unknown>,
+    _flags: Record<string, unknown>,
     cmdInst?: Command,
-    groupInst?: Command
+    groupInst?: Command,
   ): Promise<HelpContext | undefined> {
-    const sections: HelpContext['Sections'] = [];
+    const sections: HelpContext["Sections"] = [];
 
     const formatItem = (
       item: CommandModuleMetadata & { Token: string },
-      baseKey: string
+      baseKey: string,
     ): CommandModuleMetadata => {
       const { Token, Name, Description, ...rest } = item;
 
       // Remove redundant prefix from token
-      const tokenParts = Token.split('/');
-      const baseParts = baseKey ? baseKey.split('/') : [];
-      const trimmed = tokenParts.slice(baseParts.length).join(' ');
+      const tokenParts = Token.split("/");
+      const baseParts = baseKey ? baseKey.split("/") : [];
+      const trimmed = tokenParts.slice(baseParts.length).join(" ");
 
       return {
         Name: `${trimmed} - ${Name}`,
@@ -143,7 +147,7 @@ export class CLI {
         const grpMd = groupInst.BuildMetadata();
 
         sections.push({
-          type: 'GroupDetails',
+          type: "GroupDetails",
           ...grpMd,
           Name: `Group: ${grpMd.Name}`,
         });
@@ -153,7 +157,7 @@ export class CLI {
         const cmdMd = cmdInst.BuildMetadata();
 
         sections.push({
-          type: 'CommandDetails',
+          type: "CommandDetails",
           ...cmdMd,
           Name: `Command: ${cmdMd.Name}`,
         });
@@ -163,8 +167,8 @@ export class CLI {
         const childCmds = await this.getChildItems(commandMap, key, false);
         if (childCmds.length) {
           sections.push({
-            type: 'CommandList',
-            title: 'Available Commands',
+            type: "CommandList",
+            title: "Available Commands",
             items: childCmds.map((item) => formatItem(item, key)),
           });
         }
@@ -172,8 +176,8 @@ export class CLI {
         const childGrps = await this.getChildItems(commandMap, key, true);
         if (childGrps.length) {
           sections.push({
-            type: 'GroupList',
-            title: 'Available Groups',
+            type: "GroupList",
+            title: "Available Groups",
             items: childGrps.map((item) => formatItem(item, key)),
           });
         }
@@ -182,7 +186,7 @@ export class CLI {
       if (!cmdInst && !groupInst) {
         const guess = findClosestMatch(key, [...commandMap.keys()]);
         sections.push({
-          type: 'Error',
+          type: "Error",
           message: `Unknown command: ${key}`,
           suggestion: guess,
           Name: key,
@@ -190,30 +194,30 @@ export class CLI {
 
         const root = this.buildRootIntro(config);
         if (root) {
-          sections.unshift({ type: 'CommandDetails', ...root });
+          sections.unshift({ type: "CommandDetails", ...root });
         }
       }
     } else {
       const root = this.buildRootIntro(config);
       if (root) {
-        sections.push({ type: 'CommandDetails', ...root });
+        sections.push({ type: "CommandDetails", ...root });
       }
 
-      const rootCmds = await this.getChildItems(commandMap, '', false);
+      const rootCmds = await this.getChildItems(commandMap, "", false);
       if (rootCmds.length) {
         sections.push({
-          type: 'CommandList',
-          title: 'Available Commands',
-          items: rootCmds.map((item) => formatItem(item, '')),
+          type: "CommandList",
+          title: "Available Commands",
+          items: rootCmds.map((item) => formatItem(item, "")),
         });
       }
 
-      const rootGrps = await this.getChildItems(commandMap, '', true);
+      const rootGrps = await this.getChildItems(commandMap, "", true);
       if (rootGrps.length) {
         sections.push({
-          type: 'GroupList',
-          title: 'Available Groups',
-          items: rootGrps.map((item) => formatItem(item, '')),
+          type: "GroupList",
+          title: "Available Groups",
+          items: rootGrps.map((item) => formatItem(item, "")),
         });
       }
     }
@@ -224,14 +228,13 @@ export class CLI {
   protected async getChildItems(
     commandMap: Map<string, CLICommandEntry>,
     key: string,
-    groupsOnly: boolean
+    groupsOnly: boolean,
   ): Promise<(CommandModuleMetadata & { Token: string })[]> {
-    const baseDepth = key === '' ? 0 : key.split('/').length;
+    const baseDepth = key === "" ? 0 : key.split("/").length;
 
     const matches = [...commandMap.entries()].filter(([k, v]) => {
-      const depth = k.split('/').length;
-      const isDirectChild =
-        (key === '' && depth === 1) ||
+      const depth = k.split("/").length;
+      const isDirectChild = (key === "" && depth === 1) ||
         (k.startsWith(`${key}/`) && depth === baseDepth + 1);
 
       const isTypeMatch = groupsOnly ? !!v.GroupPath : !!v.CommandPath;
@@ -263,8 +266,8 @@ export class CLI {
   }
 
   protected buildRootIntro(config: CLIConfig): CommandModuleMetadata {
-    const token =
-      config.Tokens?.[0] ?? config.Name.toLowerCase().replace(/\s+/g, '-');
+    const token = config.Tokens?.[0] ??
+      config.Name.toLowerCase().replace(/\s+/g, "-");
 
     return {
       Name: `${config.Name} CLI v${config.Version}`,
@@ -277,7 +280,7 @@ export class CLI {
   protected async executeCommand(
     config: CLIConfig,
     command: Command<CommandParams> | undefined,
-    key: string | undefined
+    key: string | undefined,
   ) {
     if (!command) return;
 
@@ -290,7 +293,7 @@ export class CLI {
 
       const result = await this.runCommandLifecycle(command);
 
-      if (typeof result === 'number') {
+      if (typeof result === "number") {
         Deno.exit(result);
       }
 
@@ -304,14 +307,13 @@ export class CLI {
   }
 
   protected async runCommandLifecycle(cmd: Command): Promise<void | number> {
-    if (typeof cmd.Init === 'function') await cmd.Init();
+    if (typeof cmd.Init === "function") await cmd.Init();
 
-    const result =
-      typeof cmd.DryRun === 'function' && cmd.Params.DryRun
-        ? await cmd.DryRun()
-        : await cmd.Run();
+    const result = typeof cmd.DryRun === "function" && cmd.Params.DryRun
+      ? await cmd.DryRun()
+      : await cmd.Run();
 
-    if (typeof cmd.Cleanup === 'function') await cmd.Cleanup();
+    if (typeof cmd.Cleanup === "function") await cmd.Cleanup();
 
     return result;
   }

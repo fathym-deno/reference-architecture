@@ -2,8 +2,8 @@ import {
   Command,
   CommandParams,
   defineCommandModule,
-} from '@fathym/common/cli';
-import { z } from '../../../../../test.deps.ts';
+} from "@fathym/common/cli";
+import { z } from "../../../../../test.deps.ts";
 
 // 🔹 Flag and argument schemas (placeholder for now)
 export const FlagsSchema = z.object({});
@@ -23,14 +23,16 @@ export class ConnectionCommand extends Command<ConnectionCommandParams> {
     super(params, ArgsSchema, FlagsSchema);
   }
 
-  public async Run(): Promise<void> {
-    console.log('🔧 Scaffolding connection...');
+  public Run(): Promise<void> {
+    console.log("🔧 Scaffolding connection...");
+
+    return Promise.resolve();
   }
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      'Scaffold Connection',
-      'Generate a new connection file.'
+      "Scaffold Connection",
+      "Generate a new connection file.",
     );
   }
 }

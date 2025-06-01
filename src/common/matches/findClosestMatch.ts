@@ -6,7 +6,7 @@ import { levenshtein } from "./levenshtein.ts";
 export function findClosestMatch(
   input: string,
   options: string[],
-  maxDistance = 3
+  maxDistance = 3,
 ): string | undefined {
   let bestScore = Infinity;
   let bestMatch: string | undefined;

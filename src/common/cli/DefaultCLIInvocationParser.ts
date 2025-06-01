@@ -1,11 +1,11 @@
 // DefaultCLIInvocationParser.ts
 
-import { dirname, parseArgs, resolve } from './.deps.ts';
+import { dirname, parseArgs, resolve } from "./.deps.ts";
 import type {
   CLIInvocationParser,
   CLIParsedResult,
-} from './CLIInvocationParser.ts';
-import type { CLIConfig } from './CLIConfig.ts';
+} from "./CLIInvocationParser.ts";
+import type { CLIConfig } from "./CLIConfig.ts";
 
 /**
  * Default implementation of the CLIInvocationParser interface.
@@ -20,15 +20,15 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
    */
   public async ParseInvocation(
     cliConfigPath: string,
-    args: string[]
+    args: string[],
   ): Promise<CLIParsedResult> {
     const parsed = parseArgs(args, { boolean: true });
     const { _, ...flags } = parsed;
     const positional = _ as string[];
 
     // 👇 Flatten all non-flag args into a slash-separated key
-    const keyParts = positional.filter((p) => !p.startsWith('-'));
-    const key = keyParts.join('/');
+    const keyParts = positional.filter((p) => !p.startsWith("-"));
+    const key = keyParts.join("/");
 
     const configText = await Deno.readTextFile(cliConfigPath);
     const config = JSON.parse(configText) as CLIConfig;
@@ -37,7 +37,7 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
     const cliConfigDir = dirname(resolvedCliPath);
     const baseCommandDir = resolve(
       cliConfigDir,
-      config.Commands ?? './commands'
+      config.Commands ?? "./commands",
     );
 
     return {

@@ -1,4 +1,4 @@
-import type { CLIConfig } from './CLIConfig.ts';
+import type { CLIConfig } from "./CLIConfig.ts";
 
 export interface CLIInvocationParser {
   /**
@@ -7,7 +7,10 @@ export interface CLIInvocationParser {
    * @param args The arguments passed to the CLI.
    * @returns The parsed result, including flags, positional arguments, and more.
    */
-  ParseInvocation(cliConfigPath: string, args: string[]): Promise<CLIParsedResult>;
+  ParseInvocation(
+    cliConfigPath: string,
+    args: string[],
+  ): Promise<CLIParsedResult>;
 }
 
 export type CLIParsedResult = {

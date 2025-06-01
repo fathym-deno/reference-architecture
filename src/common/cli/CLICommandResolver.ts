@@ -1,7 +1,7 @@
 // CLICommandResolver.ts (interface)
 
-import type { Command } from './.exports.ts';
-import type { CLICommandEntry } from './CLICommandEntry.ts';
+import type { Command } from "./.exports.ts";
+import type { CLICommandEntry } from "./CLICommandEntry.ts";
 
 /**
  * Interface for resolving commands and loading their modules.
@@ -22,5 +22,9 @@ export interface CLICommandResolver {
    * @param args The arguments passed to the command.
    * @returns The loaded command instance.
    */
-  LoadCommandInstance(path: string, flags: Record<string, unknown>, args: string[]): Promise<Command>;
+  LoadCommandInstance(
+    path: string,
+    flags: Record<string, unknown>,
+    args: string[],
+  ): Promise<Command>;
 }

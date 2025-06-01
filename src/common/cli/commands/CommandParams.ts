@@ -1,5 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
-import type { ZodSchema } from '../.deps.ts';
+// deno-lint-ignore-file no-explicit-any ban-types
 
 /**
  * Base class for all CLI command parameter sets.
@@ -7,7 +6,7 @@ import type { ZodSchema } from '../.deps.ts';
  */
 export abstract class CommandParams<
   F extends Record<string, unknown> = {},
-  A extends unknown[] = []
+  A extends unknown[] = [],
 > {
   constructor(public readonly Flags: F, public readonly Args: A) {}
 
@@ -16,14 +15,14 @@ export abstract class CommandParams<
    * Automatically derived from the `--dry-run` flag.
    */
   public get DryRun(): boolean {
-    return !!this.Flag('dry-run');
+    return !!this.Flag("dry-run");
   }
 
   /**
    * Get a positional argument by index.
    */
   protected Arg<Index extends keyof A & number>(
-    index: Index
+    index: Index,
   ): A[Index] | undefined {
     return this.Args?.[index];
   }
@@ -38,5 +37,5 @@ export abstract class CommandParams<
 
 export type CommandParamConstructor = new (
   flags: Record<string, unknown>,
-  args: unknown[]
+  args: unknown[],
 ) => CommandParams<any, any>;

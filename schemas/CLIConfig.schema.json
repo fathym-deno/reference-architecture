@@ -7,7 +7,7 @@
         "Name": {
           "type": "string",
           "minLength": 1,
-          "description": "A user-facing, friendly name for the CLI. Shown in help output and documentation headers."
+          "description": "A user-facing, friendly name for the CLI."
         },
         "Tokens": {
           "type": "array",
@@ -15,21 +15,21 @@
             "type": "string"
           },
           "minItems": 1,
-          "description": "All valid CLI tokens (aliases) that can invoke this tool. Examples: [\"openindustrial\", \"oi\"]"
+          "description": "CLI aliases, e.g. [\"openindustrial\", \"oi\"]"
         },
         "Version": {
           "type": "string",
           "minLength": 1,
-          "description": "The current version of the CLI. Used in logs, help, and update flows."
+          "description": "Version shown in help output and CLI logs."
         },
         "Description": {
           "type": "string",
-          "description": "Optional description for the CLI. Shown in help output."
+          "description": "Optional description of what this CLI is for."
         },
         "Commands": {
           "type": "string",
           "default": "./commands",
-          "description": "Relative or absolute path to the root folder of command modules. Defaults to \"./commands\"."
+          "description": "Path to the CLI commands folder. Defaults to './commands'."
         }
       },
       "required": [

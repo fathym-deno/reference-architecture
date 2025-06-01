@@ -1,5 +1,5 @@
 import type { Command } from "./commands/Command.ts";
-import type { CommandSuggestions } from './commands/CommandSuggestions.ts';
+import type { CommandSuggestions } from "./commands/CommandSuggestions.ts";
 
 export interface CLISuggestions {
   /**

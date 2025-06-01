@@ -1,12 +1,12 @@
-import { walk, relative, resolve } from './.deps.ts';
-import { toFileUrl } from './.deps.ts';
+import { relative, resolve, walk } from "./.deps.ts";
+import { toFileUrl } from "./.deps.ts";
 import {
-  CommandParams,
-  type CommandModuleMetadata,
-  Command,
   type CLICommandResolver,
-} from './.exports.ts';
-import type { CLICommandEntry } from './CLICommandEntry.ts';
+  Command,
+  type CommandModuleMetadata,
+  CommandParams,
+} from "./.exports.ts";
+import type { CLICommandEntry } from "./CLICommandEntry.ts";
 
 /**
  * Default implementation for resolving commands and loading their modules.
@@ -21,30 +21,32 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
    * @returns A map of command keys to their respective command entries, where the key is the command or group name.
    */
   public async ResolveCommandMap(
-    baseDir: string
+    baseDir: string,
   ): Promise<Map<string, CLICommandEntry>> {
     const map = new Map<string, CLICommandEntry>();
 
     // Walk through the base directory and resolve all command modules
-    for await (const entry of walk(baseDir, {
-      includeDirs: false,
-      exts: ['.ts'],
-    })) {
+    for await (
+      const entry of walk(baseDir, {
+        includeDirs: false,
+        exts: [".ts"],
+      })
+    ) {
       const rel = relative(baseDir, entry.path)
-        .replace(/\\/g, '/')
-        .replace(/\/index$/, ''); // Allow folders with index.ts
+        .replace(/\\/g, "/")
+        .replace(/\/index$/, ""); // Allow folders with index.ts
 
-      const isMetadata = entry.name === '.metadata.ts';
+      const isMetadata = entry.name === ".metadata.ts";
 
       const key = isMetadata
-        ? rel.replace(/\/\.metadata\.ts$/, '')
-        : rel.replace(/\.ts$/, '');
+        ? rel.replace(/\/\.metadata\.ts$/, "")
+        : rel.replace(/\.ts$/, "");
 
       const absPath = resolve(entry.path);
-      const group = key.split('/')[0]; // Group is the first part of the path
+      const group = key.split("/")[0]; // Group is the first part of the path
 
       // Initialize or get the existing entry
-      let entryData = map.get(key) || {
+      const entryData = map.get(key) || {
         CommandPath: undefined,
         GroupPath: undefined,
         ParentGroup: group !== key ? group : undefined,
@@ -75,20 +77,20 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
   public async LoadCommandInstance(
     path: string,
     flags: Record<string, unknown>,
-    args: string[]
+    args: string[],
   ): Promise<Command> {
     const mod = (await import(toFileUrl(path).href)).default; // Load the module
     const Cmd = mod?.Command;
 
-    if (Cmd && typeof Cmd === 'function') {
+    if (Cmd && typeof Cmd === "function") {
       const CmdParams = mod.Params;
       const params = CmdParams
         ? new CmdParams(flags, args)
         : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-            constructor() {
-              super(flags, args);
-            }
-          })();
+          constructor() {
+            super(flags, args);
+          }
+        })();
 
       return new Cmd(params);
     } else {
@@ -102,13 +104,13 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
               constructor() {
                 super({}, []);
               }
-            })()
+            })(),
           );
         }
 
         public Run(): void {
           throw new Error(
-            'This is a metadata-only command and cannot be executed.'
+            "This is a metadata-only command and cannot be executed.",
           );
         }
 

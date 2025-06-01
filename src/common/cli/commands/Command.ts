@@ -1,20 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema } from '../.deps.ts';
-import type { CommandModuleMetadata } from './CommandModuleMetadata.ts';
-import type { CommandParams } from './CommandParams.ts';
-import type { CommandSuggestions } from './CommandSuggestions.ts';
+import type { ZodSchema } from "../.deps.ts";
+import type { CommandModuleMetadata } from "./CommandModuleMetadata.ts";
+import type { CommandParams } from "./CommandParams.ts";
+import type { CommandSuggestions } from "./CommandSuggestions.ts";
 
 /**
  * Base class for all CLI commands.
  * Provides lifecycle hooks, metadata, autocomplete support, and schema-derived suggestions.
  */
 export abstract class Command<
-  P extends CommandParams<any, any> = CommandParams<any, any>
+  P extends CommandParams<any, any> = CommandParams<any, any>,
 > {
   constructor(
     public Params: P,
     protected readonly argsSchema?: ZodSchema,
-    protected readonly flagsSchema?: ZodSchema
+    protected readonly flagsSchema?: ZodSchema,
   ) {}
 
   /**
@@ -56,15 +56,15 @@ export abstract class Command<
    */
   protected buildSuggestionsFromSchemas(
     flagsSchema?: ZodSchema,
-    argsSchema?: ZodSchema
+    argsSchema?: ZodSchema,
   ): CommandSuggestions {
     const flags: string[] = [];
     const args: string[] = [];
 
     if (
       flagsSchema &&
-      typeof flagsSchema === 'object' &&
-      'shape' in flagsSchema
+      typeof flagsSchema === "object" &&
+      "shape" in flagsSchema
     ) {
       flags.push(...Object.keys((flagsSchema as any).shape));
     }
@@ -72,8 +72,8 @@ export abstract class Command<
     if ((argsSchema as any)?._def?.items) {
       args.push(
         ...(argsSchema as any)._def.items.map(
-          (_: unknown, i: number) => `<arg${i + 1}>`
-        )
+          (_: unknown, i: number) => `<arg${i + 1}>`,
+        ),
       );
     }
 
@@ -89,7 +89,7 @@ export abstract class Command<
    */
   protected buildMetadataFromSchemas(
     name: string,
-    description?: string
+    description?: string,
   ): CommandModuleMetadata {
     const usageParts: string[] = [];
 
@@ -97,16 +97,16 @@ export abstract class Command<
     if ((this.argsSchema as any)?._def?.items?.length) {
       usageParts.push(
         ...(this.argsSchema as any)._def.items.map(
-          (_: unknown, i: number) => `<arg${i + 1}>`
-        )
+          (_: unknown, i: number) => `<arg${i + 1}>`,
+        ),
       );
     }
 
     // Add flags from object shape
     if (
       this.flagsSchema &&
-      typeof this.flagsSchema === 'object' &&
-      'shape' in this.flagsSchema
+      typeof this.flagsSchema === "object" &&
+      "shape" in this.flagsSchema
     ) {
       const flagKeys = Object.keys((this.flagsSchema as any).shape);
       if (flagKeys.length) {
@@ -114,7 +114,7 @@ export abstract class Command<
       }
     }
 
-    const usage = usageParts.join(' ');
+    const usage = usageParts.join(" ");
     const examples = usage ? [usage] : [];
 
     return {
