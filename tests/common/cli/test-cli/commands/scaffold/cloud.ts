@@ -10,7 +10,7 @@ export const FlagsSchema = z.object({});
 export const ArgsSchema = z.tuple([]);
 
 // 🔹 CLI params class with direct accessors (can grow later)
-export class ConnectionCommandParams extends CommandParams<
+export class CloudCommandParams extends CommandParams<
   z.infer<typeof FlagsSchema>,
   z.infer<typeof ArgsSchema>
 > {
@@ -18,21 +18,21 @@ export class ConnectionCommandParams extends CommandParams<
 }
 
 // 🔹 Command implementation — includes CLI lifecycle + metadata
-export class ConnectionCommand extends Command<ConnectionCommandParams> {
-  constructor(params: ConnectionCommandParams) {
+export class CloudCommand extends Command<CloudCommandParams> {
+  constructor(params: CloudCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }
 
   public Run(): Promise<void> {
-    console.log("🔧 Scaffolding connection...");
+    console.log("🔧 Scaffolding Cloud...");
 
     return Promise.resolve();
   }
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      "Scaffold Connection",
-      "Generate a new connection file.",
+      "Scaffold Cloud",
+      "Generate a new Cloud file.",
     );
   }
 }
@@ -41,6 +41,6 @@ export class ConnectionCommand extends Command<ConnectionCommandParams> {
 export default defineCommandModule({
   FlagsSchema,
   ArgsSchema,
-  Command: ConnectionCommand,
-  Params: ConnectionCommandParams,
+  Command: CloudCommand,
+  Params: CloudCommandParams,
 });

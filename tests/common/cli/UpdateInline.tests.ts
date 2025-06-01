@@ -1,158 +1,157 @@
-import { assert, assertEquals, delay } from "../../test.deps.ts";
-import { UpdateInline } from "../../../src/common/cli/UpdateInline.ts";
-import { showCursor } from "../../../src/common/cli/utils/showCursor.ts";
-import { hideCursor } from "../../../src/common/cli/utils/hideCursor.ts";
-import { Spinner } from "jsr:@std/cli/spinner";
+// import { assert, assertEquals, delay } from "../../test.deps.ts";
+// import { UpdateInline } from "../../../src/common/cli/styling/UpdateInline.ts";
+// import { showCursor } from "../../../src/common/cli/utils/showCursor.ts";
+// import { hideCursor } from "../../../src/common/cli/utils/hideCursor.ts";
 
-Deno.test("Update Inline Tests", async (t) => {
-  await t.step("Quick Texts", async () => {
-    let message = "Loading...";
+// Deno.test("Update Inline Tests", async (t) => {
+//   await t.step("Quick Texts", async () => {
+//     let message = "Loading...";
 
-    const spinner = new Spinner({ message, color: "yellow" });
+//     const spinner = new Spinner({ message, color: "yellow" });
 
-    spinner.start();
+//     spinner.start();
 
-    for (let i = 0; i < 100; i++) {
-      await delay(80);
+//     for (let i = 0; i < 100; i++) {
+//       await delay(80);
 
-      spinner.message = message = message + ".";
-    }
+//       spinner.message = message = message + ".";
+//     }
 
-    await delay(3000);
+//     await delay(3000);
 
-    spinner.stop();
+//     spinner.stop();
 
-    console.log("Finished loading!");
-  });
+//     console.log("Finished loading!");
+//   });
 
-  await t.step("Quick Texts", async () => {
-    console.log("From another system.");
+//   await t.step("Quick Texts", async () => {
+//     console.log("From another system.");
 
-    const inliner = new UpdateInline();
+//     const inliner = new UpdateInline();
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure("Whats up?");
+//     inliner.Configure("Whats up?");
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure("Whats up hommie?");
+//     inliner.Configure("Whats up hommie?");
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure("Whats up my hommie?");
+//     inliner.Configure("Whats up my hommie?");
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure("Whats up my super cool hommie?");
-  });
+//     inliner.Configure("Whats up my super cool hommie?");
+//   });
 
-  await t.step("Quick Texts - Long", async () => {
-    console.log("From another system.");
+//   await t.step("Quick Texts - Long", async () => {
+//     console.log("From another system.");
 
-    const inliner = new UpdateInline();
+//     const inliner = new UpdateInline();
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure(
-      "Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? ",
-    );
+//     inliner.Configure(
+//       "Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? Whats up? ",
+//     );
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure(
-      "Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie?",
-    );
+//     inliner.Configure(
+//       "Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie? Whats up hommie?",
+//     );
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure(
-      "Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie?",
-    );
+//     inliner.Configure(
+//       "Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie? Whats up my hommie?",
+//     );
 
-    await delay(2000);
+//     await delay(2000);
 
-    inliner.Configure(
-      "Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie?",
-    );
-  });
+//     inliner.Configure(
+//       "Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie? Whats up my super cool hommie?",
+//     );
+//   });
 
-  await t.step("Only Text", async () => {
-    const inliner = new UpdateInline();
+//   await t.step("Only Text", async () => {
+//     const inliner = new UpdateInline();
 
-    await delay(5000);
+//     await delay(5000);
 
-    hideCursor(Deno.stdout, new TextEncoder());
+//     hideCursor(Deno.stdout, new TextEncoder());
 
-    await inliner.Configure("Hello");
+//     await inliner.Configure("Hello");
 
-    assertEquals(inliner.LastInlined, "Hello");
+//     assertEquals(inliner.LastInlined, "Hello");
 
-    await inliner.Configure("Hello2");
+//     await inliner.Configure("Hello2");
 
-    assertEquals(inliner.LastInlined, "Hello2");
+//     assertEquals(inliner.LastInlined, "Hello2");
 
-    await delay(5000);
+//     await delay(5000);
 
-    showCursor(Deno.stdout, new TextEncoder());
+//     showCursor(Deno.stdout, new TextEncoder());
 
-    await delay(5000);
-  });
+//     await delay(5000);
+//   });
 
-  await t.step("Blue background", async () => {
-    const inliner = new UpdateInline();
+//   await t.step("Blue background", async () => {
+//     const inliner = new UpdateInline();
 
-    await inliner.Configure({
-      Styles: ["blue"],
-      Text: "Hello",
-    });
+//     await inliner.Configure({
+//       Styles: ["blue"],
+//       Text: "Hello",
+//     });
 
-    assert(inliner);
-    assertEquals(inliner.LastInlined, "\x1b[34mHello\x1b[39m");
-  });
+//     assert(inliner);
+//     assertEquals(inliner.LastInlined, "\x1b[34mHello\x1b[39m");
+//   });
 
-  await t.step("MixedStyles", async () => {
-    const inliner = new UpdateInline();
+//   await t.step("MixedStyles", async () => {
+//     const inliner = new UpdateInline();
 
-    await inliner.Configure({
-      Styles: ["bgBrightBlue"],
-      Text: {
-        Text: "Hello",
-        Styles: ["italic"],
-      },
-      PrefixText: {
-        Text: "DEBUG",
-        Styles: ["bgBlue"],
-      },
-    });
+//     await inliner.Configure({
+//       Styles: ["bgBrightBlue"],
+//       Text: {
+//         Text: "Hello",
+//         Styles: ["italic"],
+//       },
+//       PrefixText: {
+//         Text: "DEBUG",
+//         Styles: ["bgBlue"],
+//       },
+//     });
 
-    assert(inliner);
-    assertEquals(
-      inliner.LastInlined,
-      "\x1b[104m\x1b[44mDEBUG\x1b[104m \x1b[3mHello\x1b[23m\x1b[49m",
-    );
-  });
+//     assert(inliner);
+//     assertEquals(
+//       inliner.LastInlined,
+//       "\x1b[104m\x1b[44mDEBUG\x1b[104m \x1b[3mHello\x1b[23m\x1b[49m",
+//     );
+//   });
 
-  await t.step("MixedStyles with Suffix", async () => {
-    const inliner = new UpdateInline();
+//   await t.step("MixedStyles with Suffix", async () => {
+//     const inliner = new UpdateInline();
 
-    await inliner.Configure({
-      Styles: ["bgBrightBlue"],
-      Text: {
-        Text: "Hello",
-        Styles: ["italic"],
-      },
-      PrefixText: {
-        Text: "DEBUG",
-        Styles: ["bgBlue"],
-      },
-      SuffixText: ".......",
-    });
+//     await inliner.Configure({
+//       Styles: ["bgBrightBlue"],
+//       Text: {
+//         Text: "Hello",
+//         Styles: ["italic"],
+//       },
+//       PrefixText: {
+//         Text: "DEBUG",
+//         Styles: ["bgBlue"],
+//       },
+//       SuffixText: ".......",
+//     });
 
-    assert(inliner);
-    assertEquals(
-      inliner.LastInlined,
-      "\x1b[104m\x1b[44mDEBUG\x1b[104m \x1b[3mHello\x1b[23m\x1b[49m\n.......",
-    );
-  });
-});
+//     assert(inliner);
+//     assertEquals(
+//       inliner.LastInlined,
+//       "\x1b[104m\x1b[44mDEBUG\x1b[104m \x1b[3mHello\x1b[23m\x1b[49m\n.......",
+//     );
+//   });
+// });

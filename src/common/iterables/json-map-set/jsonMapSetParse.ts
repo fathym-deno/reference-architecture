@@ -20,6 +20,6 @@ import { jsonMapSetReviver } from "./jsonMapSetReviver.ts";
  * const obj = jsonMapSetParse('{}');
  * ```
  */
-export function jsonMapSetParse<T>(value: string): T {
-  return value ? JSON.parse(value, jsonMapSetReviver) : value;
+export function jsonMapSetParse<T>(value: string): T | undefined {
+  return value ? JSON.parse(value, jsonMapSetReviver) : undefined;
 }

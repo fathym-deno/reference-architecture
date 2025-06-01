@@ -1,13 +1,6 @@
 {
-  "Name": "oi",
-  "Version": "0.1.0",
-  "Description": "Open Industrial CLI",
-  "Help": {
-    "Usage": "oi <command> [args]",
-    "Examples": [
-      "oi dev",
-      "oi scaffold schema my-schema",
-      "oi publish --dry-run"
-    ]
-  }
+  "Name": "Test CLI",
+  "Tokens": ["test", "testing"],
+  "Version": "0.0.0",
+  "Description": "A Test CLI used for tests"
 }

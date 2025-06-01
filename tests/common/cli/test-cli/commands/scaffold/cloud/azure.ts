@@ -3,14 +3,14 @@ import {
   CommandParams,
   defineCommandModule,
 } from "@fathym/common/cli";
-import { z } from "../../../../../test.deps.ts";
+import { z } from "../../../../../../test.deps.ts";
 
 // 🔹 Flag and argument schemas (placeholder for now)
 export const FlagsSchema = z.object({});
 export const ArgsSchema = z.tuple([]);
 
 // 🔹 CLI params class with direct accessors (can grow later)
-export class ConnectionCommandParams extends CommandParams<
+export class AzureCommandParams extends CommandParams<
   z.infer<typeof FlagsSchema>,
   z.infer<typeof ArgsSchema>
 > {
@@ -18,21 +18,21 @@ export class ConnectionCommandParams extends CommandParams<
 }
 
 // 🔹 Command implementation — includes CLI lifecycle + metadata
-export class ConnectionCommand extends Command<ConnectionCommandParams> {
-  constructor(params: ConnectionCommandParams) {
+export class AzureCommand extends Command<AzureCommandParams> {
+  constructor(params: AzureCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }
 
   public Run(): Promise<void> {
-    console.log("🔧 Scaffolding connection...");
+    console.log("🔧 Scaffolding Azure...");
 
     return Promise.resolve();
   }
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      "Scaffold Connection",
-      "Generate a new connection file.",
+      "Scaffold Azure",
+      "Generate a new Azure file.",
     );
   }
 }
@@ -41,6 +41,6 @@ export class ConnectionCommand extends Command<ConnectionCommandParams> {
 export default defineCommandModule({
   FlagsSchema,
   ArgsSchema,
-  Command: ConnectionCommand,
-  Params: ConnectionCommandParams,
+  Command: AzureCommand,
+  Params: AzureCommandParams,
 });

@@ -1,8 +1,8 @@
-import { merge, writeAllSync, type WriterSync } from "./.deps.ts";
+import { merge, writeAllSync, type WriterSync } from "../.deps.ts";
 import type { UpdateInlineOptions } from "./UpdateInlineOptions.ts";
-import { appendStyles } from "./utils/appendStyles.ts";
-import { buildTextContent } from "./utils/buildTextContent.ts";
-import { clearLine } from "./utils/clearLine.ts";
+import { appendStyles } from "../utils/appendStyles.ts";
+import { buildTextContent } from "../utils/buildTextContent.ts";
+import { clearLine } from "../utils/clearLine.ts";
 
 export class UpdateInline {
   // #region Fields
