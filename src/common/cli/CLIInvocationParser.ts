@@ -20,4 +20,5 @@ export type CLIParsedResult = {
   key: string | undefined;
   config: CLIConfig;
   baseCommandDir: string;
+  baseTemplatesDir: string;
 };

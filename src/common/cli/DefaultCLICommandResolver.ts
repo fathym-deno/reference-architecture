@@ -14,27 +14,25 @@ import type { CLICommandEntry } from "./CLICommandEntry.ts";
  */
 export class DefaultCLICommandResolver implements CLICommandResolver {
   /**
-   * Resolves all the command modules in the given base directory.
-   * Returns a map of command keys to their respective command entries.
+   * Resolves all the command modules in the given command directory.
    *
-   * @param baseDir The base directory where the command modules are located.
-   * @returns A map of command keys to their respective command entries, where the key is the command or group name.
+   * @param baseCommandDir The base directory where command modules are stored.
+   * @returns A map of command tokens to their associated command/group paths.
    */
   public async ResolveCommandMap(
-    baseDir: string,
+    baseCommandDir: string,
   ): Promise<Map<string, CLICommandEntry>> {
     const map = new Map<string, CLICommandEntry>();
 
-    // Walk through the base directory and resolve all command modules
     for await (
-      const entry of walk(baseDir, {
+      const entry of walk(baseCommandDir, {
         includeDirs: false,
         exts: [".ts"],
       })
     ) {
-      const rel = relative(baseDir, entry.path)
+      const rel = relative(baseCommandDir, entry.path)
         .replace(/\\/g, "/")
-        .replace(/\/index$/, ""); // Allow folders with index.ts
+        .replace(/\/index$/, "");
 
       const isMetadata = entry.name === ".metadata.ts";
 
@@ -43,24 +41,20 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
         : rel.replace(/\.ts$/, "");
 
       const absPath = resolve(entry.path);
-      const group = key.split("/")[0]; // Group is the first part of the path
+      const group = key.split("/")[0];
 
-      // Initialize or get the existing entry
       const entryData = map.get(key) || {
         CommandPath: undefined,
         GroupPath: undefined,
         ParentGroup: group !== key ? group : undefined,
       };
 
-      // If it's a metadata file, set GroupPath and augment if necessary
       if (isMetadata) {
-        entryData.GroupPath = absPath; // Set GroupPath to the .metadata.ts file path
+        entryData.GroupPath = absPath;
       } else {
-        // Otherwise, it's a command file, so set the CommandPath
         entryData.CommandPath = absPath;
       }
 
-      // Store or update the entry in the map
       map.set(key, entryData);
     }
 
@@ -68,11 +62,11 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
   }
 
   /**
-   * Load and resolve the command instance based on the command path and parameters.
-   * @param path The path to the command module.
-   * @param flags The flags passed to the command.
-   * @param args The arguments passed to the command.
-   * @returns The loaded command instance.
+   * Dynamically loads a command instance from a given module file path.
+   *
+   * @param path Path to the command module.
+   * @param flags CLI flags.
+   * @param args CLI positional args.
    */
   public async LoadCommandInstance(
     path: string,
@@ -87,39 +81,33 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
       const params = CmdParams
         ? new CmdParams(flags, args)
         : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-          constructor() {
-            super(flags, args);
-          }
-        })();
+            constructor() {
+              super(flags, args);
+            }
+          })();
 
       return new Cmd(params);
-    } else {
-      return new (class extends Command {
-        constructor() {
-          super(
-            new (class extends CommandParams<
-              Record<string, unknown>,
-              unknown[]
-            > {
-              constructor() {
-                super({}, []);
-              }
-            })(),
-          );
-        }
-
-        public Run(): void {
-          throw new Error(
-            "This is a metadata-only command and cannot be executed.",
-          );
-        }
-
-        public override BuildMetadata(): CommandModuleMetadata {
-          const m = mod as unknown as CommandModuleMetadata;
-
-          return this.buildMetadataFromSchemas(m.Name, m.Description);
-        }
-      })();
     }
+
+    return new (class extends Command {
+      constructor() {
+        super(
+          new (class extends CommandParams<Record<string, unknown>, unknown[]> {
+            constructor() {
+              super({}, []);
+            }
+          })(),
+        );
+      }
+
+      public Run(): void {
+        throw new Error("This is a metadata-only command and cannot be executed.");
+      }
+
+      public override BuildMetadata(): CommandModuleMetadata {
+        const m = mod as unknown as CommandModuleMetadata;
+        return this.buildMetadataFromSchemas(m.Name, m.Description);
+      }
+    })();
   }
 }

@@ -17,11 +17,11 @@
   },
   "json.schemas": [
     {
-      "fileMatch": [".cli.json"],
+    "fileMatch": ["**/.cli.json"],
       "url": "./schemas/CLIConfig.schema.json"
     },
     {
-      "fileMatch": [".metadata.json"],
+    "fileMatch": ["**/.metadata.json"],
       "url": "./schemas/CommandModuleMetadata.schema.json"
     }
   ]

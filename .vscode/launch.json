@@ -32,10 +32,24 @@
         "-A",
         "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json",
-        "scaffold",
-        "cloud",
-        "aws",
-        "--help"
+        "init"
+      ],
+      "console": "integratedTerminal",
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Debug `ftm-cli init`",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "-A",
+        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
+        "init"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229

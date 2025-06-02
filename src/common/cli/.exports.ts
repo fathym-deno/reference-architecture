@@ -3,6 +3,7 @@
  * @module
  */
 export * from './commands/.exports.ts';
+export * from './scaffolding/.exports.ts';
 export * from './spinners/.exports.ts';
 export * from './utils/.exports.ts';
 export * from './CLI.ts';

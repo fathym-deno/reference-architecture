@@ -1,43 +1,56 @@
-// DefaultCLIInvocationParser.ts
-
-import { dirname, parseArgs, resolve } from "./.deps.ts";
+import { dirname, parseArgs, resolve, join, exists } from './.deps.ts';
 import type {
   CLIInvocationParser,
   CLIParsedResult,
-} from "./CLIInvocationParser.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
+} from './CLIInvocationParser.ts';
+import type { CLIConfig } from './CLIConfig.ts';
 
-/**
- * Default implementation of the CLIInvocationParser interface.
- * This class handles parsing command-line arguments and flags.
- */
 export class DefaultCLIInvocationParser implements CLIInvocationParser {
-  /**
-   * Parses the CLI invocation to extract flags, arguments, and the configuration.
-   * @param cliConfigPath Path to the CLI config file.
-   * @param args The arguments passed to the CLI.
-   * @returns The parsed result.
-   */
   public async ParseInvocation(
     cliConfigPath: string,
-    args: string[],
+    args: string[]
   ): Promise<CLIParsedResult> {
-    const parsed = parseArgs(args, { boolean: true });
-    const { _, ...flags } = parsed;
-    const positional = _ as string[];
+    let configPath = cliConfigPath;
+    let updatedArgs = args;
+    let configText: string | undefined;
 
-    // 👇 Flatten all non-flag args into a slash-separated key
-    const keyParts = positional.filter((p) => !p.startsWith("-"));
-    const key = keyParts.join("/");
+    try {
+      configText = await Deno.readTextFile(configPath);
+    } catch {
+      const cwd = Deno.cwd();
+      const fallbackPath = join(cwd, '.cli.json');
 
-    const configText = await Deno.readTextFile(cliConfigPath);
+      if (await exists(fallbackPath)) {
+        updatedArgs = [cliConfigPath, ...args];
+        configPath = fallbackPath;
+        configText = await Deno.readTextFile(configPath);
+      } else {
+        throw new Error(
+          `Unable to load CLI config from '${cliConfigPath}', and no .cli.json found in current directory.`
+        );
+      }
+    }
+
     const config = JSON.parse(configText) as CLIConfig;
 
-    const resolvedCliPath = resolve(cliConfigPath);
+    const parsed = parseArgs(updatedArgs, { boolean: true });
+    const { _, ...flags } = parsed;
+    const positional = _.map(String);
+
+    const keyParts = positional.filter((p) => !p.startsWith('-'));
+    const key = keyParts.join('/');
+
+    const resolvedCliPath = resolve(configPath);
     const cliConfigDir = dirname(resolvedCliPath);
+
     const baseCommandDir = resolve(
       cliConfigDir,
-      config.Commands ?? "./commands",
+      config.Commands ?? './commands'
+    );
+
+    const baseTemplatesDir = resolve(
+      cliConfigDir,
+      config.Templates ?? './.templates'
     );
 
     return {
@@ -47,6 +60,7 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
       key,
       config,
       baseCommandDir,
+      baseTemplatesDir,
     };
   }
 }

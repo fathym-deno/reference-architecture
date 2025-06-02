@@ -32,6 +32,12 @@ export type CLIConfig = {
    * May be absolute or relative. Defaults to `./commands`.
    */
   Commands?: string;
+
+  /**
+   * Root folder containing CLI templates.
+   * May be absolute or relative. Defaults to `./.templates`.
+   */
+  Templates?: string;
 };
 
 /**

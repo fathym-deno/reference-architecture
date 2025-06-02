@@ -10,7 +10,12 @@ export {
   toFileUrl,
 } from 'jsr:@std/path@1.0.9';
 
-export { z, ZodSchema, ZodType, type ZodTypeDef } from 'npm:zod@3.25.28';
+export {
+  z,
+  ZodSchema,
+  ZodType,
+  type ZodTypeDef,
+} from '../../third-party/zod/.exports.ts';
 export { zodToJsonSchema } from 'npm:zod-to-json-schema@3.24.5';
 
 export {
@@ -22,3 +27,5 @@ export {
 
 export { findClosestMatch } from '../matches/.exports.ts';
 export { merge, mergeWithArrays } from '../merge/.exports.ts';
+
+export { exists } from '../path/exists.ts';
