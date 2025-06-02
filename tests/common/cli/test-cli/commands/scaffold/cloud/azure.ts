@@ -1,15 +1,14 @@
 import {
   Command,
+  type CommandContext,
   CommandParams,
   defineCommandModule,
 } from "@fathym/common/cli";
-import { z } from "../../../../../../test.deps.ts";
+import { z } from "@fathym/common/third-party/zod";
 
-// 🔹 Flag and argument schemas (placeholder for now)
 export const FlagsSchema = z.object({});
 export const ArgsSchema = z.tuple([]);
 
-// 🔹 CLI params class with direct accessors (can grow later)
 export class AzureCommandParams extends CommandParams<
   z.infer<typeof FlagsSchema>,
   z.infer<typeof ArgsSchema>
@@ -17,19 +16,16 @@ export class AzureCommandParams extends CommandParams<
   // Add getters here when flags/args grow
 }
 
-// 🔹 Command implementation — includes CLI lifecycle + metadata
 export class AzureCommand extends Command<AzureCommandParams> {
   constructor(params: AzureCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }
 
-  public Run(): Promise<void> {
-    console.log("🔧 Scaffolding Azure...");
-
-    return Promise.resolve();
+  public override Run(ctx: CommandContext): void | number {
+    ctx.Log.Info("🔧 Scaffolding Azure...");
   }
 
-  public BuildMetadata() {
+  public override BuildMetadata() {
     return this.buildMetadataFromSchemas(
       "Scaffold Azure",
       "Generate a new Azure file.",
@@ -37,7 +33,6 @@ export class AzureCommand extends Command<AzureCommandParams> {
   }
 }
 
-// 🔹 Final CLI module export using the helper
 export default defineCommandModule({
   FlagsSchema,
   ArgsSchema,

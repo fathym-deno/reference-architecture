@@ -1,11 +1,11 @@
 import {
   Command,
+  type CommandContext,
   CommandParams,
   defineCommandModule,
 } from "@fathym/common/cli";
-import { z } from "../../../../test.deps.ts";
+import { z } from "@fathym/common/third-party/zod";
 
-// 🔹 Flag and argument schemas
 export const DevFlagsSchema = z.object({
   Verbose: z.boolean().optional().describe("Enable verbose logging"),
   Docker: z.boolean().optional().describe("Run in Docker"),
@@ -16,7 +16,6 @@ export const DevArgsSchema = z.tuple([
   z.string().optional().describe("Target workspace"),
 ]);
 
-// 🔹 CLI parameter class — direct flag/arg accessors
 export class DevCommandParams extends CommandParams<
   z.infer<typeof DevFlagsSchema>,
   z.infer<typeof DevArgsSchema>
@@ -34,30 +33,27 @@ export class DevCommandParams extends CommandParams<
   }
 }
 
-// 🔹 Command implementation — CLI logic + inferred metadata
 export class DevCommand extends Command<DevCommandParams> {
   constructor(params: DevCommandParams) {
     super(params, DevArgsSchema, DevFlagsSchema);
   }
 
-  public Run(): Promise<void> {
+  public override Run(ctx: CommandContext): void | number {
     if (this.Params.Verbose) {
-      console.log("📣 Verbose mode enabled");
+      ctx.Log.Info("📣 Verbose mode enabled");
     }
 
-    console.log("🔧 Running Open Industrial in dev mode...");
-    console.log(`📁 Workspace: ${this.Params.Workspace}`);
+    ctx.Log.Info("🔧 Running Open Industrial in dev mode...");
+    ctx.Log.Info(`📁 Workspace: ${this.Params.Workspace}`);
 
     if (this.Params.Docker) {
-      console.log("🐳 Launching in Docker...");
+      ctx.Log.Info("🐳 Launching in Docker...");
     } else {
-      console.log("🧪 Launching in local dev mode...");
+      ctx.Log.Info("🧪 Launching in local dev mode...");
     }
-
-    return Promise.resolve();
   }
 
-  public BuildMetadata() {
+  public override BuildMetadata() {
     return this.buildMetadataFromSchemas(
       "Development Mode",
       "Run Open Industrial in dev mode",

@@ -1,14 +1,14 @@
-import { dirname, parseArgs, resolve, join, exists } from './.deps.ts';
+import { dirname, exists, join, parseArgs, resolve } from "./.deps.ts";
 import type {
   CLIInvocationParser,
   CLIParsedResult,
-} from './CLIInvocationParser.ts';
-import type { CLIConfig } from './CLIConfig.ts';
+} from "./CLIInvocationParser.ts";
+import type { CLIConfig } from "./CLIConfig.ts";
 
 export class DefaultCLIInvocationParser implements CLIInvocationParser {
   public async ParseInvocation(
     cliConfigPath: string,
-    args: string[]
+    args: string[],
   ): Promise<CLIParsedResult> {
     let configPath = cliConfigPath;
     let updatedArgs = args;
@@ -18,7 +18,7 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
       configText = await Deno.readTextFile(configPath);
     } catch {
       const cwd = Deno.cwd();
-      const fallbackPath = join(cwd, '.cli.json');
+      const fallbackPath = join(cwd, ".cli.json");
 
       if (await exists(fallbackPath)) {
         updatedArgs = [cliConfigPath, ...args];
@@ -26,7 +26,7 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
         configText = await Deno.readTextFile(configPath);
       } else {
         throw new Error(
-          `Unable to load CLI config from '${cliConfigPath}', and no .cli.json found in current directory.`
+          `Unable to load CLI config from '${cliConfigPath}', and no .cli.json found in current directory.`,
         );
       }
     }
@@ -37,20 +37,20 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
     const { _, ...flags } = parsed;
     const positional = _.map(String);
 
-    const keyParts = positional.filter((p) => !p.startsWith('-'));
-    const key = keyParts.join('/');
+    const keyParts = positional.filter((p) => !p.startsWith("-"));
+    const key = keyParts.join("/");
 
     const resolvedCliPath = resolve(configPath);
     const cliConfigDir = dirname(resolvedCliPath);
 
     const baseCommandDir = resolve(
       cliConfigDir,
-      config.Commands ?? './commands'
+      config.Commands ?? "./commands",
     );
 
     const baseTemplatesDir = resolve(
       cliConfigDir,
-      config.Templates ?? './.templates'
+      config.Templates ?? "./.templates",
     );
 
     return {

@@ -81,10 +81,10 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
       const params = CmdParams
         ? new CmdParams(flags, args)
         : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-            constructor() {
-              super(flags, args);
-            }
-          })();
+          constructor() {
+            super(flags, args);
+          }
+        })();
 
       return new Cmd(params);
     }
@@ -101,7 +101,9 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
       }
 
       public Run(): void {
-        throw new Error("This is a metadata-only command and cannot be executed.");
+        throw new Error(
+          "This is a metadata-only command and cannot be executed.",
+        );
       }
 
       public override BuildMetadata(): CommandModuleMetadata {

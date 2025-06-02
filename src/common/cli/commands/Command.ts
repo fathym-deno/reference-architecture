@@ -1,5 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema } from "../.deps.ts";
+import type { IoCContainer, ZodSchema } from "../.deps.ts";
+import type { CommandContext } from "./CommandContext.ts";
 import type { CommandModuleMetadata } from "./CommandModuleMetadata.ts";
 import type { CommandParams } from "./CommandParams.ts";
 import type { CommandSuggestions } from "./CommandSuggestions.ts";
@@ -18,36 +19,45 @@ export abstract class Command<
   ) {}
 
   /**
-   * Main execution logic.
-   * Must be implemented by all commands.
-   */
-  public abstract Run(): void | number | Promise<void | number>;
-
-  /**
-   * Optional setup hook before command execution.
-   */
-  public Init?(): void | Promise<void>;
-
-  /**
-   * Optional preview-mode logic.
-   * If `--dry-run` is passed, this is called instead of `Run()`.
-   */
-  public DryRun?(): void | number | Promise<void | number>;
-
-  /**
-   * Optional teardown hook after execution (regardless of success/failure).
-   */
-  public Cleanup?(): void | Promise<void>;
-
-  /**
    * Must return CLI metadata used in help output, docs, and introspection.
    */
   public abstract BuildMetadata(): CommandModuleMetadata;
 
   /**
+   * Optional teardown hook after execution (regardless of success/failure).
+   */
+  public Cleanup?(ctx: CommandContext, ioc: IoCContainer): void | Promise<void>;
+
+  /**
+   * Optional setup hook before command execution.
+   */
+  public Init?(ctx: CommandContext, ioc: IoCContainer): void | Promise<void>;
+
+  /**
+   * Optional preview-mode logic.
+   * If `--dry-run` is passed, this is called instead of `Run()`.
+   */
+  public DryRun?(
+    ctx: CommandContext,
+    ioc: IoCContainer,
+  ): void | number | Promise<void | number>;
+
+  /**
+   * Main execution logic.
+   * Must be implemented by all commands.
+   */
+  public abstract Run(
+    ctx: CommandContext,
+    ioc: IoCContainer,
+  ): void | number | Promise<void | number>;
+
+  /**
    * Returns CLI suggestions derived from schemas unless explicitly overridden.
    */
-  public BuildSuggestions(): CommandSuggestions {
+  public Suggestions(
+    _ctx: CommandContext,
+    _ioc: IoCContainer,
+  ): CommandSuggestions {
     return this.buildSuggestionsFromSchemas(this.flagsSchema, this.argsSchema);
   }
 

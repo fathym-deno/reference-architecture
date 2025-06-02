@@ -1,23 +1,24 @@
-import { z } from '../../.deps.ts';
+import { z } from "../../.deps.ts";
 import {
-  CommandParams,
   Command,
-  TemplateScaffolder,
+  type CommandContext,
+  CommandParams,
   defineCommandModule,
-} from '../../.exports.ts';
+  TemplateScaffolder,
+} from "../../.exports.ts";
 
-export const InitArgsSchema = z.tuple([z.string().describe('Project name')]);
+export const InitArgsSchema = z.tuple([z.string().describe("Project name")]);
 
 export const InitFlagsSchema = z.object({
   template: z
     .string()
     .optional()
-    .describe('Template to use (e.g. hello, web, api)'),
+    .describe("Template to use (e.g. hello, web, api)"),
 
   baseTemplatesDir: z
     .string()
     .optional()
-    .describe('Root directory for templates (default injected by CLI)'),
+    .describe("Root directory for templates (default injected by CLI)"),
 });
 
 export class InitParams extends CommandParams<
@@ -26,15 +27,15 @@ export class InitParams extends CommandParams<
 > {
   get Name(): string {
     const arg = this.Arg(0);
-    return !arg || arg === '.' ? '.' : arg;
+    return !arg || arg === "." ? "." : arg;
   }
 
   get Template(): string {
-    return this.Flag('template') ?? 'hello';
+    return this.Flag("template") ?? "hello";
   }
 
   get BaseTemplatesDir(): string | undefined {
-    return this.Flag('baseTemplatesDir');
+    return this.Flag("baseTemplatesDir");
   }
 }
 
@@ -43,7 +44,7 @@ export class InitCommand extends Command<InitParams> {
     super(params, InitArgsSchema, InitFlagsSchema);
   }
 
-  public async Run(): Promise<void> {
+  public override async Run(ctx: CommandContext): Promise<void | number> {
     const { Name, Template, BaseTemplatesDir } = this.Params;
 
     const scaffolder = new TemplateScaffolder({
@@ -53,13 +54,15 @@ export class InitCommand extends Command<InitParams> {
 
     await scaffolder.Scaffold(Template, Name);
 
-    console.log(`✅ Project "${Name}" created from "${Template}" template.`);
+    ctx.Log.Success(
+      `✅ Project "${Name}" created from "${Template}" template.`,
+    );
   }
 
-  public BuildMetadata() {
+  public override BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      'Init',
-      'Initialize a new CLI project'
+      "Init",
+      "Initialize a new CLI project",
     );
   }
 }

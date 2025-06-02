@@ -1,21 +1,21 @@
-import { z } from '@fathym/common/third-party/zod';
+import { z } from "@fathym/common/third-party/zod";
 import {
-  CommandParams,
   Command,
+  CommandParams,
   defineCommandModule,
-} from '@fathym/common/cli';
+} from "@fathym/common/cli";
 
 // 🧩 Define schemas
 export const HelloFlagsSchema = z.object({
-  loud: z.boolean().optional().describe('Shout the greeting'),
-  'dry-run': z
+  loud: z.boolean().optional().describe("Shout the greeting"),
+  "dry-run": z
     .boolean()
     .optional()
-    .describe('Show the message without printing'),
+    .describe("Show the message without printing"),
 });
 
 export const HelloArgsSchema = z.tuple([
-  z.string().optional().describe('Name to greet'),
+  z.string().optional().describe("Name to greet"),
 ]);
 
 // 🧩 Parameter class
@@ -24,11 +24,11 @@ export class HelloCommandParams extends CommandParams<
   z.infer<typeof HelloArgsSchema>
 > {
   get Name(): string {
-    return this.Arg(0) ?? 'world';
+    return this.Arg(0) ?? "world";
   }
 
   get Loud(): boolean {
-    return this.Flag('loud') ?? false;
+    return this.Flag("loud") ?? false;
   }
 }
 
@@ -55,8 +55,8 @@ export class HelloCommand extends Command<HelloCommandParams> {
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      'Hello',
-      'Prints a friendly greeting.'
+      "Hello",
+      "Prints a friendly greeting.",
     );
   }
 }

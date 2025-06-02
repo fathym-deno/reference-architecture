@@ -10,6 +10,6 @@ export class DefaultCLISuggestions implements CLISuggestions {
   }
 
   SuggestForCommand(_key: string, command: Command): CommandSuggestions {
-    return command.BuildSuggestions?.() ?? {};
+    return command.Suggestions?.() ?? {};
   }
 }
