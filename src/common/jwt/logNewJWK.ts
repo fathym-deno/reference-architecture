@@ -1,5 +1,5 @@
-import { generateKeyValue } from "@fathym/common/jwt";
 import { encodeBase64 } from "jsr:@std/encoding@1.0.7/base64";
+import { generateKeyValue } from "./generateKeyValue.ts";
 
 export async function logNewJWK() {
   const jwk = await generateKeyValue({
