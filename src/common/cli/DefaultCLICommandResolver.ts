@@ -79,7 +79,7 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
     flags: Record<string, unknown>,
     args: string[],
   ): Promise<Command> {
-    const mod = (await import(toFileUrl(path).href)).default; // Load the module
+    const mod = (await import(toFileUrl(path).href)).default; 
     const Cmd = mod?.Command;
 
     if (Cmd && typeof Cmd === "function") {
