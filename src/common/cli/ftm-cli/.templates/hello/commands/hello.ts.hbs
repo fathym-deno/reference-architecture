@@ -1,6 +1,5 @@
 import { z } from '@fathym/common/third-party/zod';
 import { Command, CommandParams } from '@fathym/common/cli';
-import type { IoCContainer } from 'jsr:@fathym/ioc@0.0.14';
 import type { SayHello } from '../.cli.init.ts';
 
 export const HelloFlagsSchema = z.object({
@@ -32,8 +31,8 @@ export default Command('hello', 'Prints a friendly greeting.')
   .Args(HelloArgsSchema)
   .Flags(HelloFlagsSchema)
   .Params(HelloCommandParams)
-  .Services((ioc: IoCContainer) => ({
-    SayHello: ioc.Resolve<SayHello>(ioc.Symbol('SayHello')),
+  .Services(async (_, ioc) => ({
+    SayHello: await ioc.Resolve<SayHello>(ioc.Symbol('SayHello')),
   }))
   .Run(async ({ Params, Log, Services }) => {
     const sayHelloSvc = await Services.SayHello;
