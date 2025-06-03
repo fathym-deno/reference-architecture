@@ -1,51 +1,48 @@
-import { z } from "../../.deps.ts";
-import {
-  type CommandContext,
-  CommandParams,
-  CommandRuntime,
-  defineCommandModule,
-  TemplateScaffolder,
-} from "../../.exports.ts";
+import { z } from '../../.deps.ts';
+import { Command } from '../../fluent/Command.ts';
+import { TemplateScaffolder } from '../../.exports.ts';
+import { CommandParams } from '../../commands/CommandParams.ts';
 
-export const InitArgsSchema = z.tuple([z.string().describe("Project name")]);
+// --- Schemas ---
+export const InitArgsSchema = z.tuple([z.string().describe('Project name')]);
 
 export const InitFlagsSchema = z.object({
   template: z
     .string()
     .optional()
-    .describe("Template to use (e.g. hello, web, api)"),
+    .describe('Template to use (e.g. hello, web, api)'),
 
   baseTemplatesDir: z
     .string()
     .optional()
-    .describe("Root directory for templates (default injected by CLI)"),
+    .describe('Root directory for templates (default injected by CLI)'),
 });
 
+// --- Params Class ---
 export class InitParams extends CommandParams<
   z.infer<typeof InitFlagsSchema>,
   z.infer<typeof InitArgsSchema>
 > {
   get Name(): string {
     const arg = this.Arg(0);
-    return !arg || arg === "." ? "." : arg;
+    return !arg || arg === '.' ? '.' : arg;
   }
 
   get Template(): string {
-    return this.Flag("template") ?? "hello";
+    return this.Flag('template') ?? 'hello';
   }
 
   get BaseTemplatesDir(): string | undefined {
-    return this.Flag("baseTemplatesDir");
+    return this.Flag('baseTemplatesDir');
   }
 }
 
-export class InitCommand extends CommandRuntime<InitParams> {
-  constructor(params: InitParams) {
-    super(params, InitArgsSchema, InitFlagsSchema);
-  }
-
-  public override async Run(ctx: CommandContext): Promise<void | number> {
-    const { Name, Template, BaseTemplatesDir } = this.Params;
+export default Command('init', 'Initialize a new CLI project')
+  .Args(InitArgsSchema)
+  .Flags(InitFlagsSchema)
+  .Params(InitParams)
+  .Run(async ({ Params, Log }) => {
+    const { Name, Template, BaseTemplatesDir } = Params;
 
     const scaffolder = new TemplateScaffolder({
       templateRoot: BaseTemplatesDir!,
@@ -54,22 +51,5 @@ export class InitCommand extends CommandRuntime<InitParams> {
 
     await scaffolder.Scaffold(Template, Name);
 
-    ctx.Log.Success(
-      `✅ Project "${Name}" created from "${Template}" template.`,
-    );
-  }
-
-  public override BuildMetadata() {
-    return this.buildMetadataFromSchemas(
-      "Init",
-      "Initialize a new CLI project",
-    );
-  }
-}
-
-export default defineCommandModule({
-  FlagsSchema: InitFlagsSchema,
-  ArgsSchema: InitArgsSchema,
-  Command: InitCommand,
-  Params: InitParams,
-});
+    Log.Success(`✅ Project "${Name}" created from "${Template}" template.`);
+  });
