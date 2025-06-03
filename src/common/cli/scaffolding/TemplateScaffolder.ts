@@ -10,18 +10,20 @@ export interface TemplateScaffoldOptions {
   /** Where to write the scaffolded files */
   outputDir: string;
 
-  /** Key-value pairs used for rendering template placeholders */
+  /** Additional context to merge with base context (optional) */
   context?: Record<string, unknown>;
 }
 
 export class TemplateScaffolder {
   constructor(
     protected locator: TemplateLocator,
-    protected context: Record<string, unknown> = {},
+    protected baseContext: Record<string, unknown> = {},
   ) {}
 
   public async Scaffold(options: TemplateScaffoldOptions): Promise<void> {
-    const { templateName, outputDir } = options;
+    const { templateName, outputDir, context = {} } = options;
+
+    const mergedContext = { ...this.baseContext, ...context };
 
     const files = await this.locator.ListFiles(templateName);
 
@@ -30,7 +32,7 @@ export class TemplateScaffolder {
       const raw = await this.locator.ReadTemplateFile(filePath);
 
       const rendered = filePath.endsWith(".hbs")
-        ? Handlebars.compile(raw)(this.context)
+        ? Handlebars.compile(raw)(mergedContext)
         : raw;
 
       const outPath = join(outputDir, relPath.replace(/\.hbs$/, ""));

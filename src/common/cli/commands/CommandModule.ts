@@ -1,10 +1,10 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema, ZodType, ZodTypeDef } from "../.deps.ts";
-import type { CommandRuntime } from "./CommandRuntime.ts";
+import type { ZodSchema, ZodType, ZodTypeDef } from '../.deps.ts';
+import type { CommandRuntime } from './CommandRuntime.ts';
 import type {
   CommandParamConstructor,
   CommandParams,
-} from "./CommandParams.ts";
+} from './CommandParams.ts';
 
 /**
  * Represents a complete, executable CLI command module.
@@ -20,7 +20,7 @@ export type CommandModule = {
   /**
    * The executable command class. Must implement the `Run()` method from the `Command` interface.
    */
-  Command: new (params: CommandParams<any, any>) => CommandRuntime;
+  Command: new () => CommandRuntime;
 
   /**
    * Zod schema defining the named flags for the command.
@@ -45,7 +45,7 @@ export function defineCommandModule<
   CP extends CommandParams<F, A>,
   CC extends new (params: CP) => CommandRuntime<CP>,
   FS extends ZodType<F, ZodTypeDef, F>,
-  AS extends ZodType<A, ZodTypeDef, A>,
+  AS extends ZodType<A, ZodTypeDef, A>
 >(def: {
   FlagsSchema: FS;
   ArgsSchema: AS;
@@ -55,9 +55,7 @@ export function defineCommandModule<
   return {
     FlagsSchema: def.FlagsSchema,
     ArgsSchema: def.ArgsSchema,
-    Command: def.Command as unknown as new (
-      params: CommandParams<any, any>,
-    ) => CommandRuntime<any>,
+    Command: def.Command as unknown as new () => CommandRuntime<any>,
     Params: def.Params as unknown as CommandParamConstructor,
   };
 }

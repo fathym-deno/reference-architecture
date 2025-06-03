@@ -53,6 +53,23 @@
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
+    },
+    {
+      "name": "Debug `test-cli`",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "-A",
+        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/test/.cli.json",
+        "wave"
+      ],
+      "console": "integratedTerminal",
+      "attachSimplePort": 9229
     }
   ],
 }

@@ -1,0 +1,29 @@
+import type { CLIFileSystemHooks } from "{{ runtimePath }}/CLIFileSystemHooks.ts";
+import type { CLIInitFn } from "{{ runtimePath }}/CLIInitFn.ts";
+import type { CLICommandEntry } from "{{ runtimePath }}/CLICommandEntry.ts";
+import type { CommandModule } from "{{ runtimePath }}/commands/CommandModule.ts";
+import embeddedConfig from "./embedded-config.json" assert { type: "json" };
+import embeddedTemplates from "./embedded-templates.json" assert { type: "json" };
+import { EmbeddedTemplateLocator } from "{{ runtimePath }}/EmbeddedTemplateLocator.ts";
+
+export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
+  async ResolveConfig() {
+    return embeddedConfig;
+  }
+
+  async ResolveCommandEntryPaths(): Promise<Map<string, CLICommandEntry>> {
+    throw new Error("This CLI is statically compiled. Commands must be embedded.");
+  }
+
+  async LoadCommandModule(): Promise<CommandModule> {
+    throw new Error("Static CLI cannot dynamically load commands.");
+  }
+
+  async LoadInitFn(): Promise<CLIInitFn | undefined> {
+    return undefined;
+  }
+
+  async ResolveTemplateLocator() {
+    return new EmbeddedTemplateLocator(embeddedTemplates);
+  }
+}

@@ -1,0 +1,8 @@
+import { CLI } from "{{ runtimePath }}/CLI.ts";
+import { EmbeddedCLIFileSystemHooks } from "./embedded.ts";
+
+const cli = new CLI({
+  resolver: new EmbeddedCLIFileSystemHooks(),
+});
+
+cli.RunWithConfig();
