@@ -5,76 +5,87 @@ import {
   parseArgs,
   resolve,
   toFileUrl,
-} from './.deps.ts';
+} from "./.deps.ts";
 import type {
   CLIInvocationParser,
   CLIParsedResult,
-} from './CLIInvocationParser.ts';
-import type { CLIConfig } from './CLIConfig.ts';
-import type { CLIInitFn } from './CLIInitFn.ts';
+} from "./CLIInvocationParser.ts";
+import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIInitFn } from "./CLIInitFn.ts";
 
 export class DefaultCLIInvocationParser implements CLIInvocationParser {
   public async ParseInvocation(
     cliConfigPath: string,
-    args: string[]
+    args: string[],
   ): Promise<CLIParsedResult> {
     let configPath = cliConfigPath;
     let updatedArgs = args ?? [];
     let configText: string | undefined;
 
-    // If no args, treat it as if the CLI was called bare (e.g. `deno run cli-runtime.ts`)
-    if (updatedArgs.length === 0) {
-      const fallbackPath = join(Deno.cwd(), '.cli.json');
+    const firstArgIsFile = updatedArgs.length > 0 &&
+      updatedArgs[0].endsWith(".json");
 
-      if (await exists(fallbackPath)) {
-        configPath = fallbackPath;
-        updatedArgs = []; // explicitly empty
-      } else {
-        throw new Error(
-          `No CLI arguments or config provided, and no .cli.json found in current directory.`
-        );
+    // 👇 Check if the first arg is a real file
+    if (firstArgIsFile && (await exists(updatedArgs[0]))) {
+      configPath = updatedArgs[0];
+      updatedArgs = updatedArgs.slice(1);
+    } else {
+      try {
+        if (configPath) {
+          configText = await Deno.readTextFile(configPath);
+        }
+      } catch {
+        // We'll fall back below if the primary config failed to load
+      }
+
+      if (!configText) {
+        const fallbackPath = join(Deno.cwd(), ".cli.json");
+
+        if (await exists(fallbackPath)) {
+          updatedArgs = configPath ? [configPath, ...args] : [...args];
+          configPath = fallbackPath;
+          configText = await Deno.readTextFile(configPath);
+        } else {
+          console.error(
+            `❌ Unable to load CLI config.\n` +
+              `🧐 Tried path: '${cliConfigPath ?? "undefined"}'\n` +
+              `📁 No '.cli.json' found in current directory.\n\n` +
+              `👉 You can:\n` +
+              `   - Create a .cli.json file\n` +
+              `   - Or pass the path explicitly: deno run -A cli-runtime.ts ./path/to/.cli.json\n`,
+          );
+          Deno.exit(1);
+        }
       }
     }
 
-    try {
+    if (!configText && configPath) {
       configText = await Deno.readTextFile(configPath);
-    } catch {
-      const fallbackPath = join(Deno.cwd(), '.cli.json');
-
-      if (await exists(fallbackPath)) {
-        updatedArgs = [cliConfigPath, ...args];
-        configPath = fallbackPath;
-        configText = await Deno.readTextFile(configPath);
-      } else {
-        throw new Error(
-          `Unable to load CLI config from '${cliConfigPath}', and no .cli.json found in current directory.`
-        );
-      }
     }
 
-    const config = JSON.parse(configText) as CLIConfig;
+    const config = JSON.parse(configText!) as CLIConfig;
 
     const parsed = parseArgs(updatedArgs, { boolean: true });
     const { _, ...flags } = parsed;
     const positional = _.map(String);
 
-    const keyParts = positional.filter((p) => !p.startsWith('-'));
-    const key = keyParts.join('/');
+    const keyParts = positional.filter((p) => !p.startsWith("-"));
+    const key = keyParts.join("/");
 
     const resolvedCliPath = resolve(configPath);
     const cliConfigDir = dirname(resolvedCliPath);
 
     const baseCommandDir = resolve(
       cliConfigDir,
-      config.Commands ?? './commands'
+      config.Commands ?? "./commands",
     );
 
     const baseTemplatesDir = resolve(
       cliConfigDir,
-      config.Templates ?? './.templates'
+      config.Templates ?? "./.templates",
     );
 
-    const initFilePath = join(cliConfigDir, '.cli.init.ts');
+    const initFilePath = join(cliConfigDir, ".cli.init.ts");
     const hasInit = await exists(initFilePath);
 
     return {
@@ -90,11 +101,10 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
   }
 
   protected async loadInitHook(
-    initFilePath?: string
+    initFilePath?: string,
   ): Promise<CLIInitFn | undefined> {
     if (initFilePath && (await exists(initFilePath))) {
       const mod = (await import(toFileUrl(initFilePath).href)).default;
-
       return mod as CLIInitFn;
     }
   }

@@ -1,12 +1,8 @@
 import { z } from '@fathym/common/third-party/zod';
-import {
-  type CommandContext,
-  CommandParams,
-  CommandRuntime,
-  defineCommandModule,
-} from '@fathym/common/cli';
+import { Command, CommandParams } from '@fathym/common/cli';
+import type { IoCContainer } from 'jsr:@fathym/ioc@0.0.14';
+import type { SayHello } from '../.cli.init.ts';
 
-// 🧩 Define schemas
 export const HelloFlagsSchema = z.object({
   loud: z.boolean().optional().describe('Shout the greeting'),
   'dry-run': z
@@ -19,7 +15,6 @@ export const HelloArgsSchema = z.tuple([
   z.string().optional().describe('Name to greet'),
 ]);
 
-// 🧩 Parameter class
 export class HelloCommandParams extends CommandParams<
   z.infer<typeof HelloFlagsSchema>,
   z.infer<typeof HelloArgsSchema>
@@ -33,36 +28,25 @@ export class HelloCommandParams extends CommandParams<
   }
 }
 
-// 🚀 Command logic
-export class HelloCommand extends CommandRuntime<HelloCommandParams> {
-  public Run(ctx: CommandContext<HelloCommandParams>): Promise<void> {
-    const { Name, Loud, DryRun } = ctx.Params;
+export default Command('hello', 'Prints a friendly greeting.')
+  .Args(HelloArgsSchema)
+  .Flags(HelloFlagsSchema)
+  .Params(HelloCommandParams)
+  .Services((ioc: IoCContainer) => ({
+    SayHello: ioc.Resolve<SayHello>(ioc.Symbol('SayHello')),
+  }))
+  .Run(async ({ Params, Log, Services }) => {
+    const sayHelloSvc = await Services.SayHello;
 
-    let message = `Hello, ${Name}!`;
-    if (Loud) message = message.toUpperCase();
+    let message = sayHelloSvc.Speak(Params.Name);
 
-    if (DryRun) {
-      console.log(`🛑 Dry run: "${message}" would have been printed.`);
-    } else {
-      console.log(`👋 ${message}`);
+    if (Params.Loud) {
+      message = message.toUpperCase();
     }
 
-    return Promise.resolve();
-  }
-
-  public BuildMetadata() {
-    return this.buildMetadataFromSchemas(
-      'Hello',
-      'Prints a friendly greeting.',
-      HelloArgsSchema,
-      HelloFlagsSchema
-    );
-  }
-}
-
-export default defineCommandModule({
-  FlagsSchema: HelloFlagsSchema,
-  ArgsSchema: HelloArgsSchema,
-  Params: HelloCommandParams,
-  Command: HelloCommand,
-});
+    if (Params.DryRun) {
+      Log.Info(`🛑 Dry run: "${message}" would have been printed.`);
+    } else {
+      Log.Info(`👋 ${message}`);
+    }
+  });
