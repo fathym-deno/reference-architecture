@@ -1,13 +1,12 @@
-// deno-lint-ignore-file no-explicit-any
 import type { ZodSchema } from "../.deps.ts";
 import type { IoCContainer } from "../.deps.ts";
-import type { CommandModule } from "./CommandModule.ts";
-import type { CommandContext } from "./CommandContext.ts";
+import type { CommandModule } from "../commands/CommandModule.ts";
+import type { CommandContext } from "../commands/CommandContext.ts";
 import type {
   CommandParamConstructor,
   CommandParams,
-} from "./CommandParams.ts";
-import { CommandRuntime } from "./CommandRuntime.ts";
+} from "../commands/CommandParams.ts";
+import { CommandRuntime } from "../commands/CommandRuntime.ts";
 
 export class CommandModuleBuilder<
   F extends Record<string, unknown> = Record<string, unknown>,
@@ -51,11 +50,15 @@ export class CommandModuleBuilder<
     return this;
   }
 
-  public Params<NextP extends CommandParams<F, A>>(
-    ctor: CommandParamConstructor<F, A, NextP>,
-  ): CommandModuleBuilder<F, A, NextP, S> {
-    this.paramsCtor = ctor as CommandParamConstructor<F, A, any>;
-    return this as unknown as CommandModuleBuilder<F, A, NextP, S>;
+  public Params<
+    NF extends Record<string, unknown>,
+    NA extends unknown[],
+    NP extends CommandParams<NF, NA>,
+  >(
+    ctor: CommandParamConstructor<NF, NA, NP>,
+  ): CommandModuleBuilder<NF, NA, NP, S> {
+    this.paramsCtor = ctor as unknown as CommandParamConstructor<F, A, P>;
+    return this as unknown as CommandModuleBuilder<NF, NA, NP, S>;
   }
 
   public Services<NextS extends Record<string, unknown>>(

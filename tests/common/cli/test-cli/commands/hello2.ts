@@ -1,49 +1,31 @@
-import {
-  type CommandContext,
-  CommandRuntime,
-  defineCommandModule,
-} from "@fathym/common/cli";
 import type { IoCContainer } from "../../../../../src/common/cli/.deps.ts";
 import type { SayHello } from "../.cli.init.ts";
+import { Command } from "../../../../../src/common/cli/fluent/Command.ts";
 import {
   HelloArgsSchema,
   HelloCommandParams,
   HelloFlagsSchema,
 } from "./hello.ts";
 
-export class HelloCommand2 extends CommandRuntime<HelloCommandParams> {
-  public override async Run(
-    ctx: CommandContext<HelloCommandParams>,
-    ioc: IoCContainer,
-  ): Promise<void | number> {
-    const { Name, Loud, DryRun } = ctx.Params;
+export default Command("hello", "Prints a friendly greeting.")
+  .Args(HelloArgsSchema)
+  .Flags(HelloFlagsSchema)
+  .Params(HelloCommandParams)
+  .Services((ioc: IoCContainer) => ({
+    SayHello: ioc.Resolve<SayHello>(ioc.Symbol("SayHello")),
+  }))
+  .Run(async ({ Params, Log, Services }) => {
+    const sayHelloSvc = await Services.SayHello;
 
-    const sayHelloSvc = await ioc.Resolve<SayHello>(ioc.Symbol("SayHello"));
+    let message = sayHelloSvc.Speak(Params.Name);
 
-    let message = sayHelloSvc.Speak(Name);
-
-    if (Loud) message = message.toUpperCase();
-
-    if (DryRun) {
-      ctx.Log.Info(`🛑 Dry run: "${message}" would have been printed.`);
-    } else {
-      ctx.Log.Info(`👋 ${message}`);
+    if (Params.Loud) {
+      message = message.toUpperCase();
     }
-  }
 
-  public override BuildMetadata() {
-    return this.buildMetadataFromSchemas(
-      "Hello",
-      "Prints a friendly greeting.",
-      HelloArgsSchema,
-      HelloFlagsSchema,
-    );
-  }
-}
-
-export default defineCommandModule({
-  FlagsSchema: HelloFlagsSchema,
-  ArgsSchema: HelloArgsSchema,
-  Params: HelloCommandParams,
-  Command: HelloCommand2,
-});
+    if (Params.DryRun) {
+      Log.Info(`🛑 Dry run: "${message}" would have been printed.`);
+    } else {
+      Log.Info(`👋 ${message}`);
+    }
+  });

@@ -21,7 +21,7 @@
       "attachSimplePort": 9229
     },
     {
-      "name": "Debug tky-runtime CLI",
+      "name": "Debug test-runtime CLI",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -32,7 +32,7 @@
         "-A",
         "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json",
-        "hello"
+        "hello2"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229

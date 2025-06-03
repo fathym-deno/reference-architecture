@@ -7,6 +7,7 @@ import {
 } from "./.exports.ts";
 import type { CLICommandEntry } from "./CLICommandEntry.ts";
 import type { CommandModule } from "./commands/CommandModule.ts";
+import { CommandModuleBuilder } from "./fluent/CommandModuleBuilder.ts";
 
 /**
  * Default CLI resolver for loading commands and their metadata/runtime.
@@ -60,8 +61,14 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
     FlagsSchema?: ZodSchema;
     Params?: CommandParamConstructor;
   }> {
-    const mod = (await import(toFileUrl(path).href)).default;
+    let mod = (await import(toFileUrl(path).href)).default;
+
+    if (mod instanceof CommandModuleBuilder) {
+      mod = mod.Build();
+    }
+
     const Cmd = mod?.Command;
+
     if (Cmd && typeof Cmd === "function") {
       const cmdMod = mod as CommandModule;
 
