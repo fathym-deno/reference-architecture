@@ -8,7 +8,7 @@ Deno.test("Hello Command – Runtime Variants", async (t) => {
 
   await t.step("hello (default)", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["hello"])
+      cli.RunFromArgs([configPath, "hello"])
     );
     const text = stripColor(logs);
 
@@ -19,7 +19,7 @@ Deno.test("Hello Command – Runtime Variants", async (t) => {
 
   await t.step("hello Azi", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["hello", "Azi"])
+      cli.RunFromArgs([configPath, "hello", "Azi"])
     );
     const text = stripColor(logs);
 
@@ -28,7 +28,7 @@ Deno.test("Hello Command – Runtime Variants", async (t) => {
 
   await t.step("hello Azi --loud", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["hello", "Azi", "--loud"])
+      cli.RunFromArgs([configPath, "hello", "Azi", "--loud"])
     );
     const text = stripColor(logs);
 
@@ -37,7 +37,7 @@ Deno.test("Hello Command – Runtime Variants", async (t) => {
 
   await t.step("hello Azi --dry-run", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["hello", "Azi", "--dry-run"])
+      cli.RunFromArgs([configPath, "hello", "Azi", "--dry-run"])
     );
     const text = stripColor(logs);
 
@@ -46,7 +46,7 @@ Deno.test("Hello Command – Runtime Variants", async (t) => {
 
   await t.step("hello Azi --loud --dry-run", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["hello", "Azi", "--loud", "--dry-run"])
+      cli.RunFromArgs([configPath, "hello", "Azi", "--loud", "--dry-run"])
     );
     const text = stripColor(logs);
 

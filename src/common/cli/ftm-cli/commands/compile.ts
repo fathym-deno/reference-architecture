@@ -1,7 +1,6 @@
 import { z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
-import { join } from "../../.deps.ts";
 
 export const CompileArgsSchema = z.tuple([]); // no positional args
 
@@ -9,7 +8,9 @@ export const CompileFlagsSchema = z.object({
   entry: z
     .string()
     .optional()
-    .describe("Entry point file for the CLI (default: ./src/common/cli/cli-runtime.ts)"),
+    .describe(
+      "Entry point file for the CLI (default: ./src/common/cli/cli-runtime.ts)",
+    ),
 
   output: z
     .string()

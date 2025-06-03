@@ -8,6 +8,7 @@ import {
   type CommandModuleMetadata,
   CommandModuleMetadataSchema,
 } from "./CommandModuleMetadata.ts";
+import { type CommandLog, CommandLogSchema } from "./CommandLog.ts";
 
 /**
  * Strongly typed context passed to every command method (Init, Run, DryRun, Cleanup).
@@ -32,12 +33,7 @@ export type CommandContext<
   Key: string;
 
   /** Centralized logging API, supports injection, theming, formatting */
-  Log: {
-    Info: (...args: unknown[]) => void;
-    Warn: (...args: unknown[]) => void;
-    Error: (...args: unknown[]) => void;
-    Success: (...args: unknown[]) => void;
-  };
+  Log: CommandLog;
 
   /** Fully populated metadata for the resolved command (if any) */
   Metadata?: CommandModuleMetadata;
@@ -62,26 +58,13 @@ export const CommandContextSchema: z.ZodType<
     "Metadata for the resolved parent command group, if applicable",
   ),
 
-  Key: z.string().describe(
-    'The resolved key for the current command (e.g. "init" or "run/hello")',
-  ),
+  Key: z
+    .string()
+    .describe(
+      'The resolved key for the current command (e.g. "init" or "run/hello")',
+    ),
 
-  Log: z
-    .object({
-      Info: z.function().args(z.any()).returns(z.void()).describe(
-        "Standard output logging",
-      ),
-      Warn: z.function().args(z.any()).returns(z.void()).describe(
-        "Warning output logging",
-      ),
-      Error: z.function().args(z.any()).returns(z.void()).describe(
-        "Error output logging",
-      ),
-      Success: z.function().args(z.any()).returns(z.void()).describe(
-        "Success message logging",
-      ),
-    })
-    .describe("Logging interface for command output"),
+  Log: CommandLogSchema.describe("Logging interface for command output"),
 
   Metadata: CommandModuleMetadataSchema.optional().describe(
     "Metadata for the resolved command module",

@@ -1,9 +1,10 @@
-import { z, resolve } from '../../.deps.ts';
-import { Command } from '../../fluent/Command.ts';
-import { TemplateScaffolder } from '../../.exports.ts';
-import { CommandParams } from '../../commands/CommandParams.ts';
-import type { TemplateLocator } from '../../TemplateLocator.ts';
-import { exists, ensureDir, walk, relative, join } from '../../.deps.ts';
+import { resolve, z } from "../../.deps.ts";
+import { Command } from "../../fluent/Command.ts";
+import { TemplateScaffolder } from "../../.exports.ts";
+import { CommandParams } from "../../commands/CommandParams.ts";
+import type { TemplateLocator } from "../../TemplateLocator.ts";
+import { ensureDir, exists, join, relative, walk } from "../../.deps.ts";
+import type { CommandLog } from "../../commands/CommandLog.ts";
 
 export const BuildArgsSchema = z.tuple([]);
 
@@ -11,15 +12,15 @@ export const BuildFlagsSchema = z.object({
   config: z
     .string()
     .optional()
-    .describe('Path to .cli.json (default: ./.cli.json)'),
+    .describe("Path to .cli.json (default: ./.cli.json)"),
   templates: z
     .string()
     .optional()
-    .describe('Path to .templates/ folder (default: ./.templates)'),
+    .describe("Path to .templates/ folder (default: ./.templates)"),
   outDir: z
     .string()
     .optional()
-    .describe('Output build folder (default: ./_build)'),
+    .describe("Output build folder (default: ./_build)"),
 });
 
 export class BuildParams extends CommandParams<
@@ -27,25 +28,25 @@ export class BuildParams extends CommandParams<
   z.infer<typeof BuildArgsSchema>
 > {
   get TemplatesDir(): string {
-    return resolve(this.Flag('templates') ?? './.templates');
+    return resolve(this.Flag("templates") ?? "./.templates");
   }
 
   get OutDir(): string {
-    return resolve(this.Flag('outDir') ?? './_build');
+    return resolve(this.Flag("outDir") ?? "./_build");
   }
 
   get ConfigOverride(): string | undefined {
-    return this.Flag('config');
+    return this.Flag("config");
   }
 }
 
-export default Command('build', 'Prepare static CLI build folder')
+export default Command("build", "Prepare static CLI build folder")
   .Args(BuildArgsSchema)
   .Flags(BuildFlagsSchema)
   .Params(BuildParams)
   .Services(async (ctx, ioc) => {
     const locator = await ioc.Resolve<TemplateLocator>(
-      ioc.Symbol('TemplateLocator')
+      ioc.Symbol("TemplateLocator"),
     );
 
     return {
@@ -61,12 +62,12 @@ export default Command('build', 'Prepare static CLI build folder')
     const embeddedConfigPath = await writeEmbeddedConfig(
       configPath,
       Params.OutDir,
-      Log
+      Log,
     );
     const embeddedTemplatesPath = await writeEmbeddedTemplates(
       Params.TemplatesDir,
       Params.OutDir,
-      Log
+      Log,
     );
 
     await scaffoldEmbeddedRuntime(
@@ -76,30 +77,30 @@ export default Command('build', 'Prepare static CLI build folder')
         embeddedConfigPath,
         embeddedTemplatesPath,
       },
-      Log
+      Log,
     );
 
     Log.Success(
-      '✅ Build complete! Run `deno compile` on _build/cli.ts to finalize.'
+      "✅ Build complete! Run `deno compile` on _build/cli.ts to finalize.",
     );
   });
 
 async function resolveConfigPath(
   Params: BuildParams,
-  Log: any
+  Log: CommandLog,
 ): Promise<string> {
   const tryPath = Params.ConfigOverride
     ? resolve(Params.ConfigOverride)
-    : resolve('./.cli.json');
+    : resolve("./.cli.json");
 
   if (!(await exists(tryPath))) {
     if (Params.ConfigOverride) {
       Log.Error(`❌ Cannot find .cli.json at: ${tryPath}`);
     } else {
-      Log.Error('❌ No .cli.json found in current directory.');
+      Log.Error("❌ No .cli.json found in current directory.");
     }
 
-    Log.Info('👉 You can pass one with --config ./path/to/.cli.json');
+    Log.Info("👉 You can pass one with --config ./path/to/.cli.json");
     Deno.exit(1);
   }
 
@@ -109,10 +110,10 @@ async function resolveConfigPath(
 async function writeEmbeddedConfig(
   configPath: string,
   outDir: string,
-  Log: any
+  Log: CommandLog,
 ): Promise<string> {
   const raw = await Deno.readTextFile(configPath);
-  const outputPath = join(outDir, 'embedded-config.json');
+  const outputPath = join(outDir, "embedded-config.json");
   await Deno.writeTextFile(outputPath, raw);
   Log.Info(`📄 Embedded config → ${outputPath}`);
   return outputPath;
@@ -121,19 +122,19 @@ async function writeEmbeddedConfig(
 async function writeEmbeddedTemplates(
   templatesDir: string,
   outDir: string,
-  Log: any
+  Log: CommandLog,
 ): Promise<string> {
   const templates: Record<string, string> = {};
 
   if (await exists(templatesDir)) {
     for await (const entry of walk(templatesDir, { includeDirs: false })) {
-      const rel = relative(templatesDir, entry.path).replace(/\\/g, '/');
+      const rel = relative(templatesDir, entry.path).replace(/\\/g, "/");
       const contents = await Deno.readTextFile(entry.path);
       templates[rel] = contents;
     }
   }
 
-  const outputPath = join(outDir, 'embedded-templates.json');
+  const outputPath = join(outDir, "embedded-templates.json");
   await Deno.writeTextFile(outputPath, JSON.stringify(templates, null, 2));
   Log.Info(`📦 Embedded templates → ${outputPath}`);
   return outputPath;
@@ -143,10 +144,10 @@ async function scaffoldEmbeddedRuntime(
   scaffolder: TemplateScaffolder,
   outputDir: string,
   context: Record<string, string>,
-  Log: any
+  Log: CommandLog,
 ) {
   await scaffolder.Scaffold({
-    templateName: 'build-static',
+    templateName: "build-static",
     outputDir,
     context,
   });

@@ -1,12 +1,11 @@
-import type { CLIConfig } from './CLIConfig.ts';
-import type { CLIParsedResult } from './CLIParsedResult.ts';
-import type { CLIOptions } from './CLIOptions.ts';
+import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIOptions } from "./CLIOptions.ts";
 
-import { CLIInvocationParser } from './CLIInvocationParser.ts';
-import { CLICommandResolver } from './CLICommandResolver.ts';
-import { CLIExecutor } from './CLIExecutor.ts';
-import { CLICommandMatcher } from './CLICommandMatcher.ts';
-import { IoCContainer } from 'jsr:@fathym/ioc@0.0.14';
+import { CLIInvocationParser } from "./CLIInvocationParser.ts";
+import { CLICommandResolver } from "./CLICommandResolver.ts";
+import { CLIExecutor } from "./CLIExecutor.ts";
+import { CLICommandMatcher } from "./CLICommandMatcher.ts";
+import { IoCContainer } from "jsr:@fathym/ioc@0.0.14";
 
 export class CLI {
   protected resolver: CLICommandResolver;
@@ -17,22 +16,22 @@ export class CLI {
     this.parser = options.parser ?? new CLIInvocationParser();
   }
 
-  public async RunFromConfig(cliConfigPath: string, args: string[]) {
-    const { config, resolvedPath } = await this.resolver.ResolveConfig(
-      cliConfigPath
-    );
-    return await this.RunWithConfig(config, args, resolvedPath);
+  async RunFromArgs(args: string[]): Promise<void> {
+    const { config, resolvedPath, remainingArgs } = await this.resolver
+      .ResolveConfig(args);
+
+    return await this.RunWithConfig(config, remainingArgs, resolvedPath);
   }
 
   public async RunWithConfig(
     config: CLIConfig,
     args: string[],
-    configPath: string
-  ) {
+    configPath: string,
+  ): Promise<void> {
     const parsed = await this.parser.ParseInvocation(config, args, configPath);
 
     const commandMap = await this.resolver.ResolveCommandMap(
-      parsed.baseCommandDir
+      parsed.baseCommandDir,
     );
 
     const ioc = new IoCContainer();
@@ -50,17 +49,17 @@ export class CLI {
       parsed.key,
       parsed.flags,
       parsed.positional,
-      parsed.baseTemplatesDir
+      parsed.baseTemplatesDir,
     );
 
     ioc.Register(() => Templates, {
-      Type: ioc.Symbol('TemplateLocator'),
+      Type: ioc.Symbol("TemplateLocator"),
     });
 
     const executor = new CLIExecutor(ioc);
 
     await executor.Execute(parsed.config, Command, {
-      key: parsed.key || '',
+      key: parsed.key || "",
       flags: Flags,
       positional: Args,
       paramsCtor: Params,

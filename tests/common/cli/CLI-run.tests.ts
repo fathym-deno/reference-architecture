@@ -10,7 +10,7 @@ Deno.test("Test CLI – Execution Coverage", async (t) => {
 
   await t.step("Execute: scaffold/cloud/aws", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["scaffold/cloud/aws"])
+      cli.RunFromArgs([configPath, "scaffold/cloud/aws"])
     );
     const text = stripColor(logs);
 
@@ -20,7 +20,7 @@ Deno.test("Test CLI – Execution Coverage", async (t) => {
 
   await t.step("Execute: scaffold/cloud/azure", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["scaffold/cloud/azure"])
+      cli.RunFromArgs([configPath, "scaffold/cloud/azure"])
     );
     const text = stripColor(logs);
 
@@ -30,7 +30,7 @@ Deno.test("Test CLI – Execution Coverage", async (t) => {
 
   await t.step("Execute: scaffold/connection", async () => {
     const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["scaffold/connection"])
+      cli.RunFromArgs([configPath, "scaffold/connection"])
     );
     const text = stripColor(logs);
 
@@ -39,9 +39,7 @@ Deno.test("Test CLI – Execution Coverage", async (t) => {
   });
 
   await t.step("Execute: dev", async () => {
-    const logs = await captureLogs(() =>
-      cli.RunFromConfig(configPath, ["dev"])
-    );
+    const logs = await captureLogs(() => cli.RunFromArgs([configPath, "dev"]));
     const text = stripColor(logs);
 
     assertMatch(text, /running "dev"/i);

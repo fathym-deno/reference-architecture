@@ -1,33 +1,34 @@
-import { walk, relative, resolve, join, exists, toFileUrl } from './.deps.ts';
-import type { CLICommandEntry } from './CLICommandEntry.ts';
-import type { CLIInitFn } from './CLIInitFn.ts';
-import type { CLIConfig } from './CLIConfig.ts';
-import type { CommandModule } from './commands/CommandModule.ts';
-import { FileSystemTemplateLocator } from './FileSystemTemplateLocator.ts';
-import { CommandModuleBuilder } from './fluent/CommandModuleBuilder.ts';
-import type { TemplateLocator } from './TemplateLocator.ts';
-import type { CLIFileSystemHooks } from './CLIFileSystemHooks.ts';
+import { exists, join, relative, resolve, toFileUrl, walk } from "./.deps.ts";
+import type { CLICommandEntry } from "./CLICommandEntry.ts";
+import type { CLIInitFn } from "./CLIInitFn.ts";
+import type { CLIConfig } from "./CLIConfig.ts";
+import type { CommandModule } from "./commands/CommandModule.ts";
+import { FileSystemTemplateLocator } from "./FileSystemTemplateLocator.ts";
+import { CommandModuleBuilder } from "./fluent/CommandModuleBuilder.ts";
+import type { TemplateLocator } from "./TemplateLocator.ts";
+import type { CLIFileSystemHooks } from "./CLIFileSystemHooks.ts";
 
 export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
   async ResolveCommandEntryPaths(
-    baseDir: string
+    baseDir: string,
   ): Promise<Map<string, CLICommandEntry>> {
     const map = new Map<string, CLICommandEntry>();
 
-    for await (const entry of walk(baseDir, {
-      includeDirs: false,
-      exts: ['.ts'],
-    })) {
+    for await (
+      const entry of walk(baseDir, {
+        includeDirs: false,
+        exts: [".ts"],
+      })
+    ) {
       const rel = relative(baseDir, entry.path)
-        .replace(/\\/g, '/')
-        .replace(/\/index$/, '');
-      const key =
-        entry.name === '.metadata.ts'
-          ? rel.replace(/\/\.metadata\.ts$/, '')
-          : rel.replace(/\.ts$/, '');
+        .replace(/\\/g, "/")
+        .replace(/\/index$/, "");
+      const key = entry.name === ".metadata.ts"
+        ? rel.replace(/\/\.metadata\.ts$/, "")
+        : rel.replace(/\.ts$/, "");
 
       const absPath = resolve(entry.path);
-      const group = key.split('/')[0];
+      const group = key.split("/")[0];
 
       const entryData = map.get(key) || {
         CommandPath: undefined,
@@ -35,7 +36,7 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
         ParentGroup: group !== key ? group : undefined,
       };
 
-      if (entry.name === '.metadata.ts') entryData.GroupPath = absPath;
+      if (entry.name === ".metadata.ts") entryData.GroupPath = absPath;
       else entryData.CommandPath = absPath;
 
       map.set(key, entryData);
@@ -44,34 +45,36 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
     return map;
   }
 
-  async ResolveConfig(
-    configPath: string
-  ): Promise<{ config: CLIConfig; resolvedPath: string }> {
-    let resolvedPath = resolve(configPath);
-    let configText: string | undefined;
+  async ResolveConfig(args: string[]): Promise<{
+    config: CLIConfig;
+    resolvedPath: string;
+    remainingArgs: string[];
+  }> {
+    let configPath: string | undefined;
+    let remainingArgs = args;
 
-    try {
-      configText = await Deno.readTextFile(resolvedPath);
-    } catch {
-      const fallbackPath = join(Deno.cwd(), '.cli.json');
-
-      if (await exists(fallbackPath)) {
-        resolvedPath = fallbackPath;
-        configText = await Deno.readTextFile(resolvedPath);
+    if (args[0]?.endsWith(".json") && (await exists(args[0]))) {
+      configPath = args[0];
+      remainingArgs = args.slice(1);
+    } else {
+      const fallback = join(Deno.cwd(), ".cli.json");
+      if (await exists(fallback)) {
+        configPath = fallback;
       } else {
         console.error(
-          `❌ Unable to load CLI config.\n` +
-            `🧐 Tried: '${configPath}' and fallback '.cli.json'\n\n` +
-            `👉 Options:\n` +
-            `   - Create a .cli.json\n` +
-            `   - Or pass path: deno run -A cli.ts ./path/to/.cli.json\n`
+          `❌ Unable to locate CLI config.\n` +
+            `🧐 Tried: first arg and fallback '.cli.json'\n` +
+            `👉 Create one or pass path explicitly.\n`,
         );
         Deno.exit(1);
       }
     }
 
+    const resolvedPath = resolve(configPath!);
+    const configText = await Deno.readTextFile(resolvedPath);
     const config = JSON.parse(configText) as CLIConfig;
-    return { config, resolvedPath: resolve(resolvedPath) };
+
+    return { config, resolvedPath, remainingArgs };
   }
 
   async LoadCommandModule(path: string): Promise<CommandModule> {
@@ -87,7 +90,7 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
 
   ResolveTemplateLocator(dir?: string): Promise<TemplateLocator | undefined> {
     return Promise.resolve(
-      dir ? new FileSystemTemplateLocator(dir) : undefined
+      dir ? new FileSystemTemplateLocator(dir) : undefined,
     );
   }
 }
