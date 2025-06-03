@@ -1,7 +1,5 @@
-import type { CLIInvocationParser } from "./CLIInvocationParser.ts";
-import type { CLICommandResolver } from "./CLICommandResolver.ts";
-import { DefaultCLIInvocationParser } from "./DefaultCLIInvocationParser.ts";
-import { DefaultCLICommandResolver } from "./DefaultCLICommandResolver.ts";
+import { CLIInvocationParser } from "./CLIInvocationParser.ts";
+import { CLICommandResolver } from "./CLICommandResolver.ts";
 import { CLIExecutor } from "./CLIExecutor.ts";
 import { CLICommandMatcher } from "./CLICommandMatcher.ts";
 import { IoCContainer } from "jsr:@fathym/ioc@0.0.14";
@@ -16,8 +14,8 @@ export class CLI {
   protected parser: CLIInvocationParser;
 
   constructor(options: CLIOptions = {}) {
-    this.resolver = options.resolver ?? new DefaultCLICommandResolver();
-    this.parser = options.parser ?? new DefaultCLIInvocationParser();
+    this.resolver = options.resolver ?? new CLICommandResolver();
+    this.parser = options.parser ?? new CLIInvocationParser();
   }
 
   public async RunFromConfig(cliConfigPath: string, args: string[]) {
@@ -26,12 +24,17 @@ export class CLI {
     const commandMap = await this.resolver.ResolveCommandMap(
       parsed.baseCommandDir,
     );
+
     const ioc = new IoCContainer();
 
-    await parsed.initFn?.(ioc, parsed.config);
+    const initFn = parsed.initPath
+      ? await this.resolver.ResolveInitFn(parsed.initPath)
+      : undefined;
+
+    await initFn?.(ioc, parsed.config);
 
     const matcher = new CLICommandMatcher(this.resolver);
-    const { Command, Flags, Args, Params } = await matcher.Resolve(
+    const { Command, Flags, Args, Params, Templates } = await matcher.Resolve(
       parsed.config,
       commandMap,
       parsed.key,
@@ -40,12 +43,17 @@ export class CLI {
       parsed.baseTemplatesDir,
     );
 
+    ioc.Register(() => Templates, {
+      Type: ioc.Symbol("TemplateLocator"),
+    });
+
     const executor = new CLIExecutor(ioc);
     await executor.Execute(parsed.config, Command, {
       key: parsed.key || "",
       flags: Flags,
       positional: Args,
       paramsCtor: Params,
+      templates: Templates,
     });
   }
 }

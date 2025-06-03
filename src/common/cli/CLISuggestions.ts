@@ -1,14 +1,18 @@
+import { findClosestMatch } from "./.deps.ts";
 import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import type { CommandSuggestions } from "./commands/CommandSuggestions.ts";
 
-export interface CLISuggestions {
-  /**
-   * Suggest command names based on a partial input.
-   */
-  SuggestCommands(partial: string, keys: string[]): string[];
+export class DefaultCLISuggestions {
+  SuggestCommands(partial: string, keys: string[]): string[] {
+    const match = findClosestMatch(partial, keys);
+    return match ? [match] : [];
+  }
 
-  /**
-   * Get suggestions for flags/args of a specific command.
-   */
-  SuggestForCommand(key: string, command: CommandRuntime): CommandSuggestions;
+  SuggestForCommand(
+    _key: string,
+    _command: CommandRuntime,
+  ): CommandSuggestions {
+    // return command.Suggestions?.() ?? {};
+    throw new Error();
+  }
 }

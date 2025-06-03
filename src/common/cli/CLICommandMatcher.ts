@@ -5,6 +5,7 @@ import { CLIHelpBuilder } from "./CLIHelpBuilder.ts";
 import type { CommandParamConstructor } from "./commands/CommandParams.ts";
 import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import { HelpCommand, HelpCommandParams } from "./HelpCommand.ts";
+import type { TemplateLocator } from "./TemplateLocator.ts";
 
 export class CLICommandMatcher {
   constructor(protected resolver: CLICommandResolver) {}
@@ -21,6 +22,7 @@ export class CLICommandMatcher {
     Flags: Record<string, unknown>;
     Args: string[];
     Params: CommandParamConstructor | undefined;
+    Templates: TemplateLocator | undefined;
   }> {
     let match: CLICommandEntry | undefined;
     let remainingArgs: string[] = [];
@@ -88,11 +90,16 @@ export class CLICommandMatcher {
       };
     }
 
+    const tempLocator = await this.resolver.ResolveTemplateLocator(
+      baseTemplatesDir,
+    );
+
     return {
       Command: cmdInst,
       Flags: { ...flags, baseTemplatesDir },
       Args: remainingArgs,
       Params: paramsCtor,
+      Templates: tempLocator,
     };
   }
 }

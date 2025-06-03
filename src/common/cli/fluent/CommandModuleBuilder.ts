@@ -18,21 +18,16 @@ export class CommandModuleBuilder<
   protected flagsSchema?: ZodSchema;
   protected runFn?: (
     ctx: CommandContext<P, S>,
-    ioc: IoCContainer,
   ) => void | number | Promise<void | number>;
-  protected initFn?: (
-    ctx: CommandContext<P, S>,
-    ioc: IoCContainer,
-  ) => void | Promise<void>;
-  protected cleanupFn?: (
-    ctx: CommandContext<P, S>,
-    ioc: IoCContainer,
-  ) => void | Promise<void>;
+  protected initFn?: (ctx: CommandContext<P, S>) => void | Promise<void>;
+  protected cleanupFn?: (ctx: CommandContext<P, S>) => void | Promise<void>;
   protected dryRunFn?: (
     ctx: CommandContext<P, S>,
-    ioc: IoCContainer,
   ) => void | number | Promise<void | number>;
-  protected servicesFactory?: (ioc: IoCContainer) => S;
+  protected servicesFactory?: (
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ) => Promise<S>;
   protected paramsCtor?: CommandParamConstructor<F, A, P>;
 
   constructor(
@@ -62,42 +57,33 @@ export class CommandModuleBuilder<
   }
 
   public Services<NextS extends Record<string, unknown>>(
-    factory: (ioc: IoCContainer) => NextS,
+    factory: (ctx: CommandContext<P, S>, ioc: IoCContainer) => Promise<NextS>,
   ): CommandModuleBuilder<F, A, P, NextS> {
-    this.servicesFactory = factory as unknown as (ioc: IoCContainer) => S;
-
+    this.servicesFactory = factory as unknown as typeof this.servicesFactory;
     return this as unknown as CommandModuleBuilder<F, A, P, NextS>;
   }
 
-  public Init(
-    fn: (ctx: CommandContext<P, S>, ioc: IoCContainer) => void | Promise<void>,
-  ): this {
+  public Init(fn: (ctx: CommandContext<P, S>) => void | Promise<void>): this {
     this.initFn = fn;
     return this;
   }
 
   public Cleanup(
-    fn: (ctx: CommandContext<P, S>, ioc: IoCContainer) => void | Promise<void>,
+    fn: (ctx: CommandContext<P, S>) => void | Promise<void>,
   ): this {
     this.cleanupFn = fn;
     return this;
   }
 
   public DryRun(
-    fn: (
-      ctx: CommandContext<P, S>,
-      ioc: IoCContainer,
-    ) => void | number | Promise<void | number>,
+    fn: (ctx: CommandContext<P, S>) => void | number | Promise<void | number>,
   ): this {
     this.dryRunFn = fn;
     return this;
   }
 
   public Run(
-    fn: (
-      ctx: CommandContext<P, S>,
-      ioc: IoCContainer,
-    ) => void | number | Promise<void | number>,
+    fn: (ctx: CommandContext<P, S>) => void | number | Promise<void | number>,
   ): this {
     this.runFn = fn;
     return this;
@@ -124,38 +110,47 @@ export class CommandModuleBuilder<
     }
 
     class BuiltCommand extends CommandRuntime<P, S> {
+      private async withServices(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<CommandContext<P, S>> {
+        if (servicesFactory) {
+          const extra = await servicesFactory(ctx, ioc);
+          ctx.Services = { ...(ctx.Services ?? {}), ...extra };
+        }
+        return ctx;
+      }
+
       override async Init(
         ctx: CommandContext<P, S>,
         ioc: IoCContainer,
       ): Promise<void> {
-        if (initFn) {
-          await initFn(this.withServices(ctx, ioc), ioc);
-        }
-      }
-
-      override async Cleanup(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void> {
-        if (cleanupFn) {
-          await cleanupFn(this.withServices(ctx, ioc), ioc);
-        }
-      }
-
-      override async DryRun(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void | number> {
-        if (dryRunFn) {
-          return await dryRunFn(this.withServices(ctx, ioc), ioc);
-        }
+        const hydrated = await this.withServices(ctx, ioc);
+        if (initFn) await initFn(hydrated);
       }
 
       override async Run(
         ctx: CommandContext<P, S>,
         ioc: IoCContainer,
       ): Promise<void | number> {
-        return await runFn!(this.withServices(ctx, ioc), ioc);
+        const hydrated = await this.withServices(ctx, ioc);
+        return await runFn!(hydrated);
+      }
+
+      override async Cleanup(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void> {
+        const hydrated = await this.withServices(ctx, ioc);
+        if (cleanupFn) await cleanupFn(hydrated);
+      }
+
+      override async DryRun(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void | number> {
+        const hydrated = await this.withServices(ctx, ioc);
+        if (dryRunFn) return await dryRunFn(hydrated);
       }
 
       override BuildMetadata() {
@@ -165,20 +160,6 @@ export class CommandModuleBuilder<
           argsSchema,
           flagsSchema,
         );
-      }
-
-      private withServices(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): CommandContext<P, S> {
-        const extra = servicesFactory?.(ioc) ?? ({} as S);
-        return {
-          ...ctx,
-          Services: {
-            ...(ctx.Services ?? {}),
-            ...extra,
-          },
-        };
       }
     }
 

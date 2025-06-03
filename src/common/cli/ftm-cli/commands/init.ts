@@ -2,6 +2,7 @@ import { z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
+import type { TemplateLocator } from "../../TemplateLocator.ts";
 
 // --- Schemas ---
 export const InitArgsSchema = z.tuple([z.string().describe("Project name")]);
@@ -41,15 +42,20 @@ export default Command("init", "Initialize a new CLI project")
   .Args(InitArgsSchema)
   .Flags(InitFlagsSchema)
   .Params(InitParams)
-  .Run(async ({ Params, Log }) => {
-    const { Name, Template, BaseTemplatesDir } = Params;
+  .Services(async (ctx, ioc) => ({
+    Scaffolder: new TemplateScaffolder(
+      await ioc.Resolve<TemplateLocator>(ioc.Symbol("TemplateLocator")),
+      { name: ctx.Params.Name },
+    ),
+  }))
+  .Run(async ({ Params, Log, Services }) => {
+    const { Name, Template } = Params;
+    const { Scaffolder } = Services;
 
-    const scaffolder = new TemplateScaffolder({
-      templateRoot: BaseTemplatesDir!,
-      context: { name: Name },
+    await Scaffolder.Scaffold({
+      templateName: Template,
+      outputDir: Name,
     });
-
-    await scaffolder.Scaffold(Template, Name);
 
     Log.Success(`✅ Project "${Name}" created from "${Template}" template.`);
   });

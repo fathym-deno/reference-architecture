@@ -7,12 +7,14 @@ import {
 import type { CommandContext } from "./commands/CommandContext.ts";
 import type { IoCContainer } from "./.deps.ts";
 import { HelpCommand } from "./HelpCommand.ts";
+import type { TemplateLocator } from "./TemplateLocator.ts";
 
 export interface CLIExecutorOptions {
   key: string;
   flags: Record<string, unknown>;
   positional: string[];
   paramsCtor: CommandParamConstructor | undefined;
+  templates: TemplateLocator | undefined;
 }
 
 export class CLIExecutor {
