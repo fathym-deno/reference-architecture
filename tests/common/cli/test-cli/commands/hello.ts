@@ -1,7 +1,7 @@
 import {
-  Command,
   type CommandContext,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
 import { z } from "@fathym/common/third-party/zod";
@@ -33,7 +33,7 @@ export class HelloCommandParams extends CommandParams<
   }
 }
 
-export class HelloCommand extends Command<HelloCommandParams> {
+export class HelloCommand extends CommandRuntime<HelloCommandParams> {
   constructor(params: HelloCommandParams) {
     super(params, HelloArgsSchema, HelloFlagsSchema);
   }

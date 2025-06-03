@@ -1,8 +1,8 @@
 import { z } from "../../.deps.ts";
 import {
-  Command,
   type CommandContext,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
   TemplateScaffolder,
 } from "../../.exports.ts";
@@ -39,7 +39,7 @@ export class InitParams extends CommandParams<
   }
 }
 
-export class InitCommand extends Command<InitParams> {
+export class InitCommand extends CommandRuntime<InitParams> {
   constructor(params: InitParams) {
     super(params, InitArgsSchema, InitFlagsSchema);
   }

@@ -1,6 +1,6 @@
 // CLICommandResolver.ts (interface)
 
-import type { Command } from "./.exports.ts";
+import type { CommandRuntime } from "./.exports.ts";
 import type { CLICommandEntry } from "./CLICommandEntry.ts";
 
 /**
@@ -26,5 +26,5 @@ export interface CLICommandResolver {
     path: string,
     flags: Record<string, unknown>,
     args: string[],
-  ): Promise<Command>;
+  ): Promise<CommandRuntime>;
 }

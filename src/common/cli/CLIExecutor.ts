@@ -1,5 +1,5 @@
 import type { CLIConfig } from "./CLIConfig.ts";
-import type { Command } from "./commands/Command.ts";
+import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import type { CommandParams } from "./commands/CommandParams.ts";
 import type { CommandContext } from "./commands/CommandContext.ts";
 import { HelpCommand } from "./HelpCommand.ts";
@@ -14,7 +14,7 @@ export class CLIExecutor {
 
   public async Execute(
     config: CLIConfig,
-    command: Command<CommandParams> | undefined,
+    command: CommandRuntime<CommandParams> | undefined,
     options: CLIExecutorOptions,
   ): Promise<void> {
     if (!command) return;
@@ -44,7 +44,7 @@ export class CLIExecutor {
 
   protected buildContext(
     config: CLIConfig,
-    command: Command<CommandParams>,
+    command: CommandRuntime<CommandParams>,
     opts: CLIExecutorOptions,
   ): CommandContext {
     const log =
@@ -66,7 +66,7 @@ export class CLIExecutor {
   }
 
   protected async runLifecycle(
-    cmd: Command,
+    cmd: CommandRuntime,
     ctx: CommandContext,
   ): Promise<void | number> {
     if (typeof cmd.Init === "function") await cmd.Init(ctx, this.ioc);

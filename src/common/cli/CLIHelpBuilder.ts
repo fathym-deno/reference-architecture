@@ -2,7 +2,7 @@ import { findClosestMatch } from "../matches/findClosestMatch.ts";
 import type { CLICommandEntry } from "./CLICommandEntry.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
-import type { Command } from "./commands/Command.ts";
+import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import type { CommandModuleMetadata } from "./commands/CommandModuleMetadata.ts";
 import type { HelpContext } from "./HelpContext.ts";
 
@@ -14,8 +14,8 @@ export class CLIHelpBuilder {
     commandMap: Map<string, CLICommandEntry>,
     key: string | undefined,
     _flags: Record<string, unknown>,
-    cmdInst?: Command,
-    groupInst?: Command,
+    cmdInst?: CommandRuntime,
+    groupInst?: CommandRuntime,
   ): Promise<HelpContext | undefined> {
     const sections: HelpContext["Sections"] = [];
 

@@ -1,4 +1,4 @@
-import type { Command } from "./commands/Command.ts";
+import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import type { CommandSuggestions } from "./commands/CommandSuggestions.ts";
 
 export interface CLISuggestions {
@@ -10,5 +10,5 @@ export interface CLISuggestions {
   /**
    * Get suggestions for flags/args of a specific command.
    */
-  SuggestForCommand(key: string, command: Command): CommandSuggestions;
+  SuggestForCommand(key: string, command: CommandRuntime): CommandSuggestions;
 }

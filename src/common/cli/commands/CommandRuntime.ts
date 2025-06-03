@@ -9,7 +9,7 @@ import type { CommandSuggestions } from "./CommandSuggestions.ts";
  * Base class for all CLI commands.
  * Provides lifecycle hooks, metadata, autocomplete support, and schema-derived suggestions.
  */
-export abstract class Command<
+export abstract class CommandRuntime<
   P extends CommandParams<any, any> = CommandParams<any, any>,
 > {
   constructor(

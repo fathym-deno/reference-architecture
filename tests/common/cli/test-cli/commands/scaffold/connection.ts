@@ -1,7 +1,7 @@
 import {
-  Command,
   type CommandContext,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
 import { z } from "@fathym/common/third-party/zod";
@@ -16,7 +16,7 @@ export class ConnectionCommandParams extends CommandParams<
   // Add getters here when flags/args grow
 }
 
-export class ConnectionCommand extends Command<ConnectionCommandParams> {
+export class ConnectionCommand extends CommandRuntime<ConnectionCommandParams> {
   constructor(params: ConnectionCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }

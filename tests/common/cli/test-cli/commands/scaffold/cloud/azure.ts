@@ -1,7 +1,7 @@
 import {
-  Command,
   type CommandContext,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
 import { z } from "@fathym/common/third-party/zod";
@@ -16,7 +16,7 @@ export class AzureCommandParams extends CommandParams<
   // Add getters here when flags/args grow
 }
 
-export class AzureCommand extends Command<AzureCommandParams> {
+export class AzureCommand extends CommandRuntime<AzureCommandParams> {
   constructor(params: AzureCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }

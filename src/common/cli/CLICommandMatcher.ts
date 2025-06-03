@@ -2,7 +2,7 @@ import type { CLICommandEntry } from "./CLICommandEntry.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
 import { CLIHelpBuilder } from "./CLIHelpBuilder.ts";
-import type { Command } from "./commands/Command.ts";
+import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import { HelpCommand, HelpCommandParams } from "./HelpCommand.ts";
 
 export class CLICommandMatcher {
@@ -15,7 +15,7 @@ export class CLICommandMatcher {
     flags: Record<string, unknown>,
     positional: string[],
     baseTemplatesDir?: string,
-  ): Promise<Command | undefined> {
+  ): Promise<CommandRuntime | undefined> {
     let match: CLICommandEntry | undefined;
     let remainingArgs: string[] = [];
 

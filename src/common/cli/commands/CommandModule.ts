@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
 import type { ZodSchema, ZodType, ZodTypeDef } from "../.deps.ts";
-import type { Command } from "./Command.ts";
+import type { CommandRuntime } from "./CommandRuntime.ts";
 import type {
   CommandParamConstructor,
   CommandParams,
@@ -20,7 +20,7 @@ export type CommandModule = {
   /**
    * The executable command class. Must implement the `Run()` method from the `Command` interface.
    */
-  Command: new (params: CommandParams<any, any>) => Command;
+  Command: new (params: CommandParams<any, any>) => CommandRuntime;
 
   /**
    * Zod schema defining the named flags for the command.
@@ -43,7 +43,7 @@ export function defineCommandModule<
   F extends Record<string, unknown>,
   A extends unknown[],
   CP extends CommandParams<F, A>,
-  CC extends new (params: CP) => Command<CP>,
+  CC extends new (params: CP) => CommandRuntime<CP>,
   FS extends ZodType<F, ZodTypeDef, F>,
   AS extends ZodType<A, ZodTypeDef, A>,
 >(def: {
@@ -57,7 +57,7 @@ export function defineCommandModule<
     ArgsSchema: def.ArgsSchema,
     Command: def.Command as unknown as new (
       params: CommandParams<any, any>,
-    ) => Command<any>,
+    ) => CommandRuntime<any>,
     Params: def.Params as unknown as CommandParamConstructor,
   };
 }

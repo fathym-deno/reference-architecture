@@ -1,7 +1,7 @@
 import {
-  Command,
   type CommandContext,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
 import { z } from "@fathym/common/third-party/zod";
@@ -16,7 +16,7 @@ export class AWSCommandParams extends CommandParams<
   // Add getters here when flags/args grow
 }
 
-export class AWSCommand extends Command<AWSCommandParams> {
+export class AWSCommand extends CommandRuntime<AWSCommandParams> {
   constructor(params: AWSCommandParams) {
     super(params, ArgsSchema, FlagsSchema);
   }

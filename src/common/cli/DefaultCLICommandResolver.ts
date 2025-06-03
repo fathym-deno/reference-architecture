@@ -2,9 +2,9 @@ import { relative, resolve, walk } from "./.deps.ts";
 import { toFileUrl } from "./.deps.ts";
 import {
   type CLICommandResolver,
-  Command,
   type CommandModuleMetadata,
   CommandParams,
+  CommandRuntime,
 } from "./.exports.ts";
 import type { CLICommandEntry } from "./CLICommandEntry.ts";
 
@@ -72,7 +72,7 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
     path: string,
     flags: Record<string, unknown>,
     args: string[],
-  ): Promise<Command> {
+  ): Promise<CommandRuntime> {
     const mod = (await import(toFileUrl(path).href)).default;
     const Cmd = mod?.Command;
 
@@ -89,7 +89,7 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
       return new Cmd(params);
     }
 
-    return new (class extends Command {
+    return new (class extends CommandRuntime {
       constructor() {
         super(
           new (class extends CommandParams<Record<string, unknown>, unknown[]> {

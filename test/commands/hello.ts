@@ -1,7 +1,7 @@
 import { z } from "@fathym/common/third-party/zod";
 import {
-  Command,
   CommandParams,
+  CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
 
@@ -33,7 +33,7 @@ export class HelloCommandParams extends CommandParams<
 }
 
 // 🚀 Command logic
-export class HelloCommand extends Command<HelloCommandParams> {
+export class HelloCommand extends CommandRuntime<HelloCommandParams> {
   constructor(params: HelloCommandParams) {
     super(params, HelloArgsSchema, HelloFlagsSchema);
   }

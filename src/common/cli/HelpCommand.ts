@@ -1,4 +1,4 @@
-import { Command } from "./commands/Command.ts";
+import { CommandRuntime } from "./commands/CommandRuntime.ts";
 import { z } from "./.deps.ts";
 import { type HelpContext, HelpContextSchema } from "./HelpContext.ts";
 import { CommandParams } from "./commands/CommandParams.ts";
@@ -36,7 +36,7 @@ export class HelpCommandParams extends CommandParams<
 /**
  * Runtime implementation of the help renderer.
  */
-export class HelpCommand extends Command<HelpCommandParams> {
+export class HelpCommand extends CommandRuntime<HelpCommandParams> {
   constructor(params: HelpCommandParams) {
     super(params, HelpArgsSchema, HelpFlagsSchema);
   }
