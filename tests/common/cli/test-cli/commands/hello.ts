@@ -5,6 +5,8 @@ import {
   defineCommandModule,
 } from "@fathym/common/cli";
 import { z } from "@fathym/common/third-party/zod";
+import type { IoCContainer } from "../../../../../src/common/cli/.deps.ts";
+import type { SayHello } from "../.cli.init.ts";
 
 export const HelloFlagsSchema = z.object({
   loud: z.boolean().optional().describe("Shout the greeting"),
@@ -36,10 +38,16 @@ export class HelloCommand extends Command<HelloCommandParams> {
     super(params, HelloArgsSchema, HelloFlagsSchema);
   }
 
-  public override Run(ctx: CommandContext): void | number {
+  public override async Run(
+    ctx: CommandContext,
+    ioc: IoCContainer,
+  ): Promise<void | number> {
     const { Name, Loud, DryRun } = this.Params;
 
-    let message = `Hello, ${Name}!`;
+    const sayHelloSvc = await ioc.Resolve<SayHello>(ioc.Symbol("SayHello"));
+
+    let message = sayHelloSvc.Speak(Name);
+
     if (Loud) message = message.toUpperCase();
 
     if (DryRun) {

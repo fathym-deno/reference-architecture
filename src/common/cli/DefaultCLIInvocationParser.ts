@@ -53,6 +53,9 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
       config.Templates ?? "./.templates",
     );
 
+    const initFilePath = join(cliConfigDir, ".cli.init.ts");
+    const hasInit = await exists(initFilePath);
+
     return {
       parsed,
       flags,
@@ -61,6 +64,7 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
       config,
       baseCommandDir,
       baseTemplatesDir,
+      initFilePath: hasInit ? initFilePath : undefined,
     };
   }
 }

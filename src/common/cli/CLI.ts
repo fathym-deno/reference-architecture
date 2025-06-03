@@ -5,6 +5,8 @@ import { DefaultCLICommandResolver } from "./DefaultCLICommandResolver.ts";
 import { CLIExecutor } from "./CLIExecutor.ts";
 import { CLICommandMatcher } from "./CLICommandMatcher.ts";
 import { IoCContainer } from "jsr:@fathym/ioc@0.0.14";
+import type { CLIInitFn } from "./CLIInitFn.ts";
+import { exists, toFileUrl } from "./.deps.ts";
 
 export interface CLIOptions {
   resolver?: CLICommandResolver;
@@ -26,6 +28,13 @@ export class CLI {
       parsed.baseCommandDir,
     );
 
+    const ioc = new IoCContainer();
+
+    const initFn = await this.loadInitHook(parsed.initFilePath);
+    if (initFn) {
+      await initFn(ioc, parsed.config);
+    }
+
     const matcher = new CLICommandMatcher(this.resolver);
     const command = await matcher.Resolve(
       parsed.config,
@@ -36,9 +45,19 @@ export class CLI {
       parsed.baseTemplatesDir,
     );
 
-    const executor = new CLIExecutor(new IoCContainer());
+    const executor = new CLIExecutor(ioc);
     await executor.Execute(parsed.config, command, {
       key: parsed.key || "",
     });
+  }
+
+  protected async loadInitHook(
+    initFilePath?: string,
+  ): Promise<CLIInitFn | undefined> {
+    if (initFilePath && (await exists(initFilePath))) {
+      const mod = (await import(toFileUrl(initFilePath).href)).default;
+
+      return mod as CLIInitFn;
+    }
   }
 }
