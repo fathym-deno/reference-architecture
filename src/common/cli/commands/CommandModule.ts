@@ -32,7 +32,7 @@ export type CommandModule = {
    * Optional parameter class that provides typed access to flags and args.
    * Used to construct the `params` passed into the command at runtime.
    */
-  Params?: CommandParamConstructor;
+  Params?: CommandParamConstructor<any, any, any>;
 };
 
 /**

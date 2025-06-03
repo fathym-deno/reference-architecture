@@ -1,9 +1,17 @@
-import { dirname, exists, join, parseArgs, resolve } from "./.deps.ts";
+import {
+  dirname,
+  exists,
+  join,
+  parseArgs,
+  resolve,
+  toFileUrl,
+} from "./.deps.ts";
 import type {
   CLIInvocationParser,
   CLIParsedResult,
 } from "./CLIInvocationParser.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIInitFn } from "./CLIInitFn.ts";
 
 export class DefaultCLIInvocationParser implements CLIInvocationParser {
   public async ParseInvocation(
@@ -64,7 +72,17 @@ export class DefaultCLIInvocationParser implements CLIInvocationParser {
       config,
       baseCommandDir,
       baseTemplatesDir,
-      initFilePath: hasInit ? initFilePath : undefined,
+      initFn: hasInit ? await this.loadInitHook(initFilePath) : undefined,
     };
+  }
+
+  protected async loadInitHook(
+    initFilePath?: string,
+  ): Promise<CLIInitFn | undefined> {
+    if (initFilePath && (await exists(initFilePath))) {
+      const mod = (await import(toFileUrl(initFilePath).href)).default;
+
+      return mod as CLIInitFn;
+    }
   }
 }

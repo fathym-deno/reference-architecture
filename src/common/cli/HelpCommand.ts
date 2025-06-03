@@ -2,6 +2,7 @@ import { CommandRuntime } from "./commands/CommandRuntime.ts";
 import { z } from "./.deps.ts";
 import { type HelpContext, HelpContextSchema } from "./HelpContext.ts";
 import { CommandParams } from "./commands/CommandParams.ts";
+import type { CommandContext } from "./commands/CommandContext.ts";
 
 /**
  * Flag schema for HelpCommand — directly matches the HelpContext structure.
@@ -37,12 +38,8 @@ export class HelpCommandParams extends CommandParams<
  * Runtime implementation of the help renderer.
  */
 export class HelpCommand extends CommandRuntime<HelpCommandParams> {
-  constructor(params: HelpCommandParams) {
-    super(params, HelpArgsSchema, HelpFlagsSchema);
-  }
-
-  public Run(): Promise<void> {
-    const { Header, Intro, Sections } = this.Params;
+  public override Run(ctx: CommandContext<HelpCommandParams>): void {
+    const { Header, Intro, Sections } = ctx.Params;
 
     if (Header) {
       console.log(`\n🔹 ${Header}\n`);
@@ -111,14 +108,14 @@ export class HelpCommand extends CommandRuntime<HelpCommandParams> {
         }
       }
     }
-
-    return Promise.resolve();
   }
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
       "Help Command",
       "Display structured help context for commands and groups",
+      HelpArgsSchema,
+      HelpFlagsSchema,
     );
   }
 }

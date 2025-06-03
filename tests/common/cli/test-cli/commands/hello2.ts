@@ -1,39 +1,17 @@
 import {
   type CommandContext,
-  CommandParams,
   CommandRuntime,
   defineCommandModule,
 } from "@fathym/common/cli";
-import { z } from "@fathym/common/third-party/zod";
 import type { IoCContainer } from "../../../../../src/common/cli/.deps.ts";
 import type { SayHello } from "../.cli.init.ts";
+import {
+  HelloArgsSchema,
+  HelloCommandParams,
+  HelloFlagsSchema,
+} from "./hello.ts";
 
-export const HelloFlagsSchema = z.object({
-  loud: z.boolean().optional().describe("Shout the greeting"),
-  "dry-run": z
-    .boolean()
-    .optional()
-    .describe("Show the message without printing"),
-});
-
-export const HelloArgsSchema = z.tuple([
-  z.string().optional().describe("Name to greet"),
-]);
-
-export class HelloCommandParams extends CommandParams<
-  z.infer<typeof HelloFlagsSchema>,
-  z.infer<typeof HelloArgsSchema>
-> {
-  get Name(): string {
-    return this.Arg(0) ?? "world";
-  }
-
-  get Loud(): boolean {
-    return this.Flag("loud") ?? false;
-  }
-}
-
-export class HelloCommand extends CommandRuntime<HelloCommandParams> {
+export class HelloCommand2 extends CommandRuntime<HelloCommandParams> {
   public override async Run(
     ctx: CommandContext<HelloCommandParams>,
     ioc: IoCContainer,
@@ -67,5 +45,5 @@ export default defineCommandModule({
   FlagsSchema: HelloFlagsSchema,
   ArgsSchema: HelloArgsSchema,
   Params: HelloCommandParams,
-  Command: HelloCommand,
+  Command: HelloCommand2,
 });

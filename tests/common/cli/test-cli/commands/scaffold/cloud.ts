@@ -17,10 +17,6 @@ export class CloudCommandParams extends CommandParams<
 }
 
 export class CloudCommand extends CommandRuntime<CloudCommandParams> {
-  constructor(params: CloudCommandParams) {
-    super(params, ArgsSchema, FlagsSchema);
-  }
-
   public override Run(ctx: CommandContext): void | number {
     ctx.Log.Info("🔧 Scaffolding Cloud...");
   }
@@ -29,6 +25,8 @@ export class CloudCommand extends CommandRuntime<CloudCommandParams> {
     return this.buildMetadataFromSchemas(
       "Scaffold Cloud",
       "Generate a new Cloud file.",
+      ArgsSchema,
+      FlagsSchema,
     );
   }
 }

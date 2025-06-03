@@ -53,8 +53,8 @@ export class CLIHelpBuilder {
         if (!path) continue;
 
         try {
-          const inst = await this.resolver.LoadCommandInstance(path, {}, []);
-          const meta = inst?.BuildMetadata?.();
+          const inst = await this.resolver.LoadCommandInstance(path);
+          const meta = inst?.Command.BuildMetadata?.();
           if (meta?.Name) results.push({ ...meta, Token: commandKey });
         } catch {
           console.warn(`⚠️ Skipped metadata load from ${path}`);
@@ -68,9 +68,9 @@ export class CLIHelpBuilder {
       const token = config.Tokens?.[0] ??
         config.Name.toLowerCase().replace(/\s+/g, "-");
       const rootCmds = await getChildItems("", false);
-      const examples = rootCmds.slice(0, 2).map((cmd) =>
-        `${token} ${cmd.Token.replace(/\//g, " ")}`
-      );
+      const examples = rootCmds
+        .slice(0, 2)
+        .map((cmd) => `${token} ${cmd.Token.replace(/\//g, " ")}`);
       return {
         Name: `${config.Name} CLI v${config.Version}`,
         Description: config.Description,

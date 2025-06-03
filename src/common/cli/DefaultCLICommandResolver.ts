@@ -1,24 +1,17 @@
-import { relative, resolve, walk } from "./.deps.ts";
-import { toFileUrl } from "./.deps.ts";
+import { relative, resolve, toFileUrl, walk, type ZodSchema } from "./.deps.ts";
 import {
   type CLICommandResolver,
   type CommandModuleMetadata,
-  CommandParams,
+  type CommandParamConstructor,
   CommandRuntime,
 } from "./.exports.ts";
 import type { CLICommandEntry } from "./CLICommandEntry.ts";
+import type { CommandModule } from "./commands/CommandModule.ts";
 
 /**
- * Default implementation for resolving commands and loading their modules.
- * This class is responsible for resolving the commands, groups, and metadata.
+ * Default CLI resolver for loading commands and their metadata/runtime.
  */
 export class DefaultCLICommandResolver implements CLICommandResolver {
-  /**
-   * Resolves all the command modules in the given command directory.
-   *
-   * @param baseCommandDir The base directory where command modules are stored.
-   * @returns A map of command tokens to their associated command/group paths.
-   */
   public async ResolveCommandMap(
     baseCommandDir: string,
   ): Promise<Map<string, CLICommandEntry>> {
@@ -61,55 +54,42 @@ export class DefaultCLICommandResolver implements CLICommandResolver {
     return map;
   }
 
-  /**
-   * Dynamically loads a command instance from a given module file path.
-   *
-   * @param path Path to the command module.
-   * @param flags CLI flags.
-   * @param args CLI positional args.
-   */
-  public async LoadCommandInstance(
-    path: string,
-    flags: Record<string, unknown>,
-    args: string[],
-  ): Promise<CommandRuntime> {
+  public async LoadCommandInstance(path: string): Promise<{
+    ArgsSchema?: ZodSchema;
+    Command: CommandRuntime;
+    FlagsSchema?: ZodSchema;
+    Params?: CommandParamConstructor;
+  }> {
     const mod = (await import(toFileUrl(path).href)).default;
     const Cmd = mod?.Command;
-
     if (Cmd && typeof Cmd === "function") {
-      const CmdParams = mod.Params;
-      const params = CmdParams
-        ? new CmdParams(flags, args)
-        : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-          constructor() {
-            super(flags, args);
-          }
-        })();
+      const cmdMod = mod as CommandModule;
 
-      return new Cmd(params);
+      const inst = new Cmd();
+      return {
+        Command: inst,
+        Params: cmdMod.Params,
+        ArgsSchema: cmdMod.ArgsSchema,
+        FlagsSchema: cmdMod.FlagsSchema,
+      };
     }
 
-    return new (class extends CommandRuntime {
-      constructor() {
-        super(
-          new (class extends CommandParams<Record<string, unknown>, unknown[]> {
-            constructor() {
-              super({}, []);
-            }
-          })(),
-        );
-      }
+    return {
+      Command: new (class extends CommandRuntime {
+        public Run(): void {
+          throw new Error(
+            "This is a metadata-only command and cannot be executed.",
+          );
+        }
 
-      public Run(): void {
-        throw new Error(
-          "This is a metadata-only command and cannot be executed.",
-        );
-      }
-
-      public override BuildMetadata(): CommandModuleMetadata {
-        const m = mod as unknown as CommandModuleMetadata;
-        return this.buildMetadataFromSchemas(m.Name, m.Description);
-      }
-    })();
+        public override BuildMetadata(): CommandModuleMetadata {
+          const m = mod as unknown as CommandModuleMetadata;
+          return this.buildMetadataFromSchemas(m.Name, m.Description);
+        }
+      })(),
+      Params: undefined,
+      ArgsSchema: undefined,
+      FlagsSchema: undefined,
+    };
   }
 }

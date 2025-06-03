@@ -5,8 +5,6 @@ import { DefaultCLICommandResolver } from "./DefaultCLICommandResolver.ts";
 import { CLIExecutor } from "./CLIExecutor.ts";
 import { CLICommandMatcher } from "./CLICommandMatcher.ts";
 import { IoCContainer } from "jsr:@fathym/ioc@0.0.14";
-import type { CLIInitFn } from "./CLIInitFn.ts";
-import { exists, toFileUrl } from "./.deps.ts";
 
 export interface CLIOptions {
   resolver?: CLICommandResolver;
@@ -24,19 +22,16 @@ export class CLI {
 
   public async RunFromConfig(cliConfigPath: string, args: string[]) {
     const parsed = await this.parser.ParseInvocation(cliConfigPath, args);
+
     const commandMap = await this.resolver.ResolveCommandMap(
       parsed.baseCommandDir,
     );
-
     const ioc = new IoCContainer();
 
-    const initFn = await this.loadInitHook(parsed.initFilePath);
-    if (initFn) {
-      await initFn(ioc, parsed.config);
-    }
+    await parsed.initFn?.(ioc, parsed.config);
 
     const matcher = new CLICommandMatcher(this.resolver);
-    const command = await matcher.Resolve(
+    const { Command, Flags, Args, Params } = await matcher.Resolve(
       parsed.config,
       commandMap,
       parsed.key,
@@ -46,18 +41,11 @@ export class CLI {
     );
 
     const executor = new CLIExecutor(ioc);
-    await executor.Execute(parsed.config, command, {
+    await executor.Execute(parsed.config, Command, {
       key: parsed.key || "",
+      flags: Flags,
+      positional: Args,
+      paramsCtor: Params,
     });
-  }
-
-  protected async loadInitHook(
-    initFilePath?: string,
-  ): Promise<CLIInitFn | undefined> {
-    if (initFilePath && (await exists(initFilePath))) {
-      const mod = (await import(toFileUrl(initFilePath).href)).default;
-
-      return mod as CLIInitFn;
-    }
   }
 }

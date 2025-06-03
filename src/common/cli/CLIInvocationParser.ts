@@ -1,4 +1,5 @@
 import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIInitFn } from "./CLIInitFn.ts";
 
 export interface CLIInvocationParser {
   /**
@@ -17,7 +18,7 @@ export type CLIParsedResult = {
   parsed: Record<string, unknown>;
   flags: Record<string, unknown>;
   positional: string[];
-  initFilePath: string | undefined;
+  initFn: CLIInitFn | undefined;
   key: string | undefined;
   config: CLIConfig;
   baseCommandDir: string;

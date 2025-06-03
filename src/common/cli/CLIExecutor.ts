@@ -1,12 +1,18 @@
 import type { CLIConfig } from "./CLIConfig.ts";
 import type { CommandRuntime } from "./commands/CommandRuntime.ts";
-import type { CommandParams } from "./commands/CommandParams.ts";
+import {
+  type CommandParamConstructor,
+  CommandParams,
+} from "./commands/CommandParams.ts";
 import type { CommandContext } from "./commands/CommandContext.ts";
-import { HelpCommand } from "./HelpCommand.ts";
 import type { IoCContainer } from "./.deps.ts";
+import { HelpCommand } from "./HelpCommand.ts";
 
 export interface CLIExecutorOptions {
   key: string;
+  flags: Record<string, unknown>;
+  positional: string[];
+  paramsCtor: CommandParamConstructor | undefined;
 }
 
 export class CLIExecutor {
@@ -14,7 +20,7 @@ export class CLIExecutor {
 
   public async Execute(
     config: CLIConfig,
-    command: CommandRuntime<CommandParams> | undefined,
+    command: CommandRuntime | undefined,
     options: CLIExecutorOptions,
   ): Promise<void> {
     if (!command) return;
@@ -44,24 +50,34 @@ export class CLIExecutor {
 
   protected buildContext(
     config: CLIConfig,
-    command: CommandRuntime<CommandParams>,
+    command: CommandRuntime,
     opts: CLIExecutorOptions,
   ): CommandContext {
-    const log =
-      //this.ioc.Resolve<CommandContext["Log"]>("Log") ??
-      {
-        Info: console.log,
-        Warn: console.warn,
-        Error: console.error,
-        Success: (...args: unknown[]) => console.log("✅", ...args),
-      };
+    const log = {
+      Info: console.log,
+      Warn: console.warn,
+      Error: console.error,
+      Success: (...args: unknown[]) => console.log("✅", ...args),
+    };
+
+    const { flags, positional, paramsCtor } = opts;
+
+    const params = paramsCtor
+      ? new paramsCtor(flags, positional)
+      : new (class extends CommandParams<Record<string, unknown>, unknown[]> {
+        constructor() {
+          super(flags, positional);
+        }
+      })();
 
     return {
       Config: config,
+      GroupMetadata: undefined, // Future: include from commandMap/group chain
       Key: opts.key,
-      Metadata: command.BuildMetadata(),
-      // GroupMetadata: opts.groupMetadata, // TODO: Where to get the parent group for a command, if necessary...
       Log: log,
+      Metadata: command.BuildMetadata(),
+      Params: params,
+      Services: {},
     };
   }
 
@@ -71,7 +87,7 @@ export class CLIExecutor {
   ): Promise<void | number> {
     if (typeof cmd.Init === "function") await cmd.Init(ctx, this.ioc);
 
-    const result = typeof cmd.DryRun === "function" && cmd.Params.DryRun
+    const result = typeof cmd.DryRun === "function" && ctx.Params.DryRun
       ? await cmd.DryRun(ctx, this.ioc)
       : await cmd.Run(ctx, this.ioc);
 

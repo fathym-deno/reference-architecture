@@ -34,19 +34,15 @@ export class DevCommandParams extends CommandParams<
 }
 
 export class DevCommand extends CommandRuntime<DevCommandParams> {
-  constructor(params: DevCommandParams) {
-    super(params, DevArgsSchema, DevFlagsSchema);
-  }
-
-  public override Run(ctx: CommandContext): void | number {
-    if (this.Params.Verbose) {
+  public override Run(ctx: CommandContext<DevCommandParams>): void | number {
+    if (ctx.Params.Verbose) {
       ctx.Log.Info("📣 Verbose mode enabled");
     }
 
     ctx.Log.Info("🔧 Running Open Industrial in dev mode...");
-    ctx.Log.Info(`📁 Workspace: ${this.Params.Workspace}`);
+    ctx.Log.Info(`📁 Workspace: ${ctx.Params.Workspace}`);
 
-    if (this.Params.Docker) {
+    if (ctx.Params.Docker) {
       ctx.Log.Info("🐳 Launching in Docker...");
     } else {
       ctx.Log.Info("🧪 Launching in local dev mode...");
@@ -57,6 +53,8 @@ export class DevCommand extends CommandRuntime<DevCommandParams> {
     return this.buildMetadataFromSchemas(
       "Development Mode",
       "Run Open Industrial in dev mode",
+      DevArgsSchema,
+      DevFlagsSchema,
     );
   }
 }

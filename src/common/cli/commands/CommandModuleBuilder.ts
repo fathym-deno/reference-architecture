@@ -1,0 +1,189 @@
+// deno-lint-ignore-file no-explicit-any
+import type { ZodSchema } from "../.deps.ts";
+import type { IoCContainer } from "../.deps.ts";
+import type { CommandModule } from "./CommandModule.ts";
+import type { CommandContext } from "./CommandContext.ts";
+import type {
+  CommandParamConstructor,
+  CommandParams,
+} from "./CommandParams.ts";
+import { CommandRuntime } from "./CommandRuntime.ts";
+
+export class CommandModuleBuilder<
+  F extends Record<string, unknown> = Record<string, unknown>,
+  A extends unknown[] = unknown[],
+  P extends CommandParams<F, A> = CommandParams<F, A>,
+  S extends Record<string, unknown> = Record<string, unknown>,
+> {
+  protected argsSchema?: ZodSchema;
+  protected flagsSchema?: ZodSchema;
+  protected runFn?: (
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ) => void | number | Promise<void | number>;
+  protected initFn?: (
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ) => void | Promise<void>;
+  protected cleanupFn?: (
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ) => void | Promise<void>;
+  protected dryRunFn?: (
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ) => void | number | Promise<void | number>;
+  protected servicesFactory?: (ioc: IoCContainer) => S;
+  protected paramsCtor?: CommandParamConstructor<F, A, P>;
+
+  constructor(
+    protected readonly name: string,
+    protected readonly description: string,
+  ) {}
+
+  public Args(schema: ZodSchema): this {
+    this.argsSchema = schema;
+    return this;
+  }
+
+  public Flags(schema: ZodSchema): this {
+    this.flagsSchema = schema;
+    return this;
+  }
+
+  public Params<NextP extends CommandParams<F, A>>(
+    ctor: CommandParamConstructor<F, A, NextP>,
+  ): CommandModuleBuilder<F, A, NextP, S> {
+    this.paramsCtor = ctor as CommandParamConstructor<F, A, any>;
+    return this as unknown as CommandModuleBuilder<F, A, NextP, S>;
+  }
+
+  public Services<NextS extends Record<string, unknown>>(
+    factory: (ioc: IoCContainer) => NextS,
+  ): CommandModuleBuilder<F, A, P, NextS> {
+    this.servicesFactory = factory as unknown as (ioc: IoCContainer) => S;
+
+    return this as unknown as CommandModuleBuilder<F, A, P, NextS>;
+  }
+
+  public Init(
+    fn: (ctx: CommandContext<P, S>, ioc: IoCContainer) => void | Promise<void>,
+  ): this {
+    this.initFn = fn;
+    return this;
+  }
+
+  public Cleanup(
+    fn: (ctx: CommandContext<P, S>, ioc: IoCContainer) => void | Promise<void>,
+  ): this {
+    this.cleanupFn = fn;
+    return this;
+  }
+
+  public DryRun(
+    fn: (
+      ctx: CommandContext<P, S>,
+      ioc: IoCContainer,
+    ) => void | number | Promise<void | number>,
+  ): this {
+    this.dryRunFn = fn;
+    return this;
+  }
+
+  public Run(
+    fn: (
+      ctx: CommandContext<P, S>,
+      ioc: IoCContainer,
+    ) => void | number | Promise<void | number>,
+  ): this {
+    this.runFn = fn;
+    return this;
+  }
+
+  public Build(): CommandModule {
+    const {
+      name,
+      description,
+      argsSchema,
+      flagsSchema,
+      runFn,
+      initFn,
+      cleanupFn,
+      dryRunFn,
+      servicesFactory,
+      paramsCtor,
+    } = this;
+
+    if (!argsSchema || !flagsSchema || !runFn || !paramsCtor) {
+      throw new Error(
+        "CommandModuleBuilder is missing required Args, Flags, Params, or Run configuration.",
+      );
+    }
+
+    class BuiltCommand extends CommandRuntime<P, S> {
+      override async Init(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void> {
+        if (initFn) {
+          await initFn(this.withServices(ctx, ioc), ioc);
+        }
+      }
+
+      override async Cleanup(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void> {
+        if (cleanupFn) {
+          await cleanupFn(this.withServices(ctx, ioc), ioc);
+        }
+      }
+
+      override async DryRun(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void | number> {
+        if (dryRunFn) {
+          return await dryRunFn(this.withServices(ctx, ioc), ioc);
+        }
+      }
+
+      override async Run(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): Promise<void | number> {
+        return await runFn!(this.withServices(ctx, ioc), ioc);
+      }
+
+      override BuildMetadata() {
+        return this.buildMetadataFromSchemas(
+          name,
+          description,
+          argsSchema,
+          flagsSchema,
+        );
+      }
+
+      private withServices(
+        ctx: CommandContext<P, S>,
+        ioc: IoCContainer,
+      ): CommandContext<P, S> {
+        const extra = servicesFactory?.(ioc) ?? ({} as S);
+        return {
+          ...ctx,
+          Services: {
+            ...(ctx.Services ?? {}),
+            ...extra,
+          },
+        };
+      }
+    }
+
+    return {
+      ArgsSchema: argsSchema,
+      FlagsSchema: flagsSchema,
+      Command: BuiltCommand,
+      Params: paramsCtor,
+    };
+  }
+}

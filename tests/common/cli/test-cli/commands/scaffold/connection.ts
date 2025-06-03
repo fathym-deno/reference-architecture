@@ -17,10 +17,6 @@ export class ConnectionCommandParams extends CommandParams<
 }
 
 export class ConnectionCommand extends CommandRuntime<ConnectionCommandParams> {
-  constructor(params: ConnectionCommandParams) {
-    super(params, ArgsSchema, FlagsSchema);
-  }
-
   public override Run(ctx: CommandContext): void | number {
     ctx.Log.Info("🔧 Scaffolding connection...");
   }
@@ -29,6 +25,8 @@ export class ConnectionCommand extends CommandRuntime<ConnectionCommandParams> {
     return this.buildMetadataFromSchemas(
       "Scaffold Connection",
       "Generate a new connection file.",
+      ArgsSchema,
+      FlagsSchema,
     );
   }
 }

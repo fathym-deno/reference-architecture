@@ -1,5 +1,4 @@
-// deno-lint-ignore-file no-explicit-any ban-types
-
+// deno-lint-ignore-file ban-types
 /**
  * Base class for all CLI command parameter sets.
  * Provides typed access to raw flags and args, plus standard dry-run support.
@@ -35,7 +34,11 @@ export abstract class CommandParams<
   }
 }
 
-export type CommandParamConstructor = new (
-  flags: Record<string, unknown>,
-  args: unknown[],
-) => CommandParams<any, any>;
+/**
+ * Strongly typed constructor for a CommandParams subclass.
+ */
+export type CommandParamConstructor<
+  F extends Record<string, unknown> = Record<string, unknown>,
+  A extends unknown[] = unknown[],
+  P extends CommandParams<F, A> = CommandParams<F, A>,
+> = new (flags: F, args: A) => P;

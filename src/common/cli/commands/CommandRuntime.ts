@@ -7,62 +7,62 @@ import type { CommandSuggestions } from "./CommandSuggestions.ts";
 
 /**
  * Base class for all CLI commands.
- * Provides lifecycle hooks, metadata, autocomplete support, and schema-derived suggestions.
+ * Generic over Params and Services for full downstream inference.
  */
 export abstract class CommandRuntime<
   P extends CommandParams<any, any> = CommandParams<any, any>,
+  S extends Record<string, unknown> = Record<string, unknown>,
 > {
-  constructor(
-    public Params: P,
-    protected readonly argsSchema?: ZodSchema,
-    protected readonly flagsSchema?: ZodSchema,
-  ) {}
-
   /**
    * Must return CLI metadata used in help output, docs, and introspection.
    */
   public abstract BuildMetadata(): CommandModuleMetadata;
 
   /**
-   * Optional teardown hook after execution (regardless of success/failure).
-   */
-  public Cleanup?(ctx: CommandContext, ioc: IoCContainer): void | Promise<void>;
-
-  /**
    * Optional setup hook before command execution.
    */
-  public Init?(ctx: CommandContext, ioc: IoCContainer): void | Promise<void>;
-
-  /**
-   * Optional preview-mode logic.
-   * If `--dry-run` is passed, this is called instead of `Run()`.
-   */
-  public DryRun?(
-    ctx: CommandContext,
+  public Init?(
+    ctx: CommandContext<P, S>,
     ioc: IoCContainer,
-  ): void | number | Promise<void | number>;
+  ): void | Promise<void>;
 
   /**
    * Main execution logic.
    * Must be implemented by all commands.
    */
   public abstract Run(
-    ctx: CommandContext,
+    ctx: CommandContext<P, S>,
     ioc: IoCContainer,
   ): void | number | Promise<void | number>;
 
   /**
-   * Returns CLI suggestions derived from schemas unless explicitly overridden.
+   * Optional preview-mode logic (if --dry-run is passed).
    */
-  public Suggestions(
-    _ctx: CommandContext,
+  public DryRun?(
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ): void | number | Promise<void | number>;
+
+  /**
+   * Optional teardown hook after execution (regardless of success/failure).
+   */
+  public Cleanup?(
+    ctx: CommandContext<P, S>,
+    ioc: IoCContainer,
+  ): void | Promise<void>;
+
+  /**
+   * Optionally provide suggestions for flags and arguments.
+   */
+  public Suggestions?(
+    ctx: CommandContext<P, S>,
     _ioc: IoCContainer,
   ): CommandSuggestions {
-    return this.buildSuggestionsFromSchemas(this.flagsSchema, this.argsSchema);
+    return this.buildSuggestionsFromSchemas(ctx.FlagsSchema, ctx.ArgsSchema);
   }
 
   /**
-   * Generates autocomplete suggestions from Zod schemas.
+   * Autogenerate argument/flag suggestions from Zod schemas.
    */
   protected buildSuggestionsFromSchemas(
     flagsSchema?: ZodSchema,
@@ -91,37 +91,32 @@ export abstract class CommandRuntime<
   }
 
   /**
-   * Builds command metadata with inferred usage and example string(s)
-   * based on argument and flag schemas.
-   *
-   * @param name - Friendly name used in help UIs (e.g. "Dev Mode")
-   * @param description - Optional description for CLI help
+   * Build usage + examples based on schema structure.
    */
   protected buildMetadataFromSchemas(
     name: string,
     description?: string,
+    argsSchema?: ZodSchema,
+    flagsSchema?: ZodSchema,
   ): CommandModuleMetadata {
     const usageParts: string[] = [];
 
-    // Add positional args from tuple
-    if ((this.argsSchema as any)?._def?.items?.length) {
+    if ((argsSchema as any)?._def?.items?.length) {
       usageParts.push(
-        ...(this.argsSchema as any)._def.items.map(
+        ...(argsSchema as any)._def.items.map(
           (_: unknown, i: number) => `<arg${i + 1}>`,
         ),
       );
     }
 
-    // Add flags from object shape
     if (
-      this.flagsSchema &&
-      typeof this.flagsSchema === "object" &&
-      "shape" in this.flagsSchema
+      flagsSchema &&
+      typeof flagsSchema === "object" &&
+      "shape" in flagsSchema
     ) {
-      const flagKeys = Object.keys((this.flagsSchema as any).shape);
-      if (flagKeys.length) {
-        usageParts.push(...flagKeys.map((f) => `[--${f}]`));
-      }
+      usageParts.push(
+        ...Object.keys((flagsSchema as any).shape).map((f) => `[--${f}]`),
+      );
     }
 
     const usage = usageParts.join(" ");

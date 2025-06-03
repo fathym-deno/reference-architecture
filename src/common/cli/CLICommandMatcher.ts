@@ -2,6 +2,7 @@ import type { CLICommandEntry } from "./CLICommandEntry.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
 import { CLIHelpBuilder } from "./CLIHelpBuilder.ts";
+import type { CommandParamConstructor } from "./commands/CommandParams.ts";
 import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import { HelpCommand, HelpCommandParams } from "./HelpCommand.ts";
 
@@ -15,7 +16,12 @@ export class CLICommandMatcher {
     flags: Record<string, unknown>,
     positional: string[],
     baseTemplatesDir?: string,
-  ): Promise<CommandRuntime | undefined> {
+  ): Promise<{
+    Command: CommandRuntime | undefined;
+    Flags: Record<string, unknown>;
+    Args: string[];
+    Params: CommandParamConstructor | undefined;
+  }> {
     let match: CLICommandEntry | undefined;
     let remainingArgs: string[] = [];
 
@@ -42,44 +48,51 @@ export class CLICommandMatcher {
       }
     }
 
-    const [cmdInst, groupInst] = match
+    const [cmdDets, groupDets] = match
       ? await Promise.all([
         match.CommandPath
-          ? this.resolver.LoadCommandInstance(
-            match.CommandPath,
-            { ...flags, baseTemplatesDir },
-            remainingArgs,
-          )
+          ? await this.resolver.LoadCommandInstance(match.CommandPath)
           : undefined,
         match.GroupPath
-          ? this.resolver.LoadCommandInstance(
-            match.GroupPath,
-            { ...flags, baseTemplatesDir },
-            remainingArgs,
-          )
+          ? await this.resolver.LoadCommandInstance(match.GroupPath)
           : undefined,
       ])
       : [undefined, undefined];
+
+    let cmdInst = cmdDets?.Command;
+    let paramsCtor = cmdDets?.Params;
+    const groupInst = groupDets?.Command;
 
     const isGroupOnly = !cmdInst && groupInst;
     const isHelpRequested = flags.help === true;
     const shouldShowHelp = isHelpRequested || !key || isGroupOnly ||
       (!cmdInst && !groupInst);
 
-    if (!shouldShowHelp && cmdInst) return cmdInst;
+    if (shouldShowHelp || !cmdInst) {
+      const helpBuilder = new CLIHelpBuilder(this.resolver);
+      const helpCtx = await helpBuilder.Build(
+        config,
+        commandMap,
+        key,
+        flags,
+        cmdInst,
+        groupInst,
+      );
 
-    const helpBuilder = new CLIHelpBuilder(this.resolver);
-    const helpCtx = await helpBuilder.Build(
-      config,
-      commandMap,
-      key,
-      flags,
-      cmdInst,
-      groupInst,
-    );
+      cmdInst = helpCtx ? new HelpCommand() : undefined;
 
-    return helpCtx
-      ? new HelpCommand(new HelpCommandParams(helpCtx, []))
-      : undefined;
+      paramsCtor = class extends HelpCommandParams {
+        constructor(flags: Record<string, unknown>, _args: unknown[]) {
+          super({ ...flags, ...helpCtx }, []);
+        }
+      };
+    }
+
+    return {
+      Command: cmdInst,
+      Flags: { ...flags, baseTemplatesDir },
+      Args: remainingArgs,
+      Params: paramsCtor,
+    };
   }
 }
