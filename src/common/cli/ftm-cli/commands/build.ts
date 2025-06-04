@@ -110,7 +110,7 @@ export default Command("build", "Prepare static CLI build folder")
 
     Log.Info(`🧩 Scaffolder rendered build-static template to ${outDir}`);
     Log.Success(
-      `Build complete! Run \`deno compile\` on _build/cli.ts to finalize.`,
+      `Build complete! Run \`deno compile\` on .build/cli.ts to finalize.`,
     );
   });
 
@@ -125,7 +125,7 @@ async function resolveConfigAndOutDir(params: BuildParams) {
 
   const configDir = dirname(configPath);
 
-  const outDir = resolve(configDir, "./_build");
+  const outDir = resolve(configDir, "./.build");
 
   const templatesDir = resolve(
     configDir,

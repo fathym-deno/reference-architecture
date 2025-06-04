@@ -115,7 +115,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/test/_build/cli.ts",
+        "${workspaceFolder}/test/.build/cli.ts",
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
@@ -130,7 +130,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/test/_build/cli.ts",
+        "${workspaceFolder}/test/.build/cli.ts",
         "hello",
         "me"
       ],

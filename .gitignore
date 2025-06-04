@@ -8,5 +8,5 @@ target/
 tailwind.config.js
 test/
 
-**/_build/
-dist/
+.build/
+.dist/

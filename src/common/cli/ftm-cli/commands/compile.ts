@@ -9,7 +9,7 @@ export const CompileFlagsSchema = z.object({
   entry: z
     .string()
     .optional()
-    .describe("Entry point file for the CLI (default: ./_build/cli.ts)"),
+    .describe("Entry point file for the CLI (default: ./.build/cli.ts)"),
 
   config: z
     .string()
@@ -19,7 +19,7 @@ export const CompileFlagsSchema = z.object({
   output: z
     .string()
     .optional()
-    .describe("Output folder for compiled binaries (default: ./dist)"),
+    .describe("Output folder for compiled binaries (default: ./.dist)"),
 
   permissions: z
     .string()
@@ -34,7 +34,7 @@ export class CompileParams extends CommandParams<
   z.infer<typeof CompileArgsSchema>
 > {
   get Entry(): string {
-    return resolve(this.Flag("entry") ?? "./_build/cli.ts");
+    return resolve(this.Flag("entry") ?? "./.build/cli.ts");
   }
 
   get ConfigPath(): string {
@@ -44,7 +44,7 @@ export class CompileParams extends CommandParams<
   }
 
   get OutputDir(): string {
-    return resolve(this.Flag("output") ?? "./dist");
+    return resolve(this.Flag("output") ?? "./.dist");
   }
 
   get Permissions(): string[] {
