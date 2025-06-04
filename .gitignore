@@ -7,3 +7,6 @@ lcov/
 target/
 tailwind.config.js
 test/
+
+**/_build/
+dist/
