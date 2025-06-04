@@ -82,16 +82,11 @@ export class CLICommandMatcher {
       };
     }
 
-    const tempLocator = await this.resolver.ResolveTemplateLocator(
-      baseTemplatesDir,
-    );
-
     return {
       Command: cmdInst,
       Flags: { ...flags, baseTemplatesDir },
       Args: remainingArgs,
       Params: paramsCtor,
-      Templates: tempLocator,
     };
   }
 }

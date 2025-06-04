@@ -12,6 +12,7 @@ import type {
 import { CommandRuntime } from "../commands/CommandRuntime.ts";
 import { CLICommandExecutor } from "../CLICommandExecutor.ts";
 import type { CommandInvokerMap } from "../commands/CommandContext.ts";
+import { CLICommandResolver } from "../CLICommandResolver.ts";
 
 type UsedKeys = Record<string, true>;
 
@@ -306,13 +307,17 @@ export class CommandModuleBuilder<
             args?: string[],
             flags?: Record<string, unknown>,
           ) => {
-            const executor = new CLICommandExecutor(ioc);
+            const executor = new CLICommandExecutor(
+              ioc,
+              await ioc.Resolve(CLICommandResolver),
+            );
+
             await executor.Execute(ctx.Config, runtime, {
               key,
               flags: flags ?? {},
               positional: args ?? [],
               paramsCtor: ctor,
-              templates: undefined,
+              baseTemplatesDir: undefined,
             });
           };
         }

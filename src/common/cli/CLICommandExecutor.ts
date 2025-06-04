@@ -12,8 +12,8 @@ import {
   CommandParams,
 } from "./commands/CommandParams.ts";
 
-import type { TemplateLocator } from "./TemplateLocator.ts";
 import { HelpCommand } from "./HelpCommand.ts";
+import type { CLICommandResolver } from "./CLICommandResolver.ts";
 
 /**
  * Options provided when executing a CLI command.
@@ -32,8 +32,8 @@ export interface CLICommandExecutorOptions {
   /** The command’s param constructor (from `.Params(...)`) */
   paramsCtor: CommandParamConstructor<any, any, any> | undefined;
 
-  /** Optional template locator instance (used by some commands) */
-  templates: TemplateLocator | undefined;
+  /** Optional template base directory */
+  baseTemplatesDir: string | undefined;
 
   /**
    * Optional subcommand invokers — if this command was defined with `.Commands(...)`,
@@ -48,7 +48,10 @@ export interface CLICommandExecutorOptions {
  * and lifecycle phases (Init, Run, DryRun, Cleanup).
  */
 export class CLICommandExecutor {
-  constructor(protected readonly ioc: IoCContainer) {}
+  constructor(
+    protected readonly ioc: IoCContainer,
+    protected resolver: CLICommandResolver,
+  ) {}
 
   /**
    * Execute a resolved command instance with the given options.
@@ -110,6 +113,16 @@ export class CLICommandExecutor {
         }
       })();
 
+    const tempLocator = await this.resolver.ResolveTemplateLocator(
+      opts.baseTemplatesDir,
+    );
+
+    if (tempLocator) {
+      this.ioc.Register(() => tempLocator, {
+        Type: this.ioc.Symbol("TemplateLocator"),
+      });
+    }
+
     const baseContext: CommandContext = {
       ArgsSchema: undefined,
       FlagsSchema: undefined,
@@ -137,7 +150,7 @@ export class CLICommandExecutor {
   protected async runLifecycle(
     cmd: CommandRuntime,
     ctx: CommandContext,
-  ): Promise<void | number> {
+  ): Promise<number | void> {
     if (typeof cmd.Init === "function") {
       await cmd.Init(ctx, this.ioc);
     }

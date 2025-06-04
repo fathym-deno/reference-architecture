@@ -7,6 +7,7 @@ export {
   join,
   resolve,
   relative,
+  fromFileUrl,
   toFileUrl,
 } from 'jsr:@std/path@1.0.9';
 
