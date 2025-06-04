@@ -11,7 +11,7 @@ export * from './CLI.ts';
 export * from './CLICommandResolver.ts';
 export * from './CLICommandEntry.ts';
 export * from './CLIConfig.ts';
-export * from './CLIExecutor.ts';
+export * from './CLICommandExecutor.ts';
 export * from './CLIFileSystemHooks.ts';
 export * from './CLIInitFn.ts';
 export * from './EmbeddedTemplateLocator.ts';

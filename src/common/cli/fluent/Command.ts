@@ -4,12 +4,12 @@ import { CommandModuleBuilder } from "./CommandModuleBuilder.ts";
 export function Command<
   F extends Record<string, unknown> = Record<string, unknown>,
   A extends unknown[] = unknown[],
-  P extends CommandParams<F, A> = CommandParams<F, A>,
+  P extends CommandParams<A, F> = CommandParams<A, F>,
 >(
   name: string,
   description: string,
-): CommandModuleBuilder<F, A, P, Record<string, unknown>> {
-  return new CommandModuleBuilder<F, A, P, Record<string, unknown>>(
+): CommandModuleBuilder<A, F, P, Record<string, unknown>> {
+  return new CommandModuleBuilder<A, F, P, Record<string, unknown>>(
     name,
     description,
   );

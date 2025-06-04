@@ -1,95 +1,159 @@
-import type { ZodSchema } from "../.deps.ts";
-import type { IoCContainer } from "../.deps.ts";
-import type { CommandModule } from "../commands/CommandModule.ts";
-import type { CommandContext } from "../commands/CommandContext.ts";
+// deno-lint-ignore-file no-explicit-any
+import type { ZodType, ZodSchema } from '../.deps.ts';
+import type { IoCContainer } from '../.deps.ts';
+
+import type { CommandModule } from '../commands/CommandModule.ts';
+import type { CommandContext } from '../commands/CommandContext.ts';
 import type {
   CommandParamConstructor,
   CommandParams,
-} from "../commands/CommandParams.ts";
-import { CommandRuntime } from "../commands/CommandRuntime.ts";
+} from '../commands/CommandParams.ts';
+
+import { CommandRuntime } from '../commands/CommandRuntime.ts';
+import { CLICommandExecutor } from '../CLICommandExecutor.ts';
+import type { CommandInvokerMap } from '../commands/CommandContext.ts';
+
+/**
+ * Derives a typed map of subcommand invokers from a set of CommandModules.
+ */
+export type ExtractInvokerMap<T extends Record<string, CommandModule>> = {
+  [K in keyof T]: T[K] extends CommandModule<infer A, infer F>
+    ? (args?: A, flags?: F) => Promise<void | number>
+    : (
+        args?: readonly unknown[],
+        flags?: Record<string, unknown>
+      ) => Promise<void | number>;
+};
 
 export class CommandModuleBuilder<
-  F extends Record<string, unknown> = Record<string, unknown>,
-  A extends unknown[] = unknown[],
-  P extends CommandParams<F, A> = CommandParams<F, A>,
-  S extends Record<string, unknown> = Record<string, unknown>,
+  TArgs extends readonly unknown[] = readonly unknown[],
+  TFlags extends Record<string, unknown> = Record<string, unknown>,
+  TParams extends CommandParams<TArgs, TFlags> = CommandParams<TArgs, TFlags>,
+  TServices extends Record<string, unknown> = Record<string, unknown>,
+  TCommands extends CommandInvokerMap = CommandInvokerMap
 > {
-  protected argsSchema?: ZodSchema;
-  protected flagsSchema?: ZodSchema;
+  protected argsSchema?: ZodType<TArgs>;
+  protected flagsSchema?: ZodType<TFlags>;
   protected runFn?: (
-    ctx: CommandContext<P, S>,
+    ctx: CommandContext<TParams, TServices, TCommands>
   ) => void | number | Promise<void | number>;
-  protected initFn?: (ctx: CommandContext<P, S>) => void | Promise<void>;
-  protected cleanupFn?: (ctx: CommandContext<P, S>) => void | Promise<void>;
+  protected initFn?: (
+    ctx: CommandContext<TParams, TServices, TCommands>
+  ) => void | Promise<void>;
+  protected cleanupFn?: (
+    ctx: CommandContext<TParams, TServices, TCommands>
+  ) => void | Promise<void>;
   protected dryRunFn?: (
-    ctx: CommandContext<P, S>,
+    ctx: CommandContext<TParams, TServices, TCommands>
   ) => void | number | Promise<void | number>;
   protected servicesFactory?: (
-    ctx: CommandContext<P, S>,
-    ioc: IoCContainer,
-  ) => Promise<S>;
-  protected paramsCtor?: CommandParamConstructor<F, A, P>;
+    ctx: CommandContext<TParams, TServices, TCommands>,
+    ioc: IoCContainer
+  ) => Promise<TServices>;
+  protected subcommands?: Record<
+    string,
+    CommandModule<readonly unknown[], Record<string, unknown>>
+  >;
+
+  protected paramsCtor?: CommandParamConstructor<TArgs, TFlags, TParams>;
 
   constructor(
     protected readonly name: string,
-    protected readonly description: string,
+    protected readonly description: string
   ) {}
 
-  public Args(schema: ZodSchema): this {
+  public Args(schema: ZodType<TArgs>): this {
     this.argsSchema = schema;
     return this;
   }
 
-  public Flags(schema: ZodSchema): this {
+  public Flags(schema: ZodType<TFlags>): this {
     this.flagsSchema = schema;
     return this;
   }
 
   public Params<
-    NF extends Record<string, unknown>,
-    NA extends unknown[],
-    NP extends CommandParams<NF, NA>,
+    NextArgs extends readonly unknown[],
+    NextFlags extends Record<string, unknown>,
+    NextParams extends CommandParams<NextArgs, NextFlags>
   >(
-    ctor: CommandParamConstructor<NF, NA, NP>,
-  ): CommandModuleBuilder<NF, NA, NP, S> {
-    this.paramsCtor = ctor as unknown as CommandParamConstructor<F, A, P>;
-    return this as unknown as CommandModuleBuilder<NF, NA, NP, S>;
+    ctor: CommandParamConstructor<NextArgs, NextFlags, NextParams>
+  ): CommandModuleBuilder<
+    NextArgs,
+    NextFlags,
+    NextParams,
+    TServices,
+    TCommands
+  > {
+    this.paramsCtor = ctor as any;
+    return this as any;
   }
 
-  public Services<NextS extends Record<string, unknown>>(
-    factory: (ctx: CommandContext<P, S>, ioc: IoCContainer) => Promise<NextS>,
-  ): CommandModuleBuilder<F, A, P, NextS> {
-    this.servicesFactory = factory as unknown as typeof this.servicesFactory;
-    return this as unknown as CommandModuleBuilder<F, A, P, NextS>;
+  public Services<NextServices extends Record<string, unknown>>(
+    factory: (
+      ctx: CommandContext<TParams, TServices, TCommands>,
+      ioc: IoCContainer
+    ) => Promise<NextServices>
+  ): CommandModuleBuilder<TArgs, TFlags, TParams, NextServices, TCommands> {
+    this.servicesFactory = factory as any;
+    return this as any;
   }
 
-  public Init(fn: (ctx: CommandContext<P, S>) => void | Promise<void>): this {
+  public Init(
+    fn: (
+      ctx: CommandContext<TParams, TServices, TCommands>
+    ) => void | Promise<void>
+  ): this {
     this.initFn = fn;
     return this;
   }
 
   public Cleanup(
-    fn: (ctx: CommandContext<P, S>) => void | Promise<void>,
+    fn: (
+      ctx: CommandContext<TParams, TServices, TCommands>
+    ) => void | Promise<void>
   ): this {
     this.cleanupFn = fn;
     return this;
   }
 
   public DryRun(
-    fn: (ctx: CommandContext<P, S>) => void | number | Promise<void | number>,
+    fn: (
+      ctx: CommandContext<TParams, TServices, TCommands>
+    ) => void | number | Promise<void | number>
   ): this {
     this.dryRunFn = fn;
     return this;
   }
 
   public Run(
-    fn: (ctx: CommandContext<P, S>) => void | number | Promise<void | number>,
+    fn: (
+      ctx: CommandContext<TParams, TServices, TCommands>
+    ) => void | number | Promise<void | number>
   ): this {
     this.runFn = fn;
     return this;
   }
 
-  public Build(): CommandModule {
+  public Commands<
+    TSubcommands extends Record<
+      string,
+      CommandModule<readonly unknown[] | unknown[], Record<string, unknown>>
+    >
+  >(
+    commands: TSubcommands
+  ): CommandModuleBuilder<
+    TArgs,
+    TFlags,
+    TParams,
+    TServices,
+    ExtractInvokerMap<TSubcommands>
+  > {
+    this.subcommands = commands;
+    return this as any;
+  }
+
+  public Build(): CommandModule<TArgs, TFlags> {
     const {
       name,
       description,
@@ -100,57 +164,80 @@ export class CommandModuleBuilder<
       cleanupFn,
       dryRunFn,
       servicesFactory,
+      subcommands,
       paramsCtor,
     } = this;
 
     if (!argsSchema || !flagsSchema || !runFn || !paramsCtor) {
       throw new Error(
-        "CommandModuleBuilder is missing required Args, Flags, Params, or Run configuration.",
+        'CommandModuleBuilder is missing required Args, Flags, Params, or Run configuration.'
       );
     }
 
-    class BuiltCommand extends CommandRuntime<P, S> {
-      private async withServices(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<CommandContext<P, S>> {
-        if (servicesFactory) {
-          const extra = await servicesFactory(ctx, ioc);
-          ctx.Services = { ...(ctx.Services ?? {}), ...extra };
-        }
-        return ctx;
-      }
-
+    class BuiltCommand extends CommandRuntime<TParams, TServices, TCommands> {
       override async Init(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void> {
-        const hydrated = await this.withServices(ctx, ioc);
-        if (initFn) await initFn(hydrated);
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        _ioc: IoCContainer
+      ) {
+        if (initFn) await initFn(ctx);
       }
 
       override async Run(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void | number> {
-        const hydrated = await this.withServices(ctx, ioc);
-        return await runFn!(hydrated);
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        _ioc: IoCContainer
+      ) {
+        return await runFn!(ctx);
       }
 
       override async Cleanup(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void> {
-        const hydrated = await this.withServices(ctx, ioc);
-        if (cleanupFn) await cleanupFn(hydrated);
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        _ioc: IoCContainer
+      ) {
+        if (cleanupFn) await cleanupFn(ctx);
       }
 
       override async DryRun(
-        ctx: CommandContext<P, S>,
-        ioc: IoCContainer,
-      ): Promise<void | number> {
-        const hydrated = await this.withServices(ctx, ioc);
-        if (dryRunFn) return await dryRunFn(hydrated);
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        _ioc: IoCContainer
+      ) {
+        if (dryRunFn) return await dryRunFn(ctx);
+      }
+
+      protected override async injectServices(
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        ioc: IoCContainer
+      ): Promise<Partial<TServices>> {
+        return servicesFactory ? await servicesFactory(ctx, ioc) : {};
+      }
+
+      protected override async injectCommands(
+        ctx: CommandContext<TParams, TServices, TCommands>,
+        ioc: IoCContainer
+      ): Promise<TCommands> {
+        if (!subcommands) return {} as TCommands;
+
+        const invokers: CommandInvokerMap = {};
+
+        for (const [key, mod] of Object.entries(subcommands)) {
+          const runtime = new mod.Command();
+          const ctor = mod.Params;
+
+          invokers[key] = async (
+            args?: string[],
+            flags?: Record<string, unknown>
+          ) => {
+            const executor = new CLICommandExecutor(ioc);
+            await executor.Execute(ctx.Config, runtime, {
+              key,
+              flags: flags ?? {},
+              positional: args ?? [],
+              paramsCtor: ctor,
+              templates: undefined,
+            });
+          };
+        }
+
+        return invokers as TCommands;
       }
 
       override BuildMetadata() {
@@ -158,7 +245,7 @@ export class CommandModuleBuilder<
           name,
           description,
           argsSchema,
-          flagsSchema,
+          flagsSchema
         );
       }
     }

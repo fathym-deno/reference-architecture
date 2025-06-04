@@ -1,11 +1,9 @@
-import type { CLICommandEntry } from "./CLICommandEntry.ts";
-import type { CLICommandResolver } from "./CLICommandResolver.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
-import { CLIHelpBuilder } from "./CLIHelpBuilder.ts";
-import type { CommandParamConstructor } from "./commands/CommandParams.ts";
-import type { CommandRuntime } from "./commands/CommandRuntime.ts";
-import { HelpCommand, HelpCommandParams } from "./HelpCommand.ts";
-import type { TemplateLocator } from "./TemplateLocator.ts";
+import type { CLICommandEntry } from './CLICommandEntry.ts';
+import type { CLICommandResolver } from './CLICommandResolver.ts';
+import type { CLIConfig } from './CLIConfig.ts';
+import { CLIHelpBuilder } from './CLIHelpBuilder.ts';
+import type { CommandMatch } from "./commands/CommandMatch.ts";
+import { HelpCommand, HelpCommandParams } from './HelpCommand.ts';
 
 export class CLICommandMatcher {
   constructor(protected resolver: CLICommandResolver) {}
@@ -16,20 +14,14 @@ export class CLICommandMatcher {
     key: string | undefined,
     flags: Record<string, unknown>,
     positional: string[],
-    baseTemplatesDir?: string,
-  ): Promise<{
-    Command: CommandRuntime | undefined;
-    Flags: Record<string, unknown>;
-    Args: string[];
-    Params: CommandParamConstructor | undefined;
-    Templates: TemplateLocator | undefined;
-  }> {
+    baseTemplatesDir?: string
+  ): Promise<CommandMatch> {
     let match: CLICommandEntry | undefined;
     let remainingArgs: string[] = [];
 
     const parts = [...positional];
     while (parts.length > 0) {
-      const tryKey = parts.join("/");
+      const tryKey = parts.join('/');
       const entry = commandMap.get(tryKey);
 
       if (entry?.CommandPath || entry?.GroupPath) {
@@ -52,13 +44,13 @@ export class CLICommandMatcher {
 
     const [cmdDets, groupDets] = match
       ? await Promise.all([
-        match.CommandPath
-          ? await this.resolver.LoadCommandInstance(match.CommandPath)
-          : undefined,
-        match.GroupPath
-          ? await this.resolver.LoadCommandInstance(match.GroupPath)
-          : undefined,
-      ])
+          match.CommandPath
+            ? await this.resolver.LoadCommandInstance(match.CommandPath)
+            : undefined,
+          match.GroupPath
+            ? await this.resolver.LoadCommandInstance(match.GroupPath)
+            : undefined,
+        ])
       : [undefined, undefined];
 
     let cmdInst = cmdDets?.Command;
@@ -67,8 +59,8 @@ export class CLICommandMatcher {
 
     const isGroupOnly = !cmdInst && groupInst;
     const isHelpRequested = flags.help === true;
-    const shouldShowHelp = isHelpRequested || !key || isGroupOnly ||
-      (!cmdInst && !groupInst);
+    const shouldShowHelp =
+      isHelpRequested || !key || isGroupOnly || (!cmdInst && !groupInst);
 
     if (shouldShowHelp || !cmdInst) {
       const helpBuilder = new CLIHelpBuilder(this.resolver);
@@ -78,20 +70,20 @@ export class CLICommandMatcher {
         key,
         flags,
         cmdInst,
-        groupInst,
+        groupInst
       );
 
       cmdInst = helpCtx ? new HelpCommand() : undefined;
 
       paramsCtor = class extends HelpCommandParams {
-        constructor(flags: Record<string, unknown>, _args: unknown[]) {
-          super({ ...flags, ...helpCtx }, []);
+        constructor(_args: unknown[], flags: Record<string, unknown>) {
+          super([], { ...flags, ...helpCtx });
         }
       };
     }
 
     const tempLocator = await this.resolver.ResolveTemplateLocator(
-      baseTemplatesDir,
+      baseTemplatesDir
     );
 
     return {

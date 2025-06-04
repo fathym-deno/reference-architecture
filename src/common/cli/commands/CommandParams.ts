@@ -1,13 +1,12 @@
-// deno-lint-ignore-file ban-types
 /**
  * Base class for all CLI command parameter sets.
  * Provides typed access to raw flags and args, plus standard dry-run support.
  */
 export abstract class CommandParams<
-  F extends Record<string, unknown> = {},
-  A extends unknown[] = [],
+  A extends readonly unknown[] = readonly unknown[],
+  F extends Record<string, unknown> = Record<string, unknown>
 > {
-  constructor(public readonly Flags: F, public readonly Args: A) {}
+  constructor(public readonly Args: A, public readonly Flags: F) {}
 
   /**
    * Indicates whether this command was invoked in dry-run mode.
@@ -21,7 +20,7 @@ export abstract class CommandParams<
    * Get a positional argument by index.
    */
   protected Arg<Index extends keyof A & number>(
-    index: Index,
+    index: Index
   ): A[Index] | undefined {
     return this.Args?.[index];
   }
@@ -38,7 +37,7 @@ export abstract class CommandParams<
  * Strongly typed constructor for a CommandParams subclass.
  */
 export type CommandParamConstructor<
+  A extends readonly unknown[] = readonly unknown[],
   F extends Record<string, unknown> = Record<string, unknown>,
-  A extends unknown[] = unknown[],
-  P extends CommandParams<F, A> = CommandParams<F, A>,
-> = new (flags: F, args: A) => P;
+  P extends CommandParams<A, F> = CommandParams<A, F>
+> = new (args: A, flags: F) => P;

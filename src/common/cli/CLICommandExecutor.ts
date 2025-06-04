@@ -1,0 +1,155 @@
+import type { CLIConfig } from './CLIConfig.ts';
+import type { IoCContainer } from './.deps.ts';
+
+import type { CommandRuntime } from './commands/CommandRuntime.ts';
+import type {
+  CommandContext,
+  CommandInvokerMap,
+} from './commands/CommandContext.ts';
+import {
+  type CommandParamConstructor,
+  CommandParams,
+} from './commands/CommandParams.ts';
+
+import type { TemplateLocator } from './TemplateLocator.ts';
+import { HelpCommand } from './HelpCommand.ts';
+
+/**
+ * Options provided when executing a CLI command.
+ * These are derived during the parsing + resolution phase.
+ */
+export interface CLICommandExecutorOptions {
+  /** Fully resolved command key (e.g. 'init', 'schema/promote') */
+  key: string;
+
+  /** Parsed named flags (e.g., --config ./foo.json) */
+  flags: Record<string, unknown>;
+
+  /** Parsed positional arguments (e.g., ['run', 'foo']) */
+  positional: string[];
+
+  /** The command’s param constructor (from `.Params(...)`) */
+  paramsCtor: CommandParamConstructor<any, any, any> | undefined;
+
+  /** Optional template locator instance (used by some commands) */
+  templates: TemplateLocator | undefined;
+
+  /**
+   * Optional subcommand invokers — if this command was defined with `.Commands(...)`,
+   * this is the map of callable `(flags, args?) => Promise<void>` handlers.
+   */
+  commands?: CommandInvokerMap;
+}
+
+/**
+ * CLICommandExecutor is the runtime orchestrator that prepares
+ * and runs a single command — handling logging, params, services,
+ * and lifecycle phases (Init, Run, DryRun, Cleanup).
+ */
+export class CLICommandExecutor {
+  constructor(protected readonly ioc: IoCContainer) {}
+
+  /**
+   * Execute a resolved command instance with the given options.
+   * Responsible for logging, context preparation, and error handling.
+   */
+  public async Execute(
+    config: CLIConfig,
+    command: CommandRuntime | undefined,
+    options: CLICommandExecutorOptions
+  ): Promise<void> {
+    if (!command) return;
+
+    const isHelp = command instanceof HelpCommand;
+    const context = await this.buildContext(config, command, options);
+
+    try {
+      if (!isHelp) {
+        context.Log.Info(`🚀 ${config.Name}: running "${options.key}"`);
+      }
+
+      const result = await this.runLifecycle(command, context);
+
+      if (typeof result === 'number') {
+        Deno.exit(result);
+      }
+
+      if (!isHelp) {
+        context.Log.Success(`${config.Name}: "${options.key}" completed`);
+      }
+    } catch (err) {
+      context.Log.Error(`💥 Error during "${options.key}" execution:\n`, err);
+      Deno.exit(1);
+    }
+  }
+
+  /**
+   * Constructs a fully populated CommandContext, including CLI metadata,
+   * logging, parameter class, resolved commands map (if present), and hydrated services.
+   */
+  protected async buildContext(
+    config: CLIConfig,
+    command: CommandRuntime,
+    opts: CLICommandExecutorOptions
+  ): Promise<CommandContext> {
+    const log = {
+      Info: console.log,
+      Warn: console.warn,
+      Error: console.error,
+      Success: (...args: unknown[]) => console.log('✅', ...args),
+    };
+
+    const { flags, positional, paramsCtor } = opts;
+
+    const params = paramsCtor
+      ? new paramsCtor(flags, positional)
+      : new (class extends CommandParams<unknown[], Record<string, unknown>> {
+          constructor() {
+            super(positional, flags);
+          }
+        })();
+
+    const baseContext: CommandContext = {
+      ArgsSchema: undefined,
+      FlagsSchema: undefined,
+      Config: config,
+      GroupMetadata: undefined,
+      Key: opts.key,
+      Log: log,
+      Metadata: command.BuildMetadata(),
+      Params: params,
+      Services: {},
+      Commands: opts.commands ?? undefined, // <-- NEW
+    };
+
+    return await command.ConfigureContext(baseContext, this.ioc);
+  }
+
+  /**
+   * Executes the full command lifecycle in the following order:
+   * 1. Init (if present)
+   * 2. Run or DryRun (based on `--dry-run`)
+   * 3. Cleanup (if present)
+   *
+   * Expects already hydrated context (via `buildContext()`).
+   */
+  protected async runLifecycle(
+    cmd: CommandRuntime,
+    ctx: CommandContext
+  ): Promise<void | number> {
+    if (typeof cmd.Init === 'function') {
+      await cmd.Init(ctx, this.ioc);
+    }
+
+    const result =
+      typeof cmd.DryRun === 'function' && ctx.Params.DryRun
+        ? await cmd.DryRun(ctx, this.ioc)
+        : await cmd.Run(ctx, this.ioc);
+
+    if (typeof cmd.Cleanup === 'function') {
+      await cmd.Cleanup(ctx, this.ioc);
+    }
+
+    return result;
+  }
+}

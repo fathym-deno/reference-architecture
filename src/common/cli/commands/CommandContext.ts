@@ -1,81 +1,87 @@
 // deno-lint-ignore-file no-explicit-any
-import { z } from "../.deps.ts";
-import type { ZodSchema } from "../.deps.ts";
-import type { CLIConfig } from "../CLIConfig.ts";
-import { CLIConfigSchema } from "../CLIConfig.ts";
-import type { CommandParams } from "./CommandParams.ts";
+import { z } from '../.deps.ts';
+import type { ZodSchema } from '../.deps.ts';
+
+import type { CLIConfig } from '../CLIConfig.ts';
+import { CLIConfigSchema } from '../CLIConfig.ts';
+
+import type { CommandParams } from './CommandParams.ts';
 import {
   type CommandModuleMetadata,
   CommandModuleMetadataSchema,
-} from "./CommandModuleMetadata.ts";
-import { type CommandLog, CommandLogSchema } from "./CommandLog.ts";
+} from './CommandModuleMetadata.ts';
+
+import { type CommandLog, CommandLogSchema } from './CommandLog.ts';
 
 /**
- * Strongly typed context passed to every command method (Init, Run, DryRun, Cleanup).
+ * A map of command invocation functions.
+ * Each key represents a subcommand, and each value is a function that executes that subcommand
+ * with named flags and optional positional args.
+ */
+export type CommandInvokerMap = Record<
+  string,
+  (
+    args?: string[],
+    flags?: Record<string, unknown>
+  ) => Promise<void | number>
+>;
+
+/**
+ * CommandContext defines the full execution context passed to each command lifecycle method
+ * (`Init`, `Run`, `DryRun`, and `Cleanup`). It includes schemas, CLI config, command metadata,
+ * resolved runtime parameters, logging tools, service instances, and optional subcommands.
+ *
+ * @template P Type of parsed parameter class (extends CommandParams)
+ * @template S Type of injected services (via `.Services()` or `ProvideServices`)
+ * @template C Map of subcommands (injected via `.Commands(...)`)
  */
 export type CommandContext<
   P extends CommandParams<any, any> = CommandParams<any, any>,
   S extends Record<string, unknown> = Record<string, unknown>,
+  C extends CommandInvokerMap = CommandInvokerMap
 > = {
-  /** Zod schema for positional arguments */
   ArgsSchema?: ZodSchema;
-
-  /** The parsed CLI configuration object (.cli.json) */
-  Config: CLIConfig;
-
-  /** Zod schema for named flags */
   FlagsSchema?: ZodSchema;
-
-  /** Metadata for the resolved parent command group, if applicable */
+  Config: CLIConfig;
   GroupMetadata?: CommandModuleMetadata;
-
-  /** The resolved key for the executed command (e.g. 'init', 'run/hello') */
   Key: string;
-
-  /** Centralized logging API, supports injection, theming, formatting */
-  Log: CommandLog;
-
-  /** Fully populated metadata for the resolved command (if any) */
   Metadata?: CommandModuleMetadata;
-
-  /** Runtime parameters object derived from schema + command logic */
+  Log: CommandLog;
   Params: P;
-
-  /** Fully resolved runtime service instances, from `.Services(...)` */
   Services: S;
+  Commands?: C;
 };
 
 /**
- * Zod runtime validator for CommandContext — excludes generic fields
- * like `Params`, `ArgsSchema`, `FlagsSchema` that are typed dynamically.
+ * Zod schema representation of the runtime-safe subset of CommandContext.
+ * Excludes generics like `Params`, `ArgsSchema`, `FlagsSchema`, and `Commands`.
+ * Used for help output, runtime metadata, and context debugging.
  */
 export const CommandContextSchema: z.ZodType<
-  Omit<CommandContext, "Params" | "ArgsSchema" | "FlagsSchema">
+  Omit<CommandContext, 'Params' | 'ArgsSchema' | 'FlagsSchema' | 'Commands'>
 > = z.object({
-  Config: CLIConfigSchema.describe("The parsed CLI config file (.cli.json)"),
+  Config: CLIConfigSchema.describe('Parsed CLI configuration (.cli.json)'),
 
   GroupMetadata: CommandModuleMetadataSchema.optional().describe(
-    "Metadata for the resolved parent command group, if applicable",
+    'Metadata for the resolved parent command group, if applicable'
   ),
 
   Key: z
     .string()
-    .describe(
-      'The resolved key for the current command (e.g. "init" or "run/hello")',
-    ),
+    .describe('Normalized command key (e.g. "init", "schema/promote", etc.)'),
 
-  Log: CommandLogSchema.describe("Logging interface for command output"),
+  Log: CommandLogSchema.describe('Logging interface used for structured output'),
 
   Metadata: CommandModuleMetadataSchema.optional().describe(
-    "Metadata for the resolved command module",
+    'Metadata for the active command module'
   ),
 
   Services: z
     .record(z.unknown())
-    .describe("Resolved service instances from .Services(...)"),
+    .describe('Resolved runtime services injected into the command context'),
 });
 
 /**
- * Runtime shape derived from schema — does not include Params or Schemas.
+ * Runtime-typed version of CommandContext for validation, help, and introspection.
  */
 export type CommandContextSchema = z.infer<typeof CommandContextSchema>;

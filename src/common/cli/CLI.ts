@@ -3,7 +3,7 @@ import type { CLIOptions } from "./CLIOptions.ts";
 
 import { CLIInvocationParser } from "./CLIInvocationParser.ts";
 import { CLICommandResolver } from "./CLICommandResolver.ts";
-import { CLIExecutor } from "./CLIExecutor.ts";
+import { CLICommandExecutor } from "./CLICommandExecutor.ts";
 import { CLICommandMatcher } from "./CLICommandMatcher.ts";
 import { IoCContainer } from "jsr:@fathym/ioc@0.0.14";
 
@@ -56,7 +56,7 @@ export class CLI {
       Type: ioc.Symbol("TemplateLocator"),
     });
 
-    const executor = new CLIExecutor(ioc);
+    const executor = new CLICommandExecutor(ioc);
 
     await executor.Execute(parsed.config, Command, {
       key: parsed.key || "",
