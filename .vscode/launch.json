@@ -42,7 +42,7 @@
       "type": "node",
       "request": "launch",
       "program": "${workspaceFolder}/src/common/cli/ftm-cli/intents/.intents.ts",
-      "cwd": "${workspaceFolder}/src/common/cli/ftm-cli",
+      "cwd": "${workspaceFolder}",
       "runtimeExecutable": "deno.exe",
       "runtimeArgs": [
         "test",

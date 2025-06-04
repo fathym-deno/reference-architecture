@@ -71,7 +71,11 @@ export class CommandIntentRuntime<
 
       // Intercept Deno.exit during test
       (Deno as any).exit = (code: number) => {
-        interceptedExitCode = code;
+        interceptedExitCode = code ?? 0;
+
+        if (code > 0) {
+          throw new Error(`Deno.exit(${code}) intercepted`);
+        }
       };
 
       try {
