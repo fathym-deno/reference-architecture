@@ -48,10 +48,10 @@ export class CompileParams extends CommandParams<
   }
 
   get Permissions(): string[] {
-    return (this.Flag("permissions") ??
-      "--allow-read --allow-env --allow-net --allow-write --allow-run").split(
-        " ",
-      );
+    return (
+      this.Flag("permissions") ??
+        "--allow-read --allow-env --allow-net --allow-write --allow-run"
+    ).split(" ");
   }
 }
 
@@ -86,7 +86,15 @@ export default Command(
       Log.Info(`🛠️ Compiling binary for: ${token}`);
 
       const compile = new Deno.Command("deno", {
-        args: ["compile", ...Permissions, "--output", outputPath, Entry],
+        args: [
+          "compile",
+          // "--config",
+          // join(dirname(ConfigPath), '../../../../deno.jsonc'),
+          ...Permissions,
+          "--output",
+          outputPath,
+          Entry,
+        ],
         stdin: "null",
         stdout: "inherit",
         stderr: "inherit",
