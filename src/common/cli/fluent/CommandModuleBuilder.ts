@@ -1,4 +1,4 @@
-// deno-lint-ignore-file no-explicit-any
+// deno-lint-ignore-file no-explicit-any ban-types
 import type { ZodType } from "../.deps.ts";
 import type { IoCContainer } from "../.deps.ts";
 
@@ -13,9 +13,10 @@ import { CommandRuntime } from "../commands/CommandRuntime.ts";
 import { CLICommandExecutor } from "../CLICommandExecutor.ts";
 import type { CommandInvokerMap } from "../commands/CommandContext.ts";
 
-/**
- * Derives a typed map of subcommand invokers from a set of CommandModules.
- */
+type UsedKeys = Record<string, true>;
+
+type RemoveUsed<T, Used extends UsedKeys> = Omit<T, keyof Used>;
+
 export type ExtractInvokerMap<T extends Record<string, CommandModule>> = {
   [K in keyof T]: T[K] extends CommandModule<infer A, infer F, any>
     ? (args?: A, flags?: F) => Promise<void | number>
@@ -31,6 +32,7 @@ export class CommandModuleBuilder<
   TParams extends CommandParams<TArgs, TFlags> = CommandParams<TArgs, TFlags>,
   TServices extends Record<string, unknown> = Record<string, unknown>,
   TCommands extends CommandInvokerMap = CommandInvokerMap,
+  TUsed extends UsedKeys = {},
 > {
   protected argsSchema?: ZodType<TArgs>;
   protected flagsSchema?: ZodType<TFlags>;
@@ -54,7 +56,6 @@ export class CommandModuleBuilder<
     string,
     CommandModule<unknown[], Record<string, unknown>>
   >;
-
   protected paramsCtor?: CommandParamConstructor<TArgs, TFlags, TParams>;
 
   constructor(
@@ -64,58 +65,57 @@ export class CommandModuleBuilder<
 
   public Args<NextArgs extends unknown[]>(
     schema: ZodType<NextArgs>,
-  ): CommandModuleBuilder<
-    NextArgs,
-    TFlags,
-    CommandParams<NextArgs, TFlags>,
-    TServices,
-    TCommands
-  > {
-    this.argsSchema = schema as unknown as ZodType<TArgs>;
-    return this as unknown as CommandModuleBuilder<
+  ): RemoveUsed<
+    CommandModuleBuilder<
       NextArgs,
       TFlags,
       CommandParams<NextArgs, TFlags>,
       TServices,
-      TCommands
-    >;
+      TCommands,
+      TUsed & { Args: true }
+    >,
+    TUsed & { Args: true }
+  > {
+    this.argsSchema = schema as unknown as ZodType<TArgs>;
+    return this as any;
   }
 
   public Flags<NextFlags extends Record<string, unknown>>(
     schema: ZodType<NextFlags>,
-  ): CommandModuleBuilder<
-    TArgs,
-    NextFlags,
-    CommandParams<TArgs, NextFlags>,
-    TServices,
-    TCommands
-  > {
-    this.flagsSchema = schema as unknown as ZodType<TFlags>;
-    return this as unknown as CommandModuleBuilder<
+  ): RemoveUsed<
+    CommandModuleBuilder<
       TArgs,
       NextFlags,
       CommandParams<TArgs, NextFlags>,
       TServices,
-      TCommands
-    >;
+      TCommands,
+      TUsed & { Flags: true }
+    >,
+    TUsed & { Flags: true }
+  > {
+    this.flagsSchema = schema as unknown as ZodType<TFlags>;
+    return this as any;
   }
 
   public Params<NextParams extends CommandParams<TArgs, TFlags>>(
     ctor: CommandParamConstructor<TArgs, TFlags, NextParams>,
-  ): CommandModuleBuilder<TArgs, TFlags, NextParams, TServices, TCommands> {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      NextParams,
+      TServices,
+      TCommands,
+      TUsed & { Params: true }
+    >,
+    TUsed & { Params: true }
+  > {
     this.paramsCtor = ctor as unknown as CommandParamConstructor<
       TArgs,
       TFlags,
       TParams
     >;
-
-    return this as unknown as CommandModuleBuilder<
-      TArgs,
-      TFlags,
-      NextParams,
-      TServices,
-      TCommands
-    >;
+    return this as any;
   }
 
   public Services<NextServices extends Record<string, unknown>>(
@@ -123,7 +123,17 @@ export class CommandModuleBuilder<
       ctx: CommandContext<TParams, TServices, TCommands>,
       ioc: IoCContainer,
     ) => Promise<NextServices>,
-  ): CommandModuleBuilder<TArgs, TFlags, TParams, NextServices, TCommands> {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      TParams,
+      NextServices,
+      TCommands,
+      TUsed & { Services: true }
+    >,
+    TUsed & { Services: true }
+  > {
     this.servicesFactory = factory as any;
     return this as any;
   }
@@ -132,57 +142,95 @@ export class CommandModuleBuilder<
     fn: (
       ctx: CommandContext<TParams, TServices, TCommands>,
     ) => void | Promise<void>,
-  ): this {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      TParams,
+      TServices,
+      TCommands,
+      TUsed & { Init: true }
+    >,
+    TUsed & { Init: true }
+  > {
     this.initFn = fn;
-    return this;
+    return this as any;
   }
 
   public Cleanup(
     fn: (
       ctx: CommandContext<TParams, TServices, TCommands>,
     ) => void | Promise<void>,
-  ): this {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      TParams,
+      TServices,
+      TCommands,
+      TUsed & { Cleanup: true }
+    >,
+    TUsed & { Cleanup: true }
+  > {
     this.cleanupFn = fn;
-    return this;
+    return this as any;
   }
 
   public DryRun(
     fn: (
       ctx: CommandContext<TParams, TServices, TCommands>,
     ) => void | number | Promise<void | number>,
-  ): this {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      TParams,
+      TServices,
+      TCommands,
+      TUsed & { DryRun: true }
+    >,
+    TUsed & { DryRun: true }
+  > {
     this.dryRunFn = fn;
-    return this;
+    return this as any;
   }
 
   public Run(
     fn: (
       ctx: CommandContext<TParams, TServices, TCommands>,
     ) => void | number | Promise<void | number>,
-  ): this {
+  ): RemoveUsed<
+    CommandModuleBuilder<
+      TArgs,
+      TFlags,
+      TParams,
+      TServices,
+      TCommands,
+      TUsed & { Run: true }
+    >,
+    TUsed & { Run: true }
+  > {
     this.runFn = fn;
-    return this;
+    return this as any;
   }
 
   public Commands<
     TSubcommands extends Record<string, CommandModule<any, any, any>>,
   >(
     commands: TSubcommands,
-  ): CommandModuleBuilder<
-    TArgs,
-    TFlags,
-    TParams,
-    TServices,
-    ExtractInvokerMap<TSubcommands>
-  > {
-    this.subcommands = commands;
-    return this as unknown as CommandModuleBuilder<
+  ): RemoveUsed<
+    CommandModuleBuilder<
       TArgs,
       TFlags,
       TParams,
       TServices,
-      ExtractInvokerMap<TSubcommands>
-    >;
+      ExtractInvokerMap<TSubcommands>,
+      TUsed & { Commands: true }
+    >,
+    TUsed & { Commands: true }
+  > {
+    this.subcommands = commands;
+    return this as any;
   }
 
   public Build(): CommandModule<TArgs, TFlags, TParams> {
