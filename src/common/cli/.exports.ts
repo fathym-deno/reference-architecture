@@ -11,8 +11,14 @@ export * from './CLI.ts';
 export * from './CLICommandResolver.ts';
 export * from './CLICommandEntry.ts';
 export * from './CLIConfig.ts';
+export * from './CLIExecutor.ts';
+export * from './CLIFileSystemHooks.ts';
 export * from './CLIInitFn.ts';
+export * from './EmbeddedTemplateLocator.ts';
 export * from './emitSchema.ts';
+export * from './FileSystemTemplateLocator.ts';
+export * from './TemplateLocator.ts';
+
 export * from './styling/StyleKeys.ts';
 export * from './styling/TextContent.ts';
 export * from './styling/UpdateInline.ts';

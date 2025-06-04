@@ -1,0 +1,80 @@
+import type {
+  CLIFileSystemHooks,
+  CLIInitFn,
+  CLICommandEntry,
+  CommandModule,
+  CLIConfig,
+  TemplateLocator,
+} from "@fathym/common/cli";
+
+import { CommandModuleBuilder, EmbeddedTemplateLocator } from "@fathym/common/cli";
+
+import embeddedConfig from "../.cli.json" with { type: "json" };
+import embeddedTemplates from "./embedded-templates.json" with { type: "json" };
+import embeddedCommandEntries from "./embedded-command-entries.json" with { type: "json" };
+
+import { EmbeddedCommandModules } from "./EmbeddedCommandModules.ts";
+
+{{#if importInitFn}}
+import embeddedInit from "{{importInitFn}}";
+{{/if}}
+
+export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
+  async ResolveCommandEntryPaths(
+    _baseCommandDir: string,
+  ): Promise<Map<string, CLICommandEntry>> {
+    const map = new Map<string, CLICommandEntry>(
+      Object.entries(embeddedCommandEntries as Record<string, CLICommandEntry>)
+    );
+    return map;
+  }
+
+  async ResolveConfig(args: string[]): Promise<{
+    config: CLIConfig;
+    resolvedPath: string;
+    remainingArgs: string[];
+  }> {
+    const remainingArgs = args[0]?.endsWith(".json") ? args.slice(1) : args;
+
+    return {
+      config: embeddedConfig,
+      resolvedPath: Deno.cwd(),
+      remainingArgs,
+    };
+  }
+
+  async LoadInitFn(_path: string): Promise<CLIInitFn | undefined> {
+    {{#if importInitFn}}
+    return embeddedInit;
+    {{else}}
+    return undefined;
+    {{/if}}
+  }
+
+  async LoadCommandModule(path: string): Promise<CommandModule> {
+    const key = Object.entries(embeddedCommandEntries).find(
+      ([_, entry]) => (entry as any).CommandPath && (entry as any).CommandPath === path,
+    )?.[0];
+
+    if (!key) {
+      throw new Error(`❌ No embedded command key found for path: ${path}`);
+    }
+
+    let mod = (EmbeddedCommandModules as any)[key];
+
+    if (!mod) {
+      throw new Error(`❌ No embedded command module found for key: ${key}`);
+    }
+
+    if (mod instanceof CommandModuleBuilder) mod = mod.Build();
+    return mod as CommandModule;
+  }
+
+  async ResolveTemplateLocator(
+    _baseTemplatesDir?: string,
+  ): Promise<TemplateLocator | undefined> {
+    return new EmbeddedTemplateLocator(
+      embeddedTemplates as Record<string, string>,
+    );
+  }
+}

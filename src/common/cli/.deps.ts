@@ -10,6 +10,8 @@ export {
   toFileUrl,
 } from 'jsr:@std/path@1.0.9';
 
+export { pascalCase } from "jsr:@luca/cases@1.0.0";
+
 export {
   IoCContainer,
   type IoCServiceConstructor,
