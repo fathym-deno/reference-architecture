@@ -1,4 +1,4 @@
-import { resolve, join, dirname, exists } from "../../.deps.ts";
+import { dirname, exists, join, resolve } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import { z } from "../../.deps.ts";
@@ -24,7 +24,9 @@ export const CompileFlagsSchema = z.object({
   permissions: z
     .string()
     .optional()
-    .describe("Deno permissions (default: --allow-read --allow-env --allow-net)"),
+    .describe(
+      "Deno permissions (default: --allow-read --allow-env --allow-net)",
+    ),
 });
 
 export class CompileParams extends CommandParams<
@@ -36,7 +38,9 @@ export class CompileParams extends CommandParams<
   }
 
   get ConfigPath(): string {
-    return resolve(this.Flag("config") ?? join(dirname(this.Entry), "../.cli.json"));
+    return resolve(
+      this.Flag("config") ?? join(dirname(this.Entry), "../.cli.json"),
+    );
   }
 
   get OutputDir(): string {
@@ -44,11 +48,17 @@ export class CompileParams extends CommandParams<
   }
 
   get Permissions(): string[] {
-    return (this.Flag("permissions") ?? "--allow-read --allow-env --allow-net").split(" ");
+    return (this.Flag("permissions") ??
+      "--allow-read --allow-env --allow-net --allow-write --allow-run").split(
+        " ",
+      );
   }
 }
 
-export default Command("compile", "Compile the CLI into binaries for each token")
+export default Command(
+  "compile",
+  "Compile the CLI into binaries for each token",
+)
   .Args(CompileArgsSchema)
   .Flags(CompileFlagsSchema)
   .Params(CompileParams)
@@ -89,7 +99,7 @@ export default Command("compile", "Compile the CLI into binaries for each token"
         Deno.exit(result.code);
       }
 
-      Log.Success(`✅ Compiled: ${outputPath}`);
+      Log.Success(`Compiled: ${outputPath}`);
     }
 
     Log.Success("🎉 All CLI binaries compiled successfully.");

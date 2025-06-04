@@ -5,7 +5,9 @@ import { CommandParams } from "../../commands/CommandParams.ts";
 import type { TemplateLocator } from "../../TemplateLocator.ts";
 
 // --- Schemas ---
-export const InitArgsSchema = z.tuple([z.string().describe("Project name")]);
+export const InitArgsSchema = z.tuple([
+  z.string().optional().describe("Project name"),
+]);
 
 export const InitFlagsSchema = z.object({
   template: z
@@ -20,13 +22,15 @@ export const InitFlagsSchema = z.object({
 });
 
 // --- Params Class ---
+
+// --- Params Class ---
 export class InitParams extends CommandParams<
   z.infer<typeof InitFlagsSchema>,
   z.infer<typeof InitArgsSchema>
 > {
   get Name(): string {
     const arg = this.Arg(0);
-    return !arg || arg === "." ? "." : arg;
+    return !arg || arg === "." ? Deno.cwd() : arg;
   }
 
   get Template(): string {
@@ -57,5 +61,7 @@ export default Command("init", "Initialize a new CLI project")
       outputDir: Name,
     });
 
-    Log.Success(`✅ Project "${Name}" created from "${Template}" template.`);
+    const fullPath = await Deno.realPath(Name);
+    Log.Success(`Project created from "${Template}" template.`);
+    Log.Info(`📂 Initialized at: ${fullPath}`);
   });

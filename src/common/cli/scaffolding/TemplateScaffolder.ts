@@ -28,7 +28,11 @@ export class TemplateScaffolder {
     const files = await this.locator.ListFiles(templateName);
 
     for (const filePath of files) {
-      const relPath = filePath.replace(`${templateName}\\`, "");
+      const relPath = filePath.replace(
+        new RegExp(`^${templateName}[\\\\/]`),
+        "",
+      );
+
       const raw = await this.locator.ReadTemplateFile(filePath);
 
       const rendered = filePath.endsWith(".hbs")
