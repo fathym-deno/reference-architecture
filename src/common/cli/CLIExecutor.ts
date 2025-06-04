@@ -42,7 +42,7 @@ export class CLIExecutor {
       }
 
       if (!isHelp) {
-        context.Log.Success(`✅ ${config.Name}: "${options.key}" completed`);
+        context.Log.Success(`${config.Name}: "${options.key}" completed`);
       }
     } catch (err) {
       context.Log.Error(`💥 Error during "${options.key}" execution:\n`, err);

@@ -6,8 +6,9 @@ import type {
   CLIConfig,
   TemplateLocator,
 } from "@fathym/common/cli";
-
 import { CommandModuleBuilder, EmbeddedTemplateLocator } from "@fathym/common/cli";
+
+import { fromFileUrl } from "jsr:@std/path@^1.0.9/from-file-url";
 
 import embeddedConfig from "../.cli.json" with { type: "json" };
 import embeddedTemplates from "./embedded-templates.json" with { type: "json" };
@@ -38,7 +39,7 @@ export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
 
     return {
       config: embeddedConfig,
-      resolvedPath: Deno.cwd(),
+      resolvedPath: fromFileUrl(import.meta.resolve('../.cli.json')),
       remainingArgs,
     };
   }

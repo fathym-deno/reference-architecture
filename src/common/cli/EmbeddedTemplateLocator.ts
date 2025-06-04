@@ -6,23 +6,26 @@ import type { TemplateLocator } from "./TemplateLocator.ts";
  */
 
 export class EmbeddedTemplateLocator implements TemplateLocator {
-  constructor(
-    protected templates: Record<string, string>
-  ) { }
+  constructor(protected templates: Record<string, string>) {}
 
-  public async ListFiles(templateName: string): Promise<string[]> {
-    const prefix = templateName.endsWith("/") ? templateName : `${templateName}/`;
+  public ListFiles(templateName: string): Promise<string[]> {
+    const prefix = templateName.endsWith("/")
+      ? templateName
+      : `${templateName}/`;
 
-    return Object.keys(this.templates).filter((key) => key.startsWith(prefix) && !key.endsWith("/")
+    return Promise.resolve(
+      Object.keys(this.templates).filter(
+        (key) => key.startsWith(prefix) && !key.endsWith("/"),
+      ),
     );
   }
 
-  public async ReadTemplateFile(path: string): Promise<string> {
+  public ReadTemplateFile(path: string): Promise<string> {
     const contents = this.templates[path];
     if (contents === undefined) {
       throw new Error(`Template not found: ${path}`);
     }
 
-    return contents;
+    return Promise.resolve(contents);
   }
 }
