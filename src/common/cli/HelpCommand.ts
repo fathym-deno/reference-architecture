@@ -1,8 +1,8 @@
-import { CommandRuntime } from './commands/CommandRuntime.ts';
-import { z } from './.deps.ts';
-import { type HelpContext, HelpContextSchema } from './HelpContext.ts';
-import { CommandParams } from './commands/CommandParams.ts';
-import type { CommandContext } from './commands/CommandContext.ts';
+import { CommandRuntime } from "./commands/CommandRuntime.ts";
+import { z } from "./.deps.ts";
+import { type HelpContext, HelpContextSchema } from "./HelpContext.ts";
+import { CommandParams } from "./commands/CommandParams.ts";
+import type { CommandContext } from "./commands/CommandContext.ts";
 
 /**
  * Flag schema for HelpCommand — directly matches the HelpContext structure.
@@ -22,15 +22,15 @@ export class HelpCommandParams extends CommandParams<
   z.infer<typeof HelpFlagsSchema>
 > {
   public get Header(): string | undefined {
-    return this.Flag('Header');
+    return this.Flag("Header");
   }
 
-  public get Intro(): HelpContext['Intro'] {
-    return this.Flag('Intro');
+  public get Intro(): HelpContext["Intro"] {
+    return this.Flag("Intro");
   }
 
-  public get Sections(): HelpContext['Sections'] {
-    return this.Flag('Sections');
+  public get Sections(): HelpContext["Sections"] {
+    return this.Flag("Sections");
   }
 }
 
@@ -50,55 +50,55 @@ export class HelpCommand extends CommandRuntime<HelpCommandParams> {
       if (Intro.Description) console.log(Intro.Description);
       if (Intro.Usage) console.log(`\nUsage:\n  ${Intro.Usage}`);
       if (Intro.Examples?.length) {
-        console.log('\nExamples:');
+        console.log("\nExamples:");
         for (const ex of Intro.Examples) {
           console.log(`  ${ex}`);
         }
       }
-      console.log('');
+      console.log("");
     }
 
     if (Sections?.length) {
       for (const section of Sections) {
         switch (section.type) {
-          case 'CommandDetails': {
+          case "CommandDetails": {
             console.log(`📘 ${section.Name}`);
             if (section.Description) console.log(section.Description);
             if (section.Usage) console.log(`\nUsage:\n  ${section.Usage}`);
             if (section.Examples?.length) {
-              console.log('\nExamples:');
+              console.log("\nExamples:");
               for (const ex of section.Examples) {
                 console.log(`  ${ex}`);
               }
             }
-            console.log('');
+            console.log("");
             break;
           }
 
-          case 'GroupDetails': {
+          case "GroupDetails": {
             console.log(`📘 ${section.Name}`);
             if (section.Description) console.log(section.Description);
             if (section.Usage) console.log(`\nUsage:\n  ${section.Usage}`);
             if (section.Examples?.length) {
-              console.log('\nExamples:');
+              console.log("\nExamples:");
               for (const ex of section.Examples) {
                 console.log(`  ${ex}`);
               }
             }
-            console.log('');
+            console.log("");
             break;
           }
 
-          case 'CommandList':
-          case 'GroupList': {
+          case "CommandList":
+          case "GroupList": {
             console.log(`\n🔸 ${section.title}`);
             for (const item of section.items) {
-              console.log(`  ${item.Name} - ${item.Description ?? ''}`);
+              console.log(`  ${item.Name} - ${item.Description ?? ""}`);
             }
             break;
           }
 
-          case 'Error': {
+          case "Error": {
             console.error(`❌ ${section.message}`);
             if (section.suggestion) {
               console.log(`💡 Did you mean: ${section.suggestion}?`);
@@ -112,10 +112,10 @@ export class HelpCommand extends CommandRuntime<HelpCommandParams> {
 
   public BuildMetadata() {
     return this.buildMetadataFromSchemas(
-      'Help Command',
-      'Display structured help context for commands and groups',
+      "Help Command",
+      "Display structured help context for commands and groups",
       HelpArgsSchema,
-      HelpFlagsSchema
+      HelpFlagsSchema,
     );
   }
 }

@@ -1,18 +1,19 @@
-import type { CLIConfig } from './CLIConfig.ts';
-import type { IoCContainer } from './.deps.ts';
+// deno-lint-ignore-file no-explicit-any
+import type { CLIConfig } from "./CLIConfig.ts";
+import type { IoCContainer } from "./.deps.ts";
 
-import type { CommandRuntime } from './commands/CommandRuntime.ts';
+import type { CommandRuntime } from "./commands/CommandRuntime.ts";
 import type {
   CommandContext,
   CommandInvokerMap,
-} from './commands/CommandContext.ts';
+} from "./commands/CommandContext.ts";
 import {
   type CommandParamConstructor,
   CommandParams,
-} from './commands/CommandParams.ts';
+} from "./commands/CommandParams.ts";
 
-import type { TemplateLocator } from './TemplateLocator.ts';
-import { HelpCommand } from './HelpCommand.ts';
+import type { TemplateLocator } from "./TemplateLocator.ts";
+import { HelpCommand } from "./HelpCommand.ts";
 
 /**
  * Options provided when executing a CLI command.
@@ -56,7 +57,7 @@ export class CLICommandExecutor {
   public async Execute(
     config: CLIConfig,
     command: CommandRuntime | undefined,
-    options: CLICommandExecutorOptions
+    options: CLICommandExecutorOptions,
   ): Promise<void> {
     if (!command) return;
 
@@ -70,7 +71,7 @@ export class CLICommandExecutor {
 
       const result = await this.runLifecycle(command, context);
 
-      if (typeof result === 'number') {
+      if (typeof result === "number") {
         Deno.exit(result);
       }
 
@@ -90,24 +91,24 @@ export class CLICommandExecutor {
   protected async buildContext(
     config: CLIConfig,
     command: CommandRuntime,
-    opts: CLICommandExecutorOptions
+    opts: CLICommandExecutorOptions,
   ): Promise<CommandContext> {
     const log = {
       Info: console.log,
       Warn: console.warn,
       Error: console.error,
-      Success: (...args: unknown[]) => console.log('✅', ...args),
+      Success: (...args: unknown[]) => console.log("✅", ...args),
     };
 
     const { flags, positional, paramsCtor } = opts;
 
     const params = paramsCtor
-      ? new paramsCtor(flags, positional)
+      ? new paramsCtor(positional, flags)
       : new (class extends CommandParams<unknown[], Record<string, unknown>> {
-          constructor() {
-            super(positional, flags);
-          }
-        })();
+        constructor() {
+          super(positional, flags);
+        }
+      })();
 
     const baseContext: CommandContext = {
       ArgsSchema: undefined,
@@ -135,18 +136,17 @@ export class CLICommandExecutor {
    */
   protected async runLifecycle(
     cmd: CommandRuntime,
-    ctx: CommandContext
+    ctx: CommandContext,
   ): Promise<void | number> {
-    if (typeof cmd.Init === 'function') {
+    if (typeof cmd.Init === "function") {
       await cmd.Init(ctx, this.ioc);
     }
 
-    const result =
-      typeof cmd.DryRun === 'function' && ctx.Params.DryRun
-        ? await cmd.DryRun(ctx, this.ioc)
-        : await cmd.Run(ctx, this.ioc);
+    const result = typeof cmd.DryRun === "function" && ctx.Params.DryRun
+      ? await cmd.DryRun(ctx, this.ioc)
+      : await cmd.Run(ctx, this.ioc);
 
-    if (typeof cmd.Cleanup === 'function') {
+    if (typeof cmd.Cleanup === "function") {
       await cmd.Cleanup(ctx, this.ioc);
     }
 

@@ -28,8 +28,8 @@ export const BuildFlagsSchema = z.object({
 });
 
 export class BuildParams extends CommandParams<
-  z.infer<typeof BuildFlagsSchema>,
-  z.infer<typeof BuildArgsSchema>
+  z.infer<typeof BuildArgsSchema>,
+  z.infer<typeof BuildFlagsSchema>
 > {
   get TemplatesDir(): string {
     return this.Flag("templates") ?? "./.templates";

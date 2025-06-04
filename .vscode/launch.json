@@ -55,7 +55,7 @@
       "attachSimplePort": 9229
     },
     {
-      "name": "Debug `ftm-cli build` test-cli",
+      "name": "Debug `ftm-cli build` my-cli",
       "type": "node",
       "request": "launch",
       "cwd": "${workspaceFolder}/test",
@@ -84,6 +84,24 @@
         "${workspaceFolder}/src/common/cli/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "build"
+      ],
+      "console": "integratedTerminal",
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Debug `ftm-cli build --config` ftm-cli",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "-A",
+        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
+        "build",
+        "--config=/src/common/cli/ftm-cli/.cli.json"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229

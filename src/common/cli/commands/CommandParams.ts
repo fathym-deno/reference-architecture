@@ -3,8 +3,8 @@
  * Provides typed access to raw flags and args, plus standard dry-run support.
  */
 export abstract class CommandParams<
-  A extends readonly unknown[] = readonly unknown[],
-  F extends Record<string, unknown> = Record<string, unknown>
+  A extends unknown[] = unknown[],
+  F extends Record<string, unknown> = Record<string, unknown>,
 > {
   constructor(public readonly Args: A, public readonly Flags: F) {}
 
@@ -20,7 +20,7 @@ export abstract class CommandParams<
    * Get a positional argument by index.
    */
   protected Arg<Index extends keyof A & number>(
-    index: Index
+    index: Index,
   ): A[Index] | undefined {
     return this.Args?.[index];
   }
@@ -37,7 +37,7 @@ export abstract class CommandParams<
  * Strongly typed constructor for a CommandParams subclass.
  */
 export type CommandParamConstructor<
-  A extends readonly unknown[] = readonly unknown[],
+  A extends unknown[] = unknown[],
   F extends Record<string, unknown> = Record<string, unknown>,
-  P extends CommandParams<A, F> = CommandParams<A, F>
+  P extends CommandParams<A, F> = CommandParams<A, F>,
 > = new (args: A, flags: F) => P;

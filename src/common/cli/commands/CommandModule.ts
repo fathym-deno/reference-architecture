@@ -1,18 +1,18 @@
-// deno-lint-ignore-file no-explicit-any
-import type { ZodType, ZodTypeDef } from '../.deps.ts';
-import type { CommandRuntime } from './CommandRuntime.ts';
+import type { ZodType, ZodTypeDef } from "../.deps.ts";
+import type { CommandRuntime } from "./CommandRuntime.ts";
 import type {
   CommandParamConstructor,
   CommandParams,
-} from './CommandParams.ts';
+} from "./CommandParams.ts";
 
 /**
  * Represents a complete, executable CLI command module.
  * Includes runtime class, schemas for validation and docs, and metadata for help.
  */
 export type CommandModule<
-  A extends readonly unknown[] = readonly unknown[],
-  F extends Record<string, unknown> = Record<string, unknown>
+  A extends unknown[] = unknown[],
+  F extends Record<string, unknown> = Record<string, unknown>,
+  P extends CommandParams<A, F> = CommandParams<A, F>,
 > = {
   /**
    * Zod schema defining the expected positional arguments.
@@ -20,19 +20,19 @@ export type CommandModule<
   ArgsSchema: ZodType<A>;
 
   /**
-   * The executable command class.
-   */
-  Command: new () => CommandRuntime<any>;
-
-  /**
    * Zod schema defining the named flags for the command.
    */
   FlagsSchema: ZodType<F>;
 
   /**
-   * Optional parameter class that provides typed access to flags and args.
+   * The executable command class with full param typing.
    */
-  Params?: CommandParamConstructor<A, F, any>;
+  Command: new () => CommandRuntime<P>;
+
+  /**
+   * Strongly typed parameter constructor class.
+   */
+  Params?: CommandParamConstructor<A, F, P>;
 };
 
 /**
@@ -42,18 +42,18 @@ export type CommandModule<
 export function defineCommandModule<
   F extends Record<string, unknown>,
   A extends unknown[],
-  CP extends CommandParams<A, F>,
-  CC extends new (params: CP) => CommandRuntime<CP>
+  P extends CommandParams<A, F>,
+  R extends CommandRuntime<P>,
 >(def: {
   FlagsSchema: ZodType<F, ZodTypeDef, F>;
   ArgsSchema: ZodType<A, ZodTypeDef, A>;
-  Command: CC;
-  Params: new (args: A, flags: F) => CP;
-}): CommandModule<A, F> {
+  Command: new () => R;
+  Params: new (args: A, flags: F) => P;
+}): CommandModule<A, F, P> {
   return {
     FlagsSchema: def.FlagsSchema,
     ArgsSchema: def.ArgsSchema,
-    Command: def.Command as unknown as new () => CommandRuntime<any>,
-    Params: def.Params as CommandParamConstructor<A, F, any>,
+    Command: def.Command,
+    Params: def.Params,
   };
 }

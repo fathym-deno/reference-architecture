@@ -25,8 +25,8 @@ export const InitFlagsSchema = z.object({
 
 // --- Params Class ---
 export class InitParams extends CommandParams<
-  z.infer<typeof InitFlagsSchema>,
-  z.infer<typeof InitArgsSchema>
+  z.infer<typeof InitArgsSchema>,
+  z.infer<typeof InitFlagsSchema>
 > {
   get Name(): string {
     const arg = this.Arg(0);
