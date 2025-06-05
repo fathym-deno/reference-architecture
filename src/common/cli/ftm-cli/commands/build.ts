@@ -1,18 +1,12 @@
-import { pascalCase, resolve, z } from "../../.deps.ts";
+import { dirname, join, pascalCase, z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
-import {
-  dirname,
-  ensureDir,
-  exists,
-  join,
-  relative,
-  walk,
-} from "../../.deps.ts";
+import type { DFSFileHandler } from "../../.deps.ts";
 import type { CommandLog } from "../../commands/CommandLog.ts";
 import type { CLICommandEntry } from "../../types/CLICommandEntry.ts";
+import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 
 export const BuildArgsSchema = z.tuple([]);
 
@@ -45,58 +39,64 @@ export default Command("build", "Prepare static CLI build folder")
   .Flags(BuildFlagsSchema)
   .Params(BuildParams)
   .Services(async (ctx, ioc) => {
-    try {
-      const { configPath, outDir, configDir, templatesDir } =
-        await resolveConfigAndOutDir(ctx.Params);
+    const dfsCtx = await ioc.Resolve(CLIDFSContextManager);
 
-      const locator = await ioc.Resolve<TemplateLocator>(
-        ioc.Symbol("TemplateLocator"),
-      );
-
-      return {
-        Details: { configPath, outDir, configDir, templatesDir },
-        Scaffolder: new TemplateScaffolder(locator, {
-          cliOutDir: outDir,
-        }),
-      };
-    } catch (err) {
-      ctx.Log.Error((err as Error).message);
-      ctx.Log.Info("👉 You can pass one with --config ./path/to/.cli.json");
-      Deno.exit(1);
+    if (ctx.Params.ConfigOverride) {
+      await dfsCtx.RegisterProjectDFS(ctx.Params.ConfigOverride, "CLI");
     }
+
+    const buildDFS: DFSFileHandler = ctx.Params.ConfigOverride
+      ? await dfsCtx.GetDFS("CLI")
+      : await dfsCtx.GetExecutionDFS();
+
+    const { configPath, outDir, configDir, templatesDir } =
+      await resolveConfigAndOutDir(ctx.Params, buildDFS);
+
+    return {
+      BuildDFS: buildDFS,
+      Details: { configPath, outDir, configDir, templatesDir },
+      Scaffolder: new TemplateScaffolder(
+        await ioc.Resolve<TemplateLocator>(ioc.Symbol("TemplateLocator")),
+        buildDFS,
+        { cliOutDir: outDir },
+      ),
+    };
   })
   .Run(async ({ Log, Services }) => {
-    const configPath = Services.Details.configPath;
-    const configDir = Services.Details.configDir;
-    const outDir = Services.Details.outDir;
-    const templatesDir = Services.Details.templatesDir;
-
-    await ensureDir(outDir);
+    const { configPath, configDir, outDir, templatesDir } = Services.Details;
+    const { BuildDFS, Scaffolder } = Services;
 
     const embeddedTemplatesPath = await collectTemplates(
       templatesDir,
       outDir,
+      BuildDFS,
+      BuildDFS,
       Log,
     );
 
-    const configRaw = await Deno.readTextFile(configPath);
-    const config = JSON.parse(configRaw);
-    const baseDir = resolve(configDir, config.Commands ?? "./commands");
+    const configInfo = await BuildDFS.GetFileInfo(configPath);
+    if (!configInfo) throw new Error(`❌ Could not read ${configPath}`);
+    const configText = await new Response(configInfo.Contents).text();
+    const config = JSON.parse(configText);
+
+    const commandsPath = join(configDir, config.Commands ?? "./commands");
 
     const { imports, modules, commandEntries } = await collectCommandMetadata(
-      baseDir,
+      commandsPath,
+      BuildDFS,
     );
     const embeddedEntriesPath = await writeCommandEntries(
       commandEntries,
       outDir,
+      BuildDFS,
       Log,
     );
 
-    const importInit = (await exists(join(configDir, ".cli.init.ts")))
-      ? "../.cli.init.ts"
-      : undefined;
+    const initScriptPath = join(configDir, ".cli.init.ts");
+    const hasInit = await BuildDFS.GetFileInfo(initScriptPath);
+    const importInit = hasInit ? "../.cli.init.ts" : undefined;
 
-    await Services.Scaffolder.Scaffold({
+    await Scaffolder.Scaffold({
       templateName: "cli-build-static",
       outputDir: outDir,
       context: {
@@ -114,23 +114,24 @@ export default Command("build", "Prepare static CLI build folder")
     );
   });
 
-async function resolveConfigAndOutDir(params: BuildParams) {
-  const configPath = params.ConfigOverride
-    ? resolve(params.ConfigOverride)
-    : resolve("./.cli.json");
-
-  if (!(await exists(configPath))) {
+async function resolveConfigAndOutDir(
+  params: BuildParams,
+  dfs: DFSFileHandler,
+): Promise<{
+  configPath: string;
+  outDir: string;
+  configDir: string;
+  templatesDir: string;
+}> {
+  const configPath = params.ConfigOverride ?? "./.cli.json";
+  const exists = await dfs.GetFileInfo(configPath);
+  if (!exists) {
     throw new Error(`❌ Cannot find .cli.json at: ${configPath}`);
   }
 
   const configDir = dirname(configPath);
-
-  const outDir = resolve(configDir, "./.build");
-
-  const templatesDir = resolve(
-    configDir,
-    params.TemplatesDir || "./.templates",
-  );
+  const outDir = `./.build`;
+  const templatesDir = params.TemplatesDir ?? "./.templates";
 
   return { configPath, outDir, configDir, templatesDir };
 }
@@ -138,49 +139,52 @@ async function resolveConfigAndOutDir(params: BuildParams) {
 async function collectTemplates(
   templatesDir: string,
   outDir: string,
+  fromDFS: DFSFileHandler,
+  toDFS: DFSFileHandler,
   log: CommandLog,
 ): Promise<string> {
+  const baseDirNormalized = templatesDir.replace(/^\.?\//, "");
+  const paths = await fromDFS.LoadAllPaths();
+  const templateFiles = paths.filter(
+    (p) => p.startsWith(`./${baseDirNormalized}`) && !p.endsWith("/"),
+  );
+
   const templates: Record<string, string> = {};
-
-  if (await exists(templatesDir)) {
-    for await (const entry of walk(templatesDir, { includeDirs: false })) {
-      const rel = relative(templatesDir, entry.path).replace(/\\/g, "/");
-
-      const contents = await Deno.readTextFile(entry.path);
-
-      templates[rel] = contents;
-    }
+  for (const fullPath of templateFiles) {
+    const info = await fromDFS.GetFileInfo(fullPath);
+    if (!info) continue;
+    const rel = fullPath.replace(`./${baseDirNormalized}/`, "");
+    templates[rel] = await new Response(info.Contents).text();
   }
 
   const outputPath = join(outDir, "embedded-templates.json");
-
-  await Deno.writeTextFile(outputPath, JSON.stringify(templates, null, 2));
-
+  const stream = new Response(JSON.stringify(templates, null, 2)).body!;
+  await toDFS.WriteFile(outputPath, stream);
   log.Info(`📦 Embedded templates → ${outputPath}`);
-
   return outputPath;
 }
 
-async function collectCommandMetadata(baseDir: string): Promise<{
+async function collectCommandMetadata(
+  baseDir: string,
+  dfs: DFSFileHandler,
+): Promise<{
   imports: { alias: string; path: string }[];
   modules: { key: string; alias: string }[];
-  commandEntries: Record<
-    string,
-    { CommandPath?: string; GroupPath?: string; ParentGroup?: string }
-  >;
+  commandEntries: Record<string, CLICommandEntry>;
 }> {
+  const baseDirNormalized = baseDir.replace(/^\.?\//, "");
+  const paths = await dfs.LoadAllPaths();
+  const entries = paths.filter(
+    (p) => p.startsWith(`./${baseDirNormalized}`) && p.endsWith(".ts"),
+  );
+
   const imports = [];
   const modules = [];
   const commandEntries: Record<string, CLICommandEntry> = {};
 
-  for await (
-    const entry of walk(baseDir, {
-      includeDirs: false,
-      exts: [".ts"],
-    })
-  ) {
-    const rel = relative(baseDir, entry.path).replace(/\\/g, "/");
-    const isMeta = entry.name === ".metadata.ts";
+  for (const path of entries) {
+    const rel = path.replace(`./${baseDirNormalized}/`, "").replace(/\\/g, "/");
+    const isMeta = rel.endsWith(".metadata.ts");
     const key = isMeta
       ? rel.replace(/\/\.metadata\.ts$/, "")
       : rel.replace(/\.ts$/, "");
@@ -194,9 +198,9 @@ async function collectCommandMetadata(baseDir: string): Promise<{
     };
 
     if (isMeta) {
-      entryData.GroupPath = entry.path;
+      entryData.GroupPath = dfs.ResolvePath(path);
     } else {
-      entryData.CommandPath = entry.path;
+      entryData.CommandPath = dfs.ResolvePath(path);
       imports.push({ alias, path: `../commands/${rel}` });
       modules.push({ key, alias });
     }
@@ -210,10 +214,12 @@ async function collectCommandMetadata(baseDir: string): Promise<{
 async function writeCommandEntries(
   entries: Record<string, unknown>,
   outDir: string,
+  dfs: DFSFileHandler,
   log: CommandLog,
 ): Promise<string> {
-  const path = join(outDir, "embedded-command-entries.json");
-  await Deno.writeTextFile(path, JSON.stringify(entries, null, 2));
-  log.Info(`📘 Embedded command entries → ${path}`);
-  return path;
+  const outputPath = join(outDir, "embedded-command-entries.json");
+  const stream = new Response(JSON.stringify(entries, null, 2)).body!;
+  await dfs.WriteFile(outputPath, stream);
+  log.Info(`📘 Embedded command entries → ${outputPath}`);
+  return outputPath;
 }

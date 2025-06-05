@@ -1,25 +1,25 @@
-import { z } from '../../.deps.ts';
-import { Command } from '../../fluent/Command.ts';
-import { TemplateScaffolder } from '../../.exports.ts';
-import { CommandParams } from '../../commands/CommandParams.ts';
-import type { TemplateLocator } from '../../templates/TemplateLocator.ts';
-import { CLIDFSContextManager } from '../../CLIDFSContextManager.ts';
+import { z } from "../../.deps.ts";
+import { Command } from "../../fluent/Command.ts";
+import { TemplateScaffolder } from "../../.exports.ts";
+import { CommandParams } from "../../commands/CommandParams.ts";
+import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
+import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 
 // --- Schemas ---
 export const InitArgsSchema = z.tuple([
-  z.string().optional().describe('Project name'),
+  z.string().optional().describe("Project name"),
 ]);
 
 export const InitFlagsSchema = z.object({
   template: z
     .string()
     .optional()
-    .describe('Template to use (e.g. hello, web, api)'),
+    .describe("Template to use (e.g. hello, web, api)"),
 
   baseTemplatesDir: z
     .string()
     .optional()
-    .describe('Root directory for templates (default injected by CLI)'),
+    .describe("Root directory for templates (default injected by CLI)"),
 });
 
 // --- Params Class ---
@@ -31,19 +31,19 @@ export class InitParams extends CommandParams<
 > {
   get Name(): string {
     const arg = this.Arg(0);
-    return !arg || arg === '.' ? Deno.cwd() : arg;
+    return !arg || arg === "." ? "." : arg;
   }
 
   get Template(): string {
-    return this.Flag('template') ?? 'hello';
+    return this.Flag("template") ?? "hello";
   }
 
   get BaseTemplatesDir(): string | undefined {
-    return this.Flag('baseTemplatesDir');
+    return this.Flag("baseTemplatesDir");
   }
 }
 
-export default Command('init', 'Initialize a new CLI project')
+export default Command("init", "Initialize a new CLI project")
   .Args(InitArgsSchema)
   .Flags(InitFlagsSchema)
   .Params(InitParams)
@@ -52,11 +52,11 @@ export default Command('init', 'Initialize a new CLI project')
 
     return {
       Scaffolder: new TemplateScaffolder(
-        await ioc.Resolve<TemplateLocator>(ioc.Symbol('TemplateLocator')),
-        await dfsCtxMgr.GetDFS('execution'),
-        { name: ctx.Params.Name }
+        await ioc.Resolve<TemplateLocator>(ioc.Symbol("TemplateLocator")),
+        await dfsCtxMgr.GetDFS("execution"),
+        { name: ctx.Params.Name },
       ),
-      DFSContextManager: dfsCtxMgr
+      DFSContextManager: dfsCtxMgr,
     };
   })
   .Run(async ({ Params, Log, Services }) => {
@@ -68,7 +68,7 @@ export default Command('init', 'Initialize a new CLI project')
       outputDir: Name,
     });
 
-    const fullPath = await Services.DFSContextManager.ResolvePath('execution', Name);
+    const fullPath = await Services.Scaffolder.DFS.ResolvePath(Name);
 
     Log.Success(`Project created from "${Template}" template.`);
     Log.Info(`📂 Initialized at: ${fullPath}`);

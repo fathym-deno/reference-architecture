@@ -1,4 +1,5 @@
 export { Logger } from "jsr:@std/log@0.224.14/logger";
+export { resolve } from "jsr:@std/path@^1.0.9";
 
 export { dirname, join } from "jsr:@std/path@^1.0.9";
 

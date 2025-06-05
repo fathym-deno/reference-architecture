@@ -25,12 +25,20 @@ export interface IDFSFileHandler {
   ): Promise<DFSFileInfo | undefined>;
 
   /**
+   * Checks if a file exists in the DFS by attempting to retrieve metadata.
+   *
+   * @param filePath - The relative path to check.
+   * @returns A promise resolving to `true` if the file exists, `false` otherwise.
+   */
+  HasFile(filePath: string): Promise<boolean>;
+
+  /**
    * Loads all available file paths for a given revision.
    *
    * @param revision - The revision identifier.
    * @returns A promise resolving to an array of file paths.
    */
-  LoadAllPaths(revision: string): Promise<string[]>;
+  LoadAllPaths(): Promise<string[]>;
 
   /**
    * The root directory of the DFS.
@@ -45,9 +53,18 @@ export interface IDFSFileHandler {
    * @param cacheDb - Optional Deno.Kv cache database.
    * @returns A promise resolving when the file is removed.
    */
-  RemoveFile(
-    filePath: string,
-  ): Promise<void>;
+  RemoveFile(filePath: string): Promise<void>;
+
+  /**
+   * Resolves a normalized absolute path within the DFS.
+   *
+   * Combines the DFS root with the provided path segments.
+   * Useful for constructing consistent, scoped file paths across handlers.
+   *
+   * @param parts - Path segments to join under the DFS root.
+   * @returns A resolved DFS-relative file path.
+   */
+  ResolvePath(...parts: string[]): string;
 
   /**
    * Writes a file to the DFS.

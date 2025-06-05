@@ -1,4 +1,4 @@
-import { getPackageLoggerSync, type Logger } from "./.deps.ts";
+import { getPackageLoggerSync, type Logger, resolve } from "./.deps.ts";
 import type { DFSFileInfo } from "./DFSFileInfo.ts";
 import type { IDFSFileHandler } from "./IDFSFileHandler.ts";
 
@@ -14,10 +14,7 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
    * Creates an instance of `FetchDFSFileHandler`.
    * @param logger -The logger to use.
    */
-  public constructor(
-    protected details: TDetails,
-    logger?: Logger,
-  ) {
+  public constructor(protected details: TDetails, logger?: Logger) {
     this.logger = logger ?? getPackageLoggerSync(import.meta);
   }
 
@@ -45,11 +42,21 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
   ): Promise<DFSFileInfo | undefined>;
 
   /**
+   * Checks if a file exists in the DFS by attempting to retrieve metadata.
+   *
+   * @param filePath - The relative path to check.
+   * @returns A promise resolving to `true` if the file exists, `false` otherwise.
+   */
+  public async HasFile(filePath: string): Promise<boolean> {
+    return !!(await this.GetFileInfo(filePath));
+  }
+
+  /**
    * Loads all file paths available in the DFS for a given revision.
    * @param revision - The revision or version identifier.
    * @returns A list of file paths.
    */
-  public abstract LoadAllPaths(revision: string): Promise<string[]>;
+  public abstract LoadAllPaths(): Promise<string[]>;
 
   /**
    * Removes a file from the DFS.
@@ -57,9 +64,22 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
    * @param revision - The revision or version identifier.
    * @param cacheDb - A Deno.Kv instance for caching (optional).
    */
-  public abstract RemoveFile(
-    filePath: string,
-  ): Promise<void>;
+  public abstract RemoveFile(filePath: string): Promise<void>;
+
+  /**
+   * Resolves a normalized absolute path within the DFS.
+   *
+   * Combines the DFS root with the provided path segments.
+   * Useful for constructing consistent, scoped file paths across handlers.
+   *
+   * @param parts - Path segments to join under the DFS root.
+   * @returns A resolved DFS-relative file path.
+   */
+  public ResolvePath(...parts: string[]): string {
+    const from = this.Root.endsWith("/") ? this.Root : `${this.Root}/`;
+
+    return resolve(from, ...parts);
+  }
 
   /**
    * Writes a file to the DFS.

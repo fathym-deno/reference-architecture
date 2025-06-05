@@ -92,7 +92,7 @@ export class LocalDFSFileHandler
     return undefined;
   }
 
-  public async LoadAllPaths(_revision: string): Promise<string[]> {
+  public async LoadAllPaths(): Promise<string[]> {
     const dir = await getFilesList({ Directory: this.Root });
 
     return Array.from(dir).map((entry) =>

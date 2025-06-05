@@ -1,13 +1,13 @@
-import { type DFSFileHandler, join } from '../.deps.ts';
-import { Handlebars } from '../../../third-party/.exports.ts';
-import type { TemplateLocator } from '../templates/TemplateLocator.ts';
+import { type DFSFileHandler, join } from "../.deps.ts";
+import { Handlebars } from "../../../third-party/.exports.ts";
+import type { TemplateLocator } from "../templates/TemplateLocator.ts";
 
 export interface TemplateScaffoldOptions {
   /** Used to resolve files within a named template set */
   templateName: string;
 
   /** Where to write the scaffolded files within the DFS */
-  outputDir: string;
+  outputDir?: string;
 
   /** Additional context to merge with base context (optional) */
   context?: Record<string, unknown>;
@@ -16,26 +16,32 @@ export interface TemplateScaffoldOptions {
 export class TemplateScaffolder {
   constructor(
     protected locator: TemplateLocator,
-    protected dfs: DFSFileHandler,
-    protected baseContext: Record<string, unknown> = {}
+    public DFS: DFSFileHandler,
+    protected baseContext: Record<string, unknown> = {},
   ) {}
 
   public async Scaffold(options: TemplateScaffoldOptions): Promise<void> {
     const { templateName, outputDir, context = {} } = options;
+
+    const templatePath = `./.templates/${templateName}`;
+
     const mergedContext = { ...this.baseContext, ...context };
 
-    const files = await this.locator.ListFiles(templateName);
+    const files = await this.locator.ListFiles(templatePath);
 
     for (const filePath of files) {
       const relPath = filePath.replace(
-        new RegExp(`^${templateName}[\\\\/]?`),
-        ''
+        new RegExp(`^${templatePath}[\\\\/]?`),
+        "",
       );
 
-      const renderedPath = join(outputDir, relPath.replace(/\.hbs$/, ''));
+      const renderedPath = join(
+        outputDir || ".",
+        relPath.replace(/\.hbs$/, ""),
+      );
       const raw = await this.locator.ReadTemplateFile(filePath);
 
-      const rendered = filePath.endsWith('.hbs')
+      const rendered = filePath.endsWith(".hbs")
         ? Handlebars.compile(raw)(mergedContext)
         : raw;
 
@@ -46,7 +52,7 @@ export class TemplateScaffolder {
         },
       });
 
-      await this.dfs.WriteFile(renderedPath, stream);
+      await this.DFS.WriteFile(renderedPath, stream);
     }
   }
 }

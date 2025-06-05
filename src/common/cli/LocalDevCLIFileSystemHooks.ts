@@ -33,7 +33,7 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
       .replace(/^\.?\//, "")
       .replace(/^\/+/, "");
 
-    const filePaths = await dfs.LoadAllPaths("latest");
+    const filePaths = await dfs.LoadAllPaths();
 
     const tsFiles = filePaths
       .map((f) => f.replace(/^\.?\//, ""))

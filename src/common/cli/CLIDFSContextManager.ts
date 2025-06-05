@@ -7,7 +7,6 @@ import {
   join,
   LocalDFSFileHandler,
   type LocalDFSFileHandlerDetails,
-  resolve,
 } from "./.deps.ts";
 
 export class CLIDFSContextManager {
@@ -15,7 +14,10 @@ export class CLIDFSContextManager {
 
   // ─── DFS Registration Methods ─────────────────────────────────────────
 
-  public RegisterProjectDFS(fileUrlInProject: string): void {
+  public RegisterProjectDFS(
+    fileUrlInProject: string,
+    name: string = "project",
+  ): void {
     if (fileUrlInProject.startsWith("file:///")) {
       fileUrlInProject = fromFileUrl(fileUrlInProject);
     }
@@ -23,23 +25,11 @@ export class CLIDFSContextManager {
     const localPath = dirname(fileUrlInProject);
     const projectRoot = this.findProjectRoot(localPath);
 
-    this.ioc.Register(
-      LocalDFSFileHandler,
-      () => new LocalDFSFileHandler({ FileRoot: projectRoot }),
-      {
-        Name: "project",
-      },
-    );
+    this.RegisterCustomDFS(name, { FileRoot: projectRoot });
   }
 
   public RegisterExecutionDFS(cwd: string = Deno.cwd()): void {
-    this.ioc.Register(
-      LocalDFSFileHandler,
-      () => new LocalDFSFileHandler({ FileRoot: cwd }),
-      {
-        Name: "execution",
-      },
-    );
+    this.RegisterCustomDFS("execution", { FileRoot: cwd });
   }
 
   public RegisterCustomDFS(
@@ -76,9 +66,9 @@ export class CLIDFSContextManager {
   }
 
   public async ResolvePath(scope: string, ...parts: string[]): Promise<string> {
-    const base = (await this.GetDFS(scope)).Root;
+    const dfs = await this.GetDFS(scope);
 
-    return resolve(base, ...parts);
+    return dfs.ResolvePath(...parts);
   }
 
   // ─── Internal Root Discovery ──────────────────────────────────────────
