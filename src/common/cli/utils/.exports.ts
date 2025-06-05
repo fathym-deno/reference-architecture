@@ -10,6 +10,5 @@ export * from './clearLine.ts';
 export * from './createTestCLI.ts';
 export * from './emitSchema.ts';
 export * from './hideCursor.ts';
-export * from './loadModuleMetadata.ts';
 export * from './showCursor.ts';
 

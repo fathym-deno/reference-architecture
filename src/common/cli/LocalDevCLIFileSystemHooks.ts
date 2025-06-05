@@ -1,4 +1,10 @@
-import { type DFSFileHandler, exists, join, resolve, toFileUrl } from "./.deps.ts";
+import {
+  type DFSFileHandler,
+  exists,
+  join,
+  resolve,
+  toFileUrl,
+} from "./.deps.ts";
 import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
 import type { CommandModule } from "./commands/CommandModule.ts";

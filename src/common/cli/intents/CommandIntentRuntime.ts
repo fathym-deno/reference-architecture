@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { dirname, fromFileUrl, IoCContainer, join, resolve } from "../.deps.ts";
+import { IoCContainer } from "../.deps.ts";
 
 import {
   captureLogs,
@@ -21,6 +21,7 @@ export class CommandIntentRuntime<
   F extends Record<string, unknown>,
   P extends CommandParams<A, F>,
 > {
+  protected dfsCtxMgr: CLIDFSContextManager;
   protected expectedLogs: string[] = [];
   protected expectedExitCode: number | null = null;
   protected capturedOutput = "";
@@ -52,16 +53,17 @@ export class CommandIntentRuntime<
     this.ioc = new IoCContainer();
     this.runtime = new module.Command();
 
-    const dfsCtxMgr = new CLIDFSContextManager(this.ioc);
+    this.dfsCtxMgr = new CLIDFSContextManager(this.ioc);
 
-    this.ioc.Register(CLIDFSContextManager, () => dfsCtxMgr);
+    this.ioc.Register(CLIDFSContextManager, () => this.dfsCtxMgr);
     this.ioc.Register(
       CLICommandResolver,
-      () => new CLICommandResolver(new LocalDevCLIFileSystemHooks(dfsCtxMgr)),
+      () =>
+        new CLICommandResolver(new LocalDevCLIFileSystemHooks(this.dfsCtxMgr)),
     );
     this.ioc.Register(
       CLICommandInvocationParser,
-      () => new CLICommandInvocationParser(dfsCtxMgr),
+      () => new CLICommandInvocationParser(this.dfsCtxMgr),
     );
   }
 
@@ -95,8 +97,9 @@ export class CommandIntentRuntime<
       };
 
       try {
-        const baseTemplatesDir = await resolveBaseTemplatesDir(
-          this.commandFileUrl,
+        const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
+          "project",
+          "./.templates",
         );
 
         const config: CLIConfig = {
@@ -162,34 +165,4 @@ export class CommandIntentRuntime<
       }
     });
   }
-}
-
-export async function findProjectRoot(startPath: string): Promise<string> {
-  let dir = dirname(startPath);
-
-  while (true) {
-    const cliConfigPath = join(dir, ".cli.json");
-
-    try {
-      const stat = await Deno.stat(cliConfigPath);
-      if (stat.isFile) return dir;
-    } catch {
-      // Ignore and continue upward
-    }
-
-    const parent = dirname(dir);
-    if (parent === dir) {
-      throw new Error(`Could not find .cli.json in any parent of ${startPath}`);
-    }
-
-    dir = parent;
-  }
-}
-
-export async function resolveBaseTemplatesDir(
-  commandFileUrl: string,
-): Promise<string> {
-  const commandFilePath = fromFileUrl(commandFileUrl);
-  const projectRoot = await findProjectRoot(commandFilePath);
-  return resolve(projectRoot, ".templates");
 }
