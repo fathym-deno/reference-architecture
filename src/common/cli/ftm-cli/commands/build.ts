@@ -131,7 +131,10 @@ async function resolveConfigAndOutDir(
 
   const configDir = dirname(configPath);
   const outDir = `./.build`;
-  const templatesDir = params.TemplatesDir ?? "./.templates";
+  const templatesDir = (params.TemplatesDir ?? "./.templates").replace(
+    /^\.?\//,
+    "",
+  );
 
   return { configPath, outDir, configDir, templatesDir };
 }
@@ -198,9 +201,9 @@ async function collectCommandMetadata(
     };
 
     if (isMeta) {
-      entryData.GroupPath = dfs.ResolvePath(path);
+      entryData.GroupPath = await dfs.ResolvePath(path);
     } else {
-      entryData.CommandPath = dfs.ResolvePath(path);
+      entryData.CommandPath = await dfs.ResolvePath(path);
       imports.push({ alias, path: `../commands/${rel}` });
       modules.push({ key, alias });
     }

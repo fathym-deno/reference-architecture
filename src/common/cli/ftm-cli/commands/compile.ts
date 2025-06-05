@@ -1,8 +1,7 @@
-import { dirname, isAbsolute, join, z } from "../../.deps.ts";
+import { dirname, join, z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import BuildCommand from "./build.ts";
-import type { DFSFileHandler } from "../../.deps.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 
 export const CompileArgsSchema = z.tuple([]);
@@ -65,25 +64,26 @@ export default Command(
   .Commands({
     Build: BuildCommand.Build(),
   })
-  .Services(async (_ctx, ioc) => {
+  .Services(async (ctx, ioc) => {
     const dfsCtx = await ioc.Resolve(CLIDFSContextManager);
+
+    await dfsCtx.RegisterProjectDFS(ctx.Params.Entry, "CLI");
+
     return {
-      DFS: await dfsCtx.GetDFS("project"),
+      CLIDFS: await dfsCtx.GetDFS("CLI"),
     };
   })
   .Run(async ({ Params, Log, Commands, Services }) => {
-    const { DFS } = Services;
+    const { CLIDFS } = Services;
 
-    // Normalize paths against DFS root
-    const entryPath = normalizeDFSPath(Params.Entry, DFS);
-    const configPath = normalizeDFSPath(
+    const entryPath = await CLIDFS.ResolvePath(Params.Entry);
+    const configPath = await CLIDFS.ResolvePath(
       Params.ConfigPath ?? join(dirname(Params.Entry), "../.cli.json"),
-      DFS,
     );
-    const outputDir = normalizeDFSPath(Params.OutputDir, DFS);
+    const outputDir = await CLIDFS.ResolvePath(Params.OutputDir);
     const permissions = Params.Permissions;
 
-    const configInfo = await DFS.GetFileInfo(configPath);
+    const configInfo = await CLIDFS.GetFileInfo(configPath);
     if (!configInfo) {
       Log.Error(`❌ Could not find CLI config at: ${configPath}`);
       Deno.exit(1);
@@ -98,11 +98,10 @@ export default Command(
     Log.Info(`- Output dir: ${outputDir}`);
     Log.Info(`- Permissions: ${permissions.join(" ")}`);
 
-    // Build first using Build command
+    // Always build first
     const { Build } = Commands!;
     await Build([], { config: configPath });
 
-    // Run deno compile per token
     for (const token of tokens) {
       const outputPath = join(outputDir, token);
       Log.Info(`🛠️ Compiling binary for: ${token}`);
@@ -125,7 +124,3 @@ export default Command(
 
     Log.Success("🎉 All CLI binaries compiled successfully.");
   });
-
-function normalizeDFSPath(path: string, dfs: DFSFileHandler): string {
-  return isAbsolute(path) ? path : dfs.ResolvePath(path);
-}
