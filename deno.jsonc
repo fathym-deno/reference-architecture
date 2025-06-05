@@ -41,7 +41,7 @@
     "ftm-cli:test": "deno test --allow-all ./src/common/cli/ftm-cli/intents/compile.intents.ts",
     // "ftm-cli:compile": "deno compile --allow-all --output=ftm-cli ./scripts/cli-runtime.ts ./src/common/cli/ftm-cli/.cli.json",
     "ftm-cli:run": "deno task cli:run ./src/common/cli/ftm-cli/.cli.json",
-    "deploy": "deno task build && ftm git",
+    "deploy": "deno task build && fathym git",
     "npm:build": "deno run -A scripts/npm.build.ts",
     "npm:publish": "npm publish ./build --access public",
     "publish:check": "deno publish --dry-run --allow-dirty",

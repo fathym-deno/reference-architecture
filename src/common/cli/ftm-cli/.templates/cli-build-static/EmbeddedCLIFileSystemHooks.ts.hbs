@@ -49,9 +49,15 @@ export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
     initPath: string
   ): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }> {
     {{#if importInitFn}}
-    return embeddedInit;
+    return {
+      initFn: embeddedInit,
+      resolvedInitPath: fromFileUrl(import.meta.resolve("{{importInitFn}}")),
+    };
     {{else}}
-    return undefined;
+    return {
+      initFn: undefined,
+      resolvedInitPath: fromFileUrl(import.meta.resolve(initPath)),
+    };
     {{/if}}
   }
 
