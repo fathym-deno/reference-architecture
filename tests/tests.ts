@@ -1,5 +1,6 @@
+Deno.mkdirSync('../test', { recursive: true });
 import './common/.tests.ts';
-import '../src/common/cli/ftm-cli/intents/.intents.ts';
+import './intents/.intents.ts';
 
 // import "./fluent/.tests.ts";
 // import "./log/.tests.ts";

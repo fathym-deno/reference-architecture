@@ -15,7 +15,7 @@ export class CommandIntentsBuilder<
   constructor(
     protected suiteName: string,
     protected command: CommandModule<A, F, P>,
-    protected commandFileUrl: string,
+    protected cliConfigUrl: string,
   ) {}
 
   public WithInit(init: CLIInitFn): this {
@@ -32,7 +32,7 @@ export class CommandIntentsBuilder<
     const builder = new CommandIntentBuilder(
       name,
       this.command,
-      this.commandFileUrl,
+      this.cliConfigUrl,
     );
 
     this.testBuilders.push(build(builder));

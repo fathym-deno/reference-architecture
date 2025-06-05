@@ -11,11 +11,11 @@ export function CommandIntents<
 >(
   suiteName: string,
   command: CommandModule<A, F, P> | CommandModuleBuilder<A, F, P>,
-  commandFileUrl: string,
+  cliConfigUrl: string,
 ): CommandIntentsBuilder<A, F, P> {
   if (command instanceof CommandModuleBuilder) {
     command = command.Build() as CommandModule<A, F, P>;
   }
 
-  return new CommandIntentsBuilder(suiteName, command, commandFileUrl);
+  return new CommandIntentsBuilder(suiteName, command, cliConfigUrl);
 }

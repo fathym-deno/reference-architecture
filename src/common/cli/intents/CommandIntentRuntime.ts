@@ -1,31 +1,31 @@
 // deno-lint-ignore-file no-explicit-any
-import { IoCContainer } from "../.deps.ts";
+import { IoCContainer, resolve } from '../.deps.ts';
 import {
   captureLogs,
   CLICommandExecutor,
   CLICommandResolver,
   type CLIConfig,
   type CLIInitFn,
-} from "../.exports.ts";
+} from '../.exports.ts';
 
-import { assert } from "jsr:@std/assert@^0.221.0/assert";
+import { assert } from 'jsr:@std/assert@^0.221.0/assert';
 
-import type { CommandRuntime } from "../commands/CommandRuntime.ts";
-import type { CommandModule } from "../commands/CommandModule.ts";
-import type { CommandParams } from "../commands/CommandParams.ts";
-import { CLICommandInvocationParser } from "../CLICommandInvocationParser.ts";
-import { CLIDFSContextManager } from "../CLIDFSContextManager.ts";
-import { LocalDevCLIFileSystemHooks } from "../LocalDevCLIFileSystemHooks.ts";
+import type { CommandRuntime } from '../commands/CommandRuntime.ts';
+import type { CommandModule } from '../commands/CommandModule.ts';
+import type { CommandParams } from '../commands/CommandParams.ts';
+import { CLICommandInvocationParser } from '../CLICommandInvocationParser.ts';
+import { CLIDFSContextManager } from '../CLIDFSContextManager.ts';
+import { LocalDevCLIFileSystemHooks } from '../LocalDevCLIFileSystemHooks.ts';
 
 export class CommandIntentRuntime<
   A extends unknown[],
   F extends Record<string, unknown>,
-  P extends CommandParams<A, F>,
+  P extends CommandParams<A, F>
 > {
   protected dfsCtxMgr: CLIDFSContextManager;
   protected expectedLogs: string[] = [];
   protected expectedExitCode: number | null = null;
-  protected capturedOutput = "";
+  protected capturedOutput = '';
   protected actualExitCode: number | null = null;
 
   protected runtime: CommandRuntime<P>;
@@ -36,7 +36,7 @@ export class CommandIntentRuntime<
   }
 
   public get Logs(): string[] {
-    return this.capturedOutput.split("\n").filter(Boolean);
+    return this.capturedOutput.split('\n').filter(Boolean);
   }
 
   public get ExitCode(): number | null {
@@ -48,8 +48,8 @@ export class CommandIntentRuntime<
     protected module: CommandModule<A, F, P>,
     protected args: A,
     protected flags: F,
-    protected commandFileUrl: string,
-    protected initFn?: CLIInitFn,
+    protected cliConfigUrl: string,
+    protected initFn?: CLIInitFn
   ) {
     this.ioc = new IoCContainer();
     this.runtime = new module.Command();
@@ -60,11 +60,11 @@ export class CommandIntentRuntime<
     this.ioc.Register(
       CLICommandResolver,
       () =>
-        new CLICommandResolver(new LocalDevCLIFileSystemHooks(this.dfsCtxMgr)),
+        new CLICommandResolver(new LocalDevCLIFileSystemHooks(this.dfsCtxMgr))
     );
     this.ioc.Register(
       CLICommandInvocationParser,
-      () => new CLICommandInvocationParser(this.dfsCtxMgr),
+      () => new CLICommandInvocationParser(this.dfsCtxMgr)
     );
   }
 
@@ -94,32 +94,48 @@ export class CommandIntentRuntime<
     };
 
     try {
-      const config: CLIConfig = {
-        Name: "TestCLI",
-        Version: "0.0.0",
-        Description: "CLI under test",
-        Tokens: ["test-cli"],
-      };
-
       const dfsCtx = await this.ioc.Resolve(CLIDFSContextManager);
       dfsCtx.RegisterExecutionDFS();
-      dfsCtx.RegisterProjectDFS(this.commandFileUrl);
+      dfsCtx.RegisterProjectDFS(this.cliConfigUrl);
+
+      const projectDFS = await dfsCtx.GetProjectDFS();
+
+      const cliConfigFile = await projectDFS.GetFileInfo('.cli.json');
+
+      const configText = cliConfigFile
+        ? await new Response(cliConfigFile.Contents).text()
+        : undefined;
+
+      if (!configText) {
+        throw new Error(
+          `❌ Missing or unreadable .cli.json configuration file.`
+        );
+      }
+
+      const config = JSON.parse(configText) as CLIConfig;
+
+      // const config: CLIConfig = {
+      //   Name: "TestCLI",
+      //   Version: "0.0.0",
+      //   Description: "CLI under test",
+      //   Tokens: ["test-cli"],
+      // };
 
       await this.initFn?.(this.ioc, config);
 
       const executor = new CLICommandExecutor(
         this.ioc,
-        await this.ioc.Resolve(CLICommandResolver),
+        await this.ioc.Resolve(CLICommandResolver)
       );
 
       const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
-        "project",
-        "./.templates",
+        'project',
+        './.templates'
       );
 
       this.capturedOutput = await captureLogs(async () => {
         await executor.Execute(config, this.runtime, {
-          key: "test-command",
+          key: 'test-command',
           flags: this.flags,
           positional: this.args as string[],
           paramsCtor: this.module.Params,
@@ -155,7 +171,7 @@ export class CommandIntentRuntime<
       this.actualExitCode !== this.expectedExitCode
     ) {
       failures.push(
-        `❌ Expected exit code ${this.expectedExitCode}, got ${this.actualExitCode}`,
+        `❌ Expected exit code ${this.expectedExitCode}, got ${this.actualExitCode}`
       );
     }
 
@@ -168,8 +184,8 @@ export class CommandIntentRuntime<
     assert(
       failures.length === 0,
       `❌ Test "${this.testName}" failed with ${failures.length} issue(s):\n\n` +
-        failures.map((f, i) => `${i + 1}. ${f}`).join("\n") +
-        `\n\n📋 Captured Output:\n${this.capturedOutput.trim()}`,
+        failures.map((f, i) => `${i + 1}. ${f}`).join('\n') +
+        `\n\n📋 Captured Output:\n${this.capturedOutput.trim()}`
     );
   }
 }

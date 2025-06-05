@@ -4,7 +4,7 @@ import CompileCommand from '../../../src/common/cli/ftm-cli/commands/compile.ts'
 CommandIntent(
   'Compile works with token config',
   CompileCommand.Build(),
-  import.meta.url
+  import.meta.resolve('../../../src/common/cli/ftm-cli/.cli.json')
 )
   .Args([])
   .Flags({ entry: './test/.build/cli.ts' })

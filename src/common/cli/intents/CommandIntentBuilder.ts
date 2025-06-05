@@ -18,7 +18,7 @@ export class CommandIntentBuilder<
   constructor(
     protected testName: string,
     protected command: CommandModule<A, F, P>,
-    protected commandFileUrl: string,
+    protected cliConfigUrl: string,
   ) {}
 
   public Args(args: A): this {
@@ -66,7 +66,7 @@ export class CommandIntentBuilder<
       this.command,
       this.args,
       this.flags,
-      this.commandFileUrl,
+      this.cliConfigUrl,
       this.initFn,
     );
 
