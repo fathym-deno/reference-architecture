@@ -97,11 +97,6 @@ export class CommandIntentRuntime<
       };
 
       try {
-        const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
-          "project",
-          "./.templates",
-        );
-
         const config: CLIConfig = {
           Name: "TestCLI",
           Version: "0.0.0",
@@ -120,6 +115,11 @@ export class CommandIntentRuntime<
         const executor = new CLICommandExecutor(
           this.ioc,
           await this.ioc.Resolve(CLICommandResolver),
+        );
+
+        const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
+          "project",
+          "./.templates",
         );
 
         this.capturedOutput = await captureLogs(async () => {

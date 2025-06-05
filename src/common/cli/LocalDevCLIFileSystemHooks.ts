@@ -23,7 +23,7 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
   ): Promise<Map<string, CLICommandEntry>> {
     const map = new Map<string, CLICommandEntry>();
 
-    const dfs = await this.dfsCtxMgr.GetDFS("project");
+    const dfs = await this.dfsCtxMgr.GetProjectDFS();
 
     // Normalize baseDir relative to DFS root
     const projectRoot = dfs.Root.replace(/\\/g, "/").replace(/^\.\/|\/$/, "");

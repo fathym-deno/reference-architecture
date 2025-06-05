@@ -1,13 +1,12 @@
-import { ensureDir } from "jsr:@std/fs@^1.0.11/ensure-dir";
-import { dirname, join } from "../.deps.ts";
-import { Handlebars } from "../../../third-party/.exports.ts";
-import type { TemplateLocator } from "../templates/TemplateLocator.ts";
+import { type DFSFileHandler, join } from '../.deps.ts';
+import { Handlebars } from '../../../third-party/.exports.ts';
+import type { TemplateLocator } from '../templates/TemplateLocator.ts';
 
 export interface TemplateScaffoldOptions {
   /** Used to resolve files within a named template set */
   templateName: string;
 
-  /** Where to write the scaffolded files */
+  /** Where to write the scaffolded files within the DFS */
   outputDir: string;
 
   /** Additional context to merge with base context (optional) */
@@ -17,31 +16,37 @@ export interface TemplateScaffoldOptions {
 export class TemplateScaffolder {
   constructor(
     protected locator: TemplateLocator,
-    protected baseContext: Record<string, unknown> = {},
+    protected dfs: DFSFileHandler,
+    protected baseContext: Record<string, unknown> = {}
   ) {}
 
   public async Scaffold(options: TemplateScaffoldOptions): Promise<void> {
     const { templateName, outputDir, context = {} } = options;
-
     const mergedContext = { ...this.baseContext, ...context };
 
     const files = await this.locator.ListFiles(templateName);
 
     for (const filePath of files) {
       const relPath = filePath.replace(
-        new RegExp(`^${templateName}[\\\\/]`),
-        "",
+        new RegExp(`^${templateName}[\\\\/]?`),
+        ''
       );
 
+      const renderedPath = join(outputDir, relPath.replace(/\.hbs$/, ''));
       const raw = await this.locator.ReadTemplateFile(filePath);
 
-      const rendered = filePath.endsWith(".hbs")
+      const rendered = filePath.endsWith('.hbs')
         ? Handlebars.compile(raw)(mergedContext)
         : raw;
 
-      const outPath = join(outputDir, relPath.replace(/\.hbs$/, ""));
-      await ensureDir(dirname(outPath));
-      await Deno.writeTextFile(outPath, rendered);
+      const stream = new ReadableStream<Uint8Array>({
+        start(controller) {
+          controller.enqueue(new TextEncoder().encode(rendered));
+          controller.close();
+        },
+      });
+
+      await this.dfs.WriteFile(renderedPath, stream);
     }
   }
 }

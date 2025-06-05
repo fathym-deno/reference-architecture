@@ -33,7 +33,7 @@ export class CLICommandInvocationParser {
     // Check if .cli.init.ts exists within the project DFS
     const initCandidate = ".cli.init.ts";
     const initFileInfo = await (
-      await this.dfs.GetDFS("project")
+      await this.dfs.GetProjectDFS()
     ).GetFileInfo(initCandidate);
 
     const initPath = initFileInfo

@@ -57,9 +57,7 @@ export class CLIDFSContextManager {
 
   // ─── DFS Access Utilities ─────────────────────────────────────────────
 
-  public async GetDFS(
-    name: "project" | "execution" | string,
-  ): Promise<DFSFileHandler> {
+  public async GetDFS(name: string): Promise<DFSFileHandler> {
     const dfs = await this.ioc.Resolve(LocalDFSFileHandler, name);
 
     if (!dfs) {
@@ -67,6 +65,14 @@ export class CLIDFSContextManager {
     }
 
     return dfs;
+  }
+
+  public async GetExecutionDFS(): Promise<DFSFileHandler> {
+    return await this.GetDFS("execution");
+  }
+
+  public async GetProjectDFS(): Promise<DFSFileHandler> {
+    return await this.GetDFS("project");
   }
 
   public async ResolvePath(scope: string, ...parts: string[]): Promise<string> {

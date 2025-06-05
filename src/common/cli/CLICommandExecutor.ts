@@ -1,20 +1,20 @@
 // deno-lint-ignore-file no-explicit-any
-import type { CLIConfig } from "./types/CLIConfig.ts";
-import type { IoCContainer } from "./.deps.ts";
+import type { CLIConfig } from './types/CLIConfig.ts';
+import type { IoCContainer } from './.deps.ts';
 
-import type { CommandRuntime } from "./commands/CommandRuntime.ts";
+import type { CommandRuntime } from './commands/CommandRuntime.ts';
 import type {
   CommandContext,
   CommandInvokerMap,
-} from "./commands/CommandContext.ts";
+} from './commands/CommandContext.ts';
 import {
   type CommandParamConstructor,
   CommandParams,
-} from "./commands/CommandParams.ts";
+} from './commands/CommandParams.ts';
 
-import { HelpCommand } from "./help/HelpCommand.ts";
-import type { CLICommandResolver } from "./CLICommandResolver.ts";
-import { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
+import { HelpCommand } from './help/HelpCommand.ts';
+import type { CLICommandResolver } from './CLICommandResolver.ts';
+import { CLIDFSContextManager } from './CLIDFSContextManager.ts';
 
 /**
  * Options provided when executing a CLI command.
@@ -51,7 +51,7 @@ export interface CLICommandExecutorOptions {
 export class CLICommandExecutor {
   constructor(
     protected readonly ioc: IoCContainer,
-    protected resolver: CLICommandResolver,
+    protected resolver: CLICommandResolver
   ) {}
 
   /**
@@ -61,7 +61,7 @@ export class CLICommandExecutor {
   public async Execute(
     config: CLIConfig,
     command: CommandRuntime | undefined,
-    options: CLICommandExecutorOptions,
+    options: CLICommandExecutorOptions
   ): Promise<void> {
     if (!command) return;
 
@@ -75,7 +75,7 @@ export class CLICommandExecutor {
 
       const result = await this.runLifecycle(command, context);
 
-      if (typeof result === "number") {
+      if (typeof result === 'number') {
         Deno.exit(result);
       }
 
@@ -95,13 +95,13 @@ export class CLICommandExecutor {
   protected async buildContext(
     config: CLIConfig,
     command: CommandRuntime,
-    opts: CLICommandExecutorOptions,
+    opts: CLICommandExecutorOptions
   ): Promise<CommandContext> {
     const log = {
       Info: console.log,
       Warn: console.warn,
       Error: console.error,
-      Success: (...args: unknown[]) => console.log("✅", ...args),
+      Success: (...args: unknown[]) => console.log('✅', ...args),
     };
 
     const { flags, positional, paramsCtor } = opts;
@@ -109,20 +109,20 @@ export class CLICommandExecutor {
     const params = paramsCtor
       ? new paramsCtor(positional, flags)
       : new (class extends CommandParams<unknown[], Record<string, unknown>> {
-        constructor() {
-          super(positional, flags);
-        }
-      })();
+          constructor() {
+            super(positional, flags);
+          }
+        })();
 
     const dfsCtxMgr = await this.ioc.Resolve(CLIDFSContextManager);
 
     const tempLocator = await this.resolver.ResolveTemplateLocator(
-      await dfsCtxMgr.GetDFS("project"),
+      await dfsCtxMgr.GetProjectDFS()
     );
 
     if (tempLocator) {
       this.ioc.Register(() => tempLocator, {
-        Type: this.ioc.Symbol("TemplateLocator"),
+        Type: this.ioc.Symbol('TemplateLocator'),
       });
     }
 
@@ -152,17 +152,18 @@ export class CLICommandExecutor {
    */
   protected async runLifecycle(
     cmd: CommandRuntime,
-    ctx: CommandContext,
+    ctx: CommandContext
   ): Promise<number | void> {
-    if (typeof cmd.Init === "function") {
+    if (typeof cmd.Init === 'function') {
       await cmd.Init(ctx, this.ioc);
     }
 
-    const result = typeof cmd.DryRun === "function" && ctx.Params.DryRun
-      ? await cmd.DryRun(ctx, this.ioc)
-      : await cmd.Run(ctx, this.ioc);
+    const result =
+      typeof cmd.DryRun === 'function' && ctx.Params.DryRun
+        ? await cmd.DryRun(ctx, this.ioc)
+        : await cmd.Run(ctx, this.ioc);
 
-    if (typeof cmd.Cleanup === "function") {
+    if (typeof cmd.Cleanup === 'function') {
       await cmd.Cleanup(ctx, this.ioc);
     }
 
