@@ -1,3 +1,4 @@
+import type { DFSFileHandler } from "./.deps.ts";
 import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLIInitFn } from "./types/CLIInitFn.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
@@ -18,6 +19,6 @@ export interface CLIFileSystemHooks {
   ): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }>;
   LoadCommandModule(path: string): Promise<CommandModule>;
   ResolveTemplateLocator(
-    baseTemplatesDir?: string,
+    dfsHandler?: DFSFileHandler,
   ): Promise<TemplateLocator | undefined>;
 }

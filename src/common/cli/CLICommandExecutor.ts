@@ -14,6 +14,7 @@ import {
 
 import { HelpCommand } from "./help/HelpCommand.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
+import { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
 
 /**
  * Options provided when executing a CLI command.
@@ -113,8 +114,10 @@ export class CLICommandExecutor {
         }
       })();
 
+    const dfsCtxMgr = await this.ioc.Resolve(CLIDFSContextManager);
+
     const tempLocator = await this.resolver.ResolveTemplateLocator(
-      opts.baseTemplatesDir,
+      await dfsCtxMgr.GetDFS("project"),
     );
 
     if (tempLocator) {

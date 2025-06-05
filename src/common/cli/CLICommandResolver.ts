@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import type { ZodSchema } from "./.deps.ts";
+import type { DFSFileHandler, ZodSchema } from "./.deps.ts";
 import type { CLIFileSystemHooks } from "./CLIFileSystemHooks.ts";
 import {
   type CLICommandEntry,
@@ -13,9 +13,7 @@ import {
 import type { TemplateLocator } from "./templates/TemplateLocator.ts";
 
 export class CLICommandResolver {
-  constructor(
-    protected readonly hooks: CLIFileSystemHooks,
-  ) {}
+  constructor(protected readonly hooks: CLIFileSystemHooks) {}
 
   public ResolveCommandMap(dir: string): Promise<Map<string, CLICommandEntry>> {
     return this.hooks.ResolveCommandEntryPaths(dir);
@@ -70,8 +68,8 @@ export class CLICommandResolver {
   }
 
   public ResolveTemplateLocator(
-    baseTemplatesDir?: string,
+    dfsHandler?: DFSFileHandler,
   ): Promise<TemplateLocator | undefined> {
-    return this.hooks.ResolveTemplateLocator(baseTemplatesDir);
+    return this.hooks.ResolveTemplateLocator(dfsHandler);
   }
 }

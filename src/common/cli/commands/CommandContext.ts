@@ -20,10 +20,7 @@ import { type CommandLog, CommandLogSchema } from "./CommandLog.ts";
  */
 export type CommandInvokerMap = Record<
   string,
-  (
-    args?: string[],
-    flags?: Record<string, unknown>,
-  ) => Promise<void | number>
+  (args?: string[], flags?: Record<string, unknown>) => Promise<void | number>
 >;
 
 /**
@@ -52,13 +49,29 @@ export type CommandContext<
   Commands?: C;
 };
 
+export type CommandContextSubset = Omit<
+  CommandContext,
+  "Params" | "ArgsSchema" | "FlagsSchema" | "Commands"
+>;
+
 /**
  * Zod schema representation of the runtime-safe subset of CommandContext.
  * Excludes generics like `Params`, `ArgsSchema`, `FlagsSchema`, and `Commands`.
  * Used for help output, runtime metadata, and context debugging.
  */
-export const CommandContextSchema: z.ZodType<
-  Omit<CommandContext, "Params" | "ArgsSchema" | "FlagsSchema" | "Commands">
+export const CommandContextSchema: z.ZodObject<
+  {
+    Config: typeof CLIConfigSchema;
+    GroupMetadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
+    Key: z.ZodString;
+    Log: typeof CommandLogSchema;
+    Metadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
+    Services: z.ZodRecord<z.ZodString, z.ZodUnknown>;
+  },
+  "strip",
+  z.ZodTypeAny,
+  CommandContextSubset,
+  CommandContextSubset
 > = z.object({
   Config: CLIConfigSchema.describe("Parsed CLI configuration (.cli.json)"),
 
@@ -79,7 +92,7 @@ export const CommandContextSchema: z.ZodType<
   ),
 
   Services: z
-    .record(z.unknown())
+    .record(z.string(), z.unknown())
     .describe("Resolved runtime services injected into the command context"),
 });
 

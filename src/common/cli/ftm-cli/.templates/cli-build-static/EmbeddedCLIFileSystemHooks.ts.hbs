@@ -7,6 +7,7 @@ import type {
   TemplateLocator,
 } from "@fathym/common/cli";
 import { CommandModuleBuilder, EmbeddedTemplateLocator } from "@fathym/common/cli";
+import type { DFSFileHandler } from '@fathym/common/dfs';
 
 import { fromFileUrl } from "jsr:@std/path@^1.0.9/from-file-url";
 
@@ -74,7 +75,7 @@ export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
   }
 
   async ResolveTemplateLocator(
-    _baseTemplatesDir?: string,
+    _dfsHandler?: DFSFileHandler,
   ): Promise<TemplateLocator | undefined> {
     return new EmbeddedTemplateLocator(
       embeddedTemplates as Record<string, string>,
