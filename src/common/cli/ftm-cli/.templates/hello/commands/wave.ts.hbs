@@ -37,14 +37,15 @@ export class WaveCommandParams extends CommandParams<
 export class WaveCommand extends CommandRuntime<WaveCommandParams> {
   public Run(ctx: CommandContext<WaveCommandParams>): Promise<void> {
     const { Name, Excited, DryRun } = ctx.Params;
+    const { Log } = ctx;
 
     let message = `👋 Waving at ${Name}`;
     if (Excited) message += '!!!';
 
     if (DryRun) {
-      console.log(`🛑 Dry run: "${message}" would have been printed.`);
+      Log.Info(`🛑 Dry run: "${message}" would have been printed.`);
     } else {
-      console.log(message);
+      Log.Info(message);
     }
 
     return Promise.resolve();

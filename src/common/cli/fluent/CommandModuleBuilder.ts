@@ -279,9 +279,13 @@ export class CommandModuleBuilder<
 
       override async DryRun(
         ctx: CommandContext<TParams, TServices, TCommands>,
-        _ioc: IoCContainer,
+        ioc: IoCContainer,
       ) {
-        if (dryRunFn) return await dryRunFn(ctx);
+        if (dryRunFn) {
+          return await dryRunFn(ctx);
+        } else {
+          return await this.Run(ctx, ioc);
+        }
       }
 
       protected override async injectServices(

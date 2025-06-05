@@ -153,7 +153,26 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/test/.build/cli.ts",
+        "${workspaceFolder}/test/my-cli/.build/cli.ts",
+      ],
+      "console": "integratedTerminal",
+      "attachSimplePort": 9229
+    },
+    {
+      "name": "Test `my-cli hello`",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/test",
+      "runtimeExecutable": "deno",
+      "runtimeArgs": [
+        "run",
+        "--inspect-brk",
+        "-A",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
+        "${workspaceFolder}/test/my-cli/.cli.json",
+        "hello",
+        "me",
+        "--dry-run"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
@@ -168,7 +187,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/test/.build/cli.ts",
+        "${workspaceFolder}/test/my-cli/.build/cli.ts",
         "hello",
         "me"
       ],
@@ -186,7 +205,7 @@
         "--inspect-brk",
         "-A",
         "${workspaceFolder}/scripts/cli-runtime.ts",
-        "${workspaceFolder}/test/.cli.json",
+        "${workspaceFolder}/test/my-cli/.cli.json",
         "wave"
       ],
       "console": "integratedTerminal",

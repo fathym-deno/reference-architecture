@@ -3,7 +3,7 @@ import HelloCommand from '../commands/hello.ts';
 import initFn from '../.cli.init.ts';
 
 const cmd = HelloCommand.Build();
-const origin = import.meta.url;
+const origin = import.meta.resolve('../.cli.json');
 
 CommandIntents('Hello Command Suite', cmd, origin)
   .WithInit(initFn)
