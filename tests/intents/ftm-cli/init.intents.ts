@@ -1,19 +1,18 @@
-import { CommandIntents } from '../../test.deps.ts';
-import InitCommand from '../../../src/common/cli/ftm-cli/commands/init.ts';
+import { CommandIntents } from "../../test.deps.ts";
+import InitCommand from "../../../src/common/cli/ftm-cli/commands/init.ts";
 
 CommandIntents(
-  'Init Command Suite',
+  "Init Command Suite",
   InitCommand.Build(),
-  import.meta.resolve('../../../src/common/cli/ftm-cli/.cli.json')
+  import.meta.resolve("../../../src/common/cli/ftm-cli/.cli.json"),
 )
   .Intent("Init with default 'hello' template", (int) =>
     int
-      .Args(['./test/hello'])
+      .Args(["./test/hello"])
       .Flags({})
       .ExpectLogs(
         `Project created from "hello" template.`,
-        '📂 Initialized at:'
+        "📂 Initialized at:",
       )
-      .ExpectExit(0)
-  )
+      .ExpectExit(0))
   .Run();

@@ -1,6 +1,6 @@
-Deno.mkdirSync('../test', { recursive: true });
-import './common/.tests.ts';
-import './intents/.intents.ts';
+Deno.mkdirSync("../test", { recursive: true });
+import "./common/.tests.ts";
+import "./intents/.intents.ts";
 
 // import "./fluent/.tests.ts";
 // import "./log/.tests.ts";
