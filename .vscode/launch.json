@@ -39,23 +39,6 @@
       "attachSimplePort": 9229
     },
     {
-      "name": "Debug ftm-cli intents",
-      "type": "node",
-      "request": "launch",
-      "program": "${workspaceFolder}/src/common/cli/ftm-cli/intents/.intents.ts",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "deno.exe",
-      "runtimeArgs": [
-        "test",
-        "-A",
-        // "--config",
-        // "./deno.jsonc",
-        "--inspect-wait"
-      ],
-      "console": "integratedTerminal",
-      "attachSimplePort": 9229
-    },
-    {
       "name": "Debug `ftm-cli init` my-cli",
       "type": "node",
       "request": "launch",
