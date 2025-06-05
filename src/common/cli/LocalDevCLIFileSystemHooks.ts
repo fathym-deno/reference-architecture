@@ -1,4 +1,4 @@
-import { exists, join, relative, resolve, toFileUrl, walk } from "./.deps.ts";
+import { exists, join, resolve, toFileUrl } from "./.deps.ts";
 import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
 import type { CommandModule } from "./commands/CommandModule.ts";
@@ -11,25 +11,38 @@ import type { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
 
 export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
   constructor(protected dfsCtxMgr: CLIDFSContextManager) {}
+
   public async ResolveCommandEntryPaths(
     baseDir: string,
   ): Promise<Map<string, CLICommandEntry>> {
     const map = new Map<string, CLICommandEntry>();
 
-    for await (
-      const entry of walk(baseDir, {
-        includeDirs: false,
-        exts: [".ts"],
-      })
-    ) {
-      const rel = relative(baseDir, entry.path)
+    const dfs = await this.dfsCtxMgr.GetDFS("project");
+
+    // Normalize baseDir relative to DFS root
+    const projectRoot = dfs.Root.replace(/\\/g, "/").replace(/^\.\/|\/$/, "");
+    const cleanBaseDir = baseDir
+      .replace(/\\/g, "/")
+      .replace(projectRoot, "")
+      .replace(/^\.?\//, "")
+      .replace(/^\/+/, "");
+
+    const filePaths = await dfs.LoadAllPaths("latest");
+
+    const tsFiles = filePaths
+      .map((f) => f.replace(/^\.?\//, ""))
+      .filter((f) => f.startsWith(cleanBaseDir) && f.endsWith(".ts"));
+
+    for (const path of tsFiles) {
+      const rel = path
+        .replace(cleanBaseDir + "/", "")
         .replace(/\\/g, "/")
         .replace(/\/index$/, "");
-      const key = entry.name === ".metadata.ts"
+
+      const key = path.endsWith("/.metadata.ts")
         ? rel.replace(/\/\.metadata\.ts$/, "")
         : rel.replace(/\.ts$/, "");
 
-      const absPath = resolve(entry.path);
       const group = key.split("/")[0];
 
       const entryData = map.get(key) || {
@@ -38,8 +51,13 @@ export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
         ParentGroup: group !== key ? group : undefined,
       };
 
-      if (entry.name === ".metadata.ts") entryData.GroupPath = absPath;
-      else entryData.CommandPath = absPath;
+      const resolvedPath = await this.dfsCtxMgr.ResolvePath("project", path);
+
+      if (path.endsWith(".metadata.ts")) {
+        entryData.GroupPath = resolvedPath;
+      } else {
+        entryData.CommandPath = resolvedPath;
+      }
 
       map.set(key, entryData);
     }
