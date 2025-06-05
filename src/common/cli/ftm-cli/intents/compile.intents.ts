@@ -1,9 +1,9 @@
 import { CommandIntent } from "../../intents/CommandIntent.ts";
 import CompileCommand from "../commands/compile.ts";
 
-export const compileWithToken = CommandIntent(
-  CompileCommand.Build(),
+CommandIntent(
   "Compile works with token config",
+  CompileCommand.Build(),
   import.meta.url,
 )
   .Args([])

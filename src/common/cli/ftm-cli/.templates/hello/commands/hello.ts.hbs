@@ -15,8 +15,8 @@ export const HelloArgsSchema = z.tuple([
 ]);
 
 export class HelloCommandParams extends CommandParams<
-  z.infer<typeof HelloFlagsSchema>,
-  z.infer<typeof HelloArgsSchema>
+  z.infer<typeof HelloArgsSchema>,
+  z.infer<typeof HelloFlagsSchema>
 > {
   get Name(): string {
     return this.Arg(0) ?? 'world';

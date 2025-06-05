@@ -67,15 +67,13 @@ export default Command("compile", "Compile the CLI into a native binary")
     const { CLIDFS } = Services;
 
     const entryPath = await CLIDFS.ResolvePath(Params.Entry);
-    const configPath = await CLIDFS.ResolvePath(
-      Params.ConfigPath ?? join(dirname(Params.Entry), "../.cli.json"),
-    );
+    
     const outputDir = await CLIDFS.ResolvePath(Params.OutputDir);
     const permissions = Params.Permissions;
 
-    const configInfo = await CLIDFS.GetFileInfo(configPath);
+    const configInfo = await CLIDFS.GetFileInfo("./.cli.json");
     if (!configInfo) {
-      Log.Error(`❌ Could not find CLI config at: ${configPath}`);
+      Log.Error(`❌ Could not find CLI config at: ${"./.cli.json"}`);
       Deno.exit(1);
     }
 
@@ -97,7 +95,7 @@ export default Command("compile", "Compile the CLI into a native binary")
     Log.Info(`- Permissions: ${permissions.join(" ")}`);
 
     const { Build } = Commands!;
-    await Build([], { config: configPath });
+    await Build([], { config: "./.cli.json" });
 
     const compile = new Deno.Command("deno", {
       args: [

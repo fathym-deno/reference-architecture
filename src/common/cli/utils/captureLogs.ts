@@ -9,12 +9,12 @@ export function captureLogs(
   console.log = (...args: unknown[]) => {
     output += args.map((a) => String(a)).join(" ") + "\n";
 
-    if (useOrig) originalLog(args);
+    if (useOrig) originalLog(...args);
   };
   console.error = (...args: unknown[]) => {
     output += args.map((a) => String(a)).join(" ") + "\n";
 
-    if (useOrig) originalError(args);
+    if (useOrig) originalError(...args);
   };
 
   return fn()

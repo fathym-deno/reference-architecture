@@ -1,18 +1,18 @@
 // deno-lint-ignore-file no-explicit-any
-import type { CommandModule } from "../commands/CommandModule.ts";
-import type { CommandParams } from "../commands/CommandParams.ts";
-import type { CommandContext } from "../commands/CommandContext.ts";
-import { CommandIntentRuntime } from "./CommandIntentRuntime.ts";
-import type { CLIInitFn } from "../types/CLIInitFn.ts";
+import type { CommandModule } from '../commands/CommandModule.ts';
+import type { CommandParams } from '../commands/CommandParams.ts';
+import type { CommandContext } from '../commands/CommandContext.ts';
+import { CommandIntentRuntime } from './CommandIntentRuntime.ts';
+import type { CLIInitFn } from '../types/CLIInitFn.ts';
 
 export function createTestContext<
   A extends unknown[],
   F extends Record<string, unknown>,
-  P extends CommandParams<A, F>,
+  P extends CommandParams<A, F>
 >(
   cmd: CommandModule<A, F, P>,
   args: A,
-  flags: F,
+  flags: F
 ): Promise<CommandContext<P, Record<string, unknown>, Record<string, any>>> {
   const ctor = cmd.Params!;
   const params = new ctor(args, flags);
@@ -21,11 +21,11 @@ export function createTestContext<
     Info: console.log,
     Warn: console.warn,
     Error: console.error,
-    Success: (...args: unknown[]) => console.log("✅", ...args),
+    Success: (...args: unknown[]) => console.log('✅', ...args),
   };
 
   return Promise.resolve({
-    Key: "",
+    Key: '',
     ArgsSchema: cmd.ArgsSchema,
     FlagsSchema: cmd.FlagsSchema,
     Params: params,
@@ -39,7 +39,7 @@ export function createTestContext<
 export class CommandIntentBuilder<
   A extends unknown[],
   F extends Record<string, unknown>,
-  P extends CommandParams<A, F>,
+  P extends CommandParams<A, F>
 > {
   protected args: A = [] as unknown as A;
   protected flags: F = {} as F;
@@ -49,9 +49,9 @@ export class CommandIntentBuilder<
     [];
 
   constructor(
-    protected command: CommandModule<A, F, P>,
     protected testName: string,
-    protected commandFileUrl: string,
+    protected command: CommandModule<A, F, P>,
+    protected commandFileUrl: string
   ) {}
 
   public Args(args: A): this {
@@ -82,17 +82,19 @@ export class CommandIntentBuilder<
   }
 
   public Run(): void {
-    const runner = new CommandIntentRuntime(
-      this.testName,
-      this.command,
-      this.args,
-      this.flags,
-      this.commandFileUrl,
-      this.initFn,
-    );
+    Deno.test(this.testName, async () => {
+      const runner = new CommandIntentRuntime(
+        this.testName,
+        this.command,
+        this.args,
+        this.flags,
+        this.commandFileUrl,
+        this.initFn
+      );
 
-    this.expectations.forEach((fn) => fn(runner));
+      this.expectations.forEach((fn) => fn(runner));
 
-    runner.Run();
+      runner.Run();
+    });
   }
 }

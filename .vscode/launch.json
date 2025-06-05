@@ -67,7 +67,8 @@
         "-A",
         "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
-        "init"
+        "init",
+        "my-cli"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
@@ -76,7 +77,7 @@
       "name": "Debug `ftm-cli build` my-cli",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/test",
+      "cwd": "${workspaceFolder}/test/my-cli",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "run",
@@ -93,7 +94,7 @@
       "name": "Debug `ftm-cli compile` my-cli",
       "type": "node",
       "request": "launch",
-      "cwd": "${workspaceFolder}/test",
+      "cwd": "${workspaceFolder}/test/my-cli",
       "runtimeExecutable": "deno",
       "runtimeArgs": [
         "run",

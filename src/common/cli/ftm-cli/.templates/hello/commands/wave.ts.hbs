@@ -21,8 +21,8 @@ export const WaveArgsSchema = z.tuple([
 
 // 🧩 Parameter class
 export class WaveCommandParams extends CommandParams<
-  z.infer<typeof WaveFlagsSchema>,
-  z.infer<typeof WaveArgsSchema>
+  z.infer<typeof WaveArgsSchema>,
+  z.infer<typeof WaveFlagsSchema>
 > {
   get Name(): string {
     return this.Arg(0) ?? 'friend';

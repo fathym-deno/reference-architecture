@@ -1,6 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
 import { IoCContainer } from "../.deps.ts";
-
 import {
   captureLogs,
   CLICommandExecutor,
@@ -8,6 +7,8 @@ import {
   type CLIConfig,
   type CLIInitFn,
 } from "../.exports.ts";
+
+import { assert } from "jsr:@std/assert@^0.221.0/assert";
 
 import type { CommandRuntime } from "../commands/CommandRuntime.ts";
 import type { CommandModule } from "../commands/CommandModule.ts";
@@ -82,18 +83,14 @@ export class CommandIntentRuntime<
     return this;
   }
 
-  public Run(): void {
-    Deno.test(this.testName, async () => {
+  public async Run(): Promise<void> {
       const originalExit = Deno.exit;
       let interceptedExitCode: number | null = null;
 
       // Intercept Deno.exit during test
       (Deno as any).exit = (code: number) => {
-        interceptedExitCode = code ?? 0;
-
-        if (code > 0) {
-          throw new Error(`Deno.exit(${code}) intercepted`);
-        }
+        interceptedExitCode = code;
+        if (code > 0) throw new Error(`Deno.exit(${code}) intercepted`);
       };
 
       try {
@@ -105,9 +102,7 @@ export class CommandIntentRuntime<
         };
 
         const dfsCtx = await this.ioc.Resolve(CLIDFSContextManager);
-
         dfsCtx.RegisterExecutionDFS();
-
         dfsCtx.RegisterProjectDFS(this.commandFileUrl);
 
         await this.initFn?.(this.ioc, config);
@@ -147,22 +142,34 @@ export class CommandIntentRuntime<
         (Deno as any).exit = originalExit;
       }
 
-      if (
-        this.expectedExitCode !== null &&
-        interceptedExitCode !== this.expectedExitCode
-      ) {
-        throw new Error(
-          `Expected exit code ${this.expectedExitCode}, got ${interceptedExitCode}`,
-        );
-      }
+      this.actualExitCode = interceptedExitCode ?? 0;
 
-      for (const expected of this.expectedLogs) {
-        if (!this.capturedOutput.includes(expected)) {
-          throw new Error(
-            `Expected log "${expected}" not found in output:\n${this.capturedOutput}`,
-          );
-        }
+      this.assert();
+  }
+
+  protected assert(): void {
+    const failures: string[] = [];
+
+    if (
+      this.expectedExitCode !== null &&
+      this.actualExitCode !== this.expectedExitCode
+    ) {
+      failures.push(
+        `❌ Expected exit code ${this.expectedExitCode}, got ${this.actualExitCode}`,
+      );
+    }
+
+    for (const expected of this.expectedLogs) {
+      if (!this.capturedOutput.includes(expected)) {
+        failures.push(`❌ Expected log line not found:\n  → "${expected}"`);
       }
-    });
+    }
+
+    assert(
+      failures.length === 0,
+      `❌ Test "${this.testName}" failed with ${failures.length} issue(s):\n\n` +
+        failures.map((f, i) => `${i + 1}. ${f}`).join("\n") +
+        `\n\n📋 Captured Output:\n${this.capturedOutput.trim()}`,
+    );
   }
 }
