@@ -8,7 +8,7 @@ import {
   LocalDFSFileHandler,
   type LocalDFSFileHandlerDetails,
   resolve,
-} from './.deps.ts';
+} from "./.deps.ts";
 
 export class CLIDFSContextManager {
   constructor(protected ioc: IoCContainer) {}
@@ -23,8 +23,8 @@ export class CLIDFSContextManager {
       LocalDFSFileHandler,
       () => new LocalDFSFileHandler({ FileRoot: projectRoot }),
       {
-        Name: 'project',
-      }
+        Name: "project",
+      },
     );
   }
 
@@ -33,28 +33,28 @@ export class CLIDFSContextManager {
       LocalDFSFileHandler,
       () => new LocalDFSFileHandler({ FileRoot: cwd }),
       {
-        Name: 'execution',
-      }
+        Name: "execution",
+      },
     );
   }
 
   public RegisterCustomDFS(
     name: string,
-    details: LocalDFSFileHandlerDetails
+    details: LocalDFSFileHandlerDetails,
   ): void {
     this.ioc.Register(
       LocalDFSFileHandler,
       () => new LocalDFSFileHandler(details),
       {
         Name: name,
-      }
+      },
     );
   }
 
   // ─── DFS Access Utilities ─────────────────────────────────────────────
 
   public async GetDFS(
-    name: 'project' | 'execution' | string
+    name: "project" | "execution" | string,
   ): Promise<DFSFileHandler> {
     const dfs = await this.ioc.Resolve(LocalDFSFileHandler, name);
 
@@ -76,7 +76,7 @@ export class CLIDFSContextManager {
   protected findProjectRoot(startDir: string): string {
     let current = startDir;
     while (true) {
-      const candidate = join(current, '.cli.json');
+      const candidate = join(current, ".cli.json");
       if (existsSync(candidate)) return current;
 
       const parent = dirname(current);

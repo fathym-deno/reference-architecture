@@ -7,7 +7,7 @@ export const compileWithToken = CommandIntent(
   import.meta.url,
 )
   .Args([])
-  .Flags({ entry: './test/.build/cli.ts'})
+  .Flags({ entry: "./test/.build/cli.ts" })
   .ExpectLogs("🔧 Compiling", "🎉 All CLI binaries compiled")
   .ExpectExit(0)
   .Run();

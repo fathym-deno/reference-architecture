@@ -1,6 +1,6 @@
 import { dirname, exists, join, parseArgs, resolve } from "./.deps.ts";
-import type { CLIParsedResult } from "./CLIParsedResult.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIParsedResult } from "./types/CLIParsedResult.ts";
+import type { CLIConfig } from "./types/CLIConfig.ts";
 
 export class CLICommandInvocationParser {
   public async ParseInvocation(

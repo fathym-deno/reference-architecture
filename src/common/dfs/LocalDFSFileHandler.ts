@@ -1,23 +1,24 @@
 // deno-lint-ignore-file no-empty
-import { join, existsSync, getFilesList, dirname } from './.deps.ts';
-import { DFSFileHandler } from './DFSFileHandler.ts';
-import type { DFSFileInfo } from './DFSFileInfo.ts';
-import { getFileCheckPathsToProcess } from './getFileCheckPathsToProcess.ts';
-import type { LocalDFSFileHandlerDetails } from './LocalDFSFileHandlerDetails.ts';
+import { dirname, existsSync, getFilesList, join } from "./.deps.ts";
+import { DFSFileHandler } from "./DFSFileHandler.ts";
+import type { DFSFileInfo } from "./DFSFileInfo.ts";
+import { getFileCheckPathsToProcess } from "./getFileCheckPathsToProcess.ts";
+import type { LocalDFSFileHandlerDetails } from "./LocalDFSFileHandlerDetails.ts";
 
 /**
  * Implements `DFSFileHandler` for local file system storage.
  */
-export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetails> {
+export class LocalDFSFileHandler
+  extends DFSFileHandler<LocalDFSFileHandlerDetails> {
   public override get Root(): string {
-    return this.details?.FileRoot?.endsWith('/')
+    return this.details?.FileRoot?.endsWith("/")
       ? this.details.FileRoot
       : `${this.details.FileRoot}/`;
   }
 
   constructor(
     details: LocalDFSFileHandlerDetails,
-    protected readonly pathResolver?: (filePath: string) => string
+    protected readonly pathResolver?: (filePath: string) => string,
   ) {
     super(details);
   }
@@ -26,13 +27,13 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
     filePath: string,
     defaultFileName?: string,
     extensions?: string[],
-    useCascading?: boolean
+    useCascading?: boolean,
   ): Promise<DFSFileInfo | undefined> {
     const fileCheckPaths = getFileCheckPathsToProcess(
       filePath,
       defaultFileName,
       extensions,
-      useCascading
+      useCascading,
     );
 
     for (const fcp of fileCheckPaths) {
@@ -40,9 +41,9 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
       if (!resolvedPath) continue;
 
       const fullFilePath = join(
-        this.Root.includes(':/') || this.Root.includes(':\\') ? '' : Deno.cwd(),
-        this.Root || '',
-        resolvedPath
+        this.Root.includes(":/") || this.Root.includes(":\\") ? "" : Deno.cwd(),
+        this.Root || "",
+        resolvedPath,
       );
 
       if (!existsSync(fullFilePath)) continue;
@@ -75,8 +76,8 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
       `Unable to locate a local file at path ${filePath}${
         defaultFileName
           ? `, and no default file was found for ${defaultFileName}.`
-          : '.'
-      }`
+          : "."
+      }`,
     );
 
     return undefined;
@@ -94,9 +95,9 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
 
   public async RemoveFile(filePath: string): Promise<void> {
     const fullPath = join(
-      this.Root.includes(':/') || this.Root.includes(':\\') ? '' : Deno.cwd(),
+      this.Root.includes(":/") || this.Root.includes(":\\") ? "" : Deno.cwd(),
       this.Root,
-      filePath
+      filePath,
     );
 
     try {
@@ -112,12 +113,12 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
     stream: ReadableStream<Uint8Array>,
     _ttlSeconds?: number,
     headers?: Headers,
-    _maxChunkSize = 8000
+    _maxChunkSize = 8000,
   ): Promise<void> {
     const fullPath = join(
-      this.Root.includes(':/') || this.Root.includes(':\\') ? '' : Deno.cwd(),
+      this.Root.includes(":/") || this.Root.includes(":\\") ? "" : Deno.cwd(),
       this.Root,
-      filePath
+      filePath,
     );
 
     // Ensure parent directory exists
@@ -138,7 +139,7 @@ export class LocalDFSFileHandler extends DFSFileHandler<LocalDFSFileHandlerDetai
 
       await Deno.writeTextFile(
         `${fullPath}.headers.json`,
-        JSON.stringify(headerObj)
+        JSON.stringify(headerObj),
       );
     }
   }

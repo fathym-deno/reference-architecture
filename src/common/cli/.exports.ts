@@ -4,20 +4,24 @@
  */
 export * from './commands/.exports.ts';
 export * from './fluent/.exports.ts';
+export * from './help/.exports.ts';
+export * from './intents/.exports.ts';
 export * from './scaffolding/.exports.ts';
 export * from './spinners/.exports.ts';
+export * from './templates/.exports.ts';
+export * from './types/.exports.ts';
 export * from './utils/.exports.ts';
+
 export * from './CLI.ts';
-export * from './CLICommandResolver.ts';
 export * from './CLICommandEntry.ts';
-export * from './CLIConfig.ts';
 export * from './CLICommandExecutor.ts';
+export * from './CLICommandInvocationParser.ts';
+export * from './CLICommandMatcher.ts';
+export * from './CLICommandResolver.ts';
+export * from './CLIDFSContextManager.ts';
 export * from './CLIFileSystemHooks.ts';
-export * from './CLIInitFn.ts';
-export * from './EmbeddedTemplateLocator.ts';
-export * from './emitSchema.ts';
-export * from './FileSystemTemplateLocator.ts';
-export * from './TemplateLocator.ts';
+export * from './CLISuggestions.ts';
+export * from './LocalDevCLIFileSystemHooks.ts';
 
 export * from './styling/StyleKeys.ts';
 export * from './styling/TextContent.ts';

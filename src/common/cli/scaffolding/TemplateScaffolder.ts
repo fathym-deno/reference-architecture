@@ -1,7 +1,7 @@
 import { ensureDir } from "jsr:@std/fs@^1.0.11/ensure-dir";
 import { dirname, join } from "../.deps.ts";
 import { Handlebars } from "../../../third-party/.exports.ts";
-import type { TemplateLocator } from "../TemplateLocator.ts";
+import type { TemplateLocator } from "../templates/TemplateLocator.ts";
 
 export interface TemplateScaffoldOptions {
   /** Used to resolve files within a named template set */

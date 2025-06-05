@@ -21,7 +21,7 @@ export interface IDFSFileHandler {
     filePath: string,
     defaultFileName?: string,
     extensions?: string[],
-    useCascading?: boolean
+    useCascading?: boolean,
   ): Promise<DFSFileInfo | undefined>;
 
   /**
@@ -46,7 +46,7 @@ export interface IDFSFileHandler {
    * @returns A promise resolving when the file is removed.
    */
   RemoveFile(
-    filePath: string
+    filePath: string,
   ): Promise<void>;
 
   /**

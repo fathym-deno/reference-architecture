@@ -10,7 +10,7 @@ import {
   type CommandParams,
   CommandRuntime,
 } from "./.exports.ts";
-import type { TemplateLocator } from "./TemplateLocator.ts";
+import type { TemplateLocator } from "./templates/TemplateLocator.ts";
 import type { ZodSchema } from "./.deps.ts";
 
 export class CLICommandResolver {
@@ -65,7 +65,9 @@ export class CLICommandResolver {
     return this.hooks.ResolveConfig(args);
   }
 
-  public ResolveInitFn(path: string): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }> {
+  public ResolveInitFn(
+    path: string,
+  ): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }> {
     return this.hooks.LoadInitFn(path);
   }
 

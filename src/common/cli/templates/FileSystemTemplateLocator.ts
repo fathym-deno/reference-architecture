@@ -1,4 +1,4 @@
-import { join, relative, walk } from "./.deps.ts";
+import { join, relative, walk } from "../.deps.ts";
 import type { TemplateLocator } from "./TemplateLocator.ts";
 
 export class FileSystemTemplateLocator implements TemplateLocator {

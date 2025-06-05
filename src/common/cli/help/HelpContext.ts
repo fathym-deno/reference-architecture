@@ -1,8 +1,8 @@
-import { z } from "./.deps.ts";
+import { z } from "../.deps.ts";
 import {
   type CommandModuleMetadata,
   CommandModuleMetadataSchema,
-} from "./commands/CommandModuleMetadata.ts";
+} from "../commands/CommandModuleMetadata.ts";
 
 /**
  * Represents the structured context used by the HelpCommand

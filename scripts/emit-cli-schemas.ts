@@ -1,8 +1,8 @@
 // src/common/cli/emit-cli-schemas.ts
 
-import { CLIConfigSchema } from "../src/common/cli/CLIConfig.ts";
+import { CLIConfigSchema } from "../src/common/cli/types/CLIConfig.ts";
 import { CommandModuleMetadataSchema } from "../src/common/cli/commands/CommandModuleMetadata.ts";
-import { emitSchema } from "../src/common/cli/emitSchema.ts";
+import { emitSchema } from "../src/common/cli/utils/emitSchema.ts";
 
 // Run directly as a Deno script
 if (import.meta.main) {

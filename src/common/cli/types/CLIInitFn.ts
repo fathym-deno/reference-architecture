@@ -1,4 +1,4 @@
-import type { IoCContainer } from "./.deps.ts";
+import type { IoCContainer } from "../.deps.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
 
 /**

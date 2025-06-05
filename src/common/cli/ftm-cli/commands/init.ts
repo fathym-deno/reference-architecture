@@ -2,7 +2,7 @@ import { z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
-import type { TemplateLocator } from "../../TemplateLocator.ts";
+import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
 
 // --- Schemas ---
 export const InitArgsSchema = z.tuple([

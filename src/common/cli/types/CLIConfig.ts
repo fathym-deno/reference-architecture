@@ -1,4 +1,4 @@
-import { z } from "./.deps.ts";
+import { z } from "../.deps.ts";
 
 /**
  * Represents the structure of the root CLI configuration (`.cli.json`).

@@ -1,9 +1,9 @@
-import { findClosestMatch } from "../matches/findClosestMatch.ts";
-import type { CLICommandEntry } from "./CLICommandEntry.ts";
-import type { CLICommandResolver } from "./CLICommandResolver.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
-import type { CommandRuntime } from "./commands/CommandRuntime.ts";
-import type { CommandModuleMetadata } from "./commands/CommandModuleMetadata.ts";
+import { findClosestMatch } from "../../matches/findClosestMatch.ts";
+import type { CLICommandEntry } from "../CLICommandEntry.ts";
+import type { CLICommandResolver } from "../CLICommandResolver.ts";
+import type { CLIConfig } from "../types/CLIConfig.ts";
+import type { CommandRuntime } from "../commands/CommandRuntime.ts";
+import type { CommandModuleMetadata } from "../commands/CommandModuleMetadata.ts";
 import type { HelpContext } from "./HelpContext.ts";
 
 export class CLIHelpBuilder {

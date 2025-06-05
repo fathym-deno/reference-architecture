@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import type { CLIConfig } from "./CLIConfig.ts";
+import type { CLIConfig } from "./types/CLIConfig.ts";
 import type { IoCContainer } from "./.deps.ts";
 
 import type { CommandRuntime } from "./commands/CommandRuntime.ts";
@@ -12,7 +12,7 @@ import {
   CommandParams,
 } from "./commands/CommandParams.ts";
 
-import { HelpCommand } from "./HelpCommand.ts";
+import { HelpCommand } from "./help/HelpCommand.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
 
 /**

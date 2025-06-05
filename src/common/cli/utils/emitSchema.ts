@@ -1,4 +1,4 @@
-import { join, type ZodSchema, zodToJsonSchema } from "./.deps.ts";
+import { join, type ZodSchema, zodToJsonSchema } from "../.deps.ts";
 
 /**
  * Emits a given Zod schema as a JSON Schema to the `schemas/` directory.

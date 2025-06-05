@@ -1,8 +1,9 @@
-import { CommandRuntime } from "./commands/CommandRuntime.ts";
-import { z } from "./.deps.ts";
+import { CommandRuntime } from "../commands/CommandRuntime.ts";
+import { z } from "../.deps.ts";
 import { type HelpContext, HelpContextSchema } from "./HelpContext.ts";
-import { CommandParams } from "./commands/CommandParams.ts";
-import type { CommandContext } from "./commands/CommandContext.ts";
+import { CommandParams } from "../commands/CommandParams.ts";
+import type { CommandContext } from "../commands/CommandContext.ts";
+import type { CommandModuleMetadata } from "../commands/CommandModuleMetadata.ts";
 
 /**
  * Flag schema for HelpCommand — directly matches the HelpContext structure.
@@ -12,7 +13,7 @@ export const HelpFlagsSchema = HelpContextSchema;
 /**
  * HelpCommand takes no positional arguments.
  */
-export const HelpArgsSchema = z.tuple([]);
+export const HelpArgsSchema: z.ZodTuple<[], null> = z.tuple([]);
 
 /**
  * Parameters used by HelpCommand — surfaces structured HelpContext flags.
@@ -110,7 +111,7 @@ export class HelpCommand extends CommandRuntime<HelpCommandParams> {
     }
   }
 
-  public BuildMetadata() {
+  public BuildMetadata(): CommandModuleMetadata {
     return this.buildMetadataFromSchemas(
       "Help Command",
       "Display structured help context for commands and groups",

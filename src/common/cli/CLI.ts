@@ -1,12 +1,12 @@
-import { IoCContainer } from './.deps.ts';
-import type { CLIConfig } from './CLIConfig.ts';
-import type { CLIOptions } from './CLIOptions.ts';
+import { IoCContainer } from "./.deps.ts";
+import type { CLIConfig } from "./types/CLIConfig.ts";
+import type { CLIOptions } from "./types/CLIOptions.ts";
 
-import { CLICommandInvocationParser } from './CLICommandInvocationParser.ts';
-import { CLICommandResolver } from './CLICommandResolver.ts';
-import { CLICommandExecutor } from './CLICommandExecutor.ts';
-import { CLICommandMatcher } from './CLICommandMatcher.ts';
-import { CLIDFSContextManager } from './CLIDFSContextManager.ts';
+import { CLICommandInvocationParser } from "./CLICommandInvocationParser.ts";
+import { CLICommandResolver } from "./CLICommandResolver.ts";
+import { CLICommandExecutor } from "./CLICommandExecutor.ts";
+import { CLICommandMatcher } from "./CLICommandMatcher.ts";
+import { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
 
 export class CLI {
   protected dfsCtxMgr: CLIDFSContextManager;
@@ -15,7 +15,7 @@ export class CLI {
 
   constructor(
     options: CLIOptions = {},
-    protected ioc: IoCContainer = new IoCContainer()
+    protected ioc: IoCContainer = new IoCContainer(),
   ) {
     this.dfsCtxMgr = options.dfsCtxMgr ?? new CLIDFSContextManager(this.ioc);
     this.parser = options.parser ?? new CLICommandInvocationParser();
@@ -27,8 +27,8 @@ export class CLI {
   }
 
   async RunFromArgs(args: string[]): Promise<void> {
-    const { config, resolvedPath, remainingArgs } =
-      await this.resolver.ResolveConfig(args);
+    const { config, resolvedPath, remainingArgs } = await this.resolver
+      .ResolveConfig(args);
 
     return await this.RunWithConfig(config, remainingArgs, resolvedPath);
   }
@@ -36,14 +36,14 @@ export class CLI {
   public async RunWithConfig(
     config: CLIConfig,
     args: string[],
-    configPath: string
+    configPath: string,
   ): Promise<void> {
     const parsed = await this.parser.ParseInvocation(config, args, configPath);
 
     await this.initialize(parsed.initPath, parsed.config);
 
     const commandMap = await this.resolver.ResolveCommandMap(
-      parsed.baseCommandDir
+      parsed.baseCommandDir,
     );
 
     const matcher = new CLICommandMatcher(this.resolver);
@@ -52,13 +52,13 @@ export class CLI {
       commandMap,
       parsed.key,
       parsed.flags,
-      parsed.positional
+      parsed.positional,
     );
 
     const executor = new CLICommandExecutor(this.ioc, this.resolver);
 
     await executor.Execute(parsed.config, Command, {
-      key: parsed.key || '',
+      key: parsed.key || "",
       flags: Flags,
       positional: Args,
       paramsCtor: Params,
@@ -71,7 +71,7 @@ export class CLI {
 
     if (initPath) {
       const { initFn, resolvedInitPath } = await this.resolver.ResolveInitFn(
-        initPath
+        initPath,
       );
 
       this.dfsCtxMgr.RegisterProjectDFS(resolvedInitPath);

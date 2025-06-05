@@ -2,8 +2,8 @@
 import { z } from "../.deps.ts";
 import type { ZodSchema } from "../.deps.ts";
 
-import type { CLIConfig } from "../CLIConfig.ts";
-import { CLIConfigSchema } from "../CLIConfig.ts";
+import type { CLIConfig } from "../types/CLIConfig.ts";
+import { CLIConfigSchema } from "../types/CLIConfig.ts";
 
 import type { CommandParams } from "./CommandParams.ts";
 import {

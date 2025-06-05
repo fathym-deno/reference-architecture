@@ -8,7 +8,7 @@
     "./cli": "./src/common/cli/.exports.ts",
     "./cli-runtime": "./src/common/cli/cli-runtime.ts",
     "./deno-kv": "./src/deno-kv/.exports.ts",
-    "./dfs": "./src/dfs/.exports.ts",
+    "./dfs": "./src/common/dfs/.exports.ts",
     "./fluent": "./src/fluent/.exports.ts",
     "./http": "./src/common/http/.exports.ts",
     "./iterables": "./src/common/iterables/.exports.ts",

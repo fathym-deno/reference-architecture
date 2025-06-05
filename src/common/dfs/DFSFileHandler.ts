@@ -1,14 +1,13 @@
-import { type Logger, getPackageLoggerSync } from './.deps.ts';
-import type { DFSFileInfo } from './DFSFileInfo.ts';
-import type { IDFSFileHandler } from './IDFSFileHandler.ts';
+import { getPackageLoggerSync, type Logger } from "./.deps.ts";
+import type { DFSFileInfo } from "./DFSFileInfo.ts";
+import type { IDFSFileHandler } from "./IDFSFileHandler.ts";
 
 /**
  * Abstract base class implementing `IDFSFileHandler`.
  * Concrete implementations must provide method implementations.
  */
 export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
-  implements IDFSFileHandler
-{
+  implements IDFSFileHandler {
   protected readonly logger: Logger;
 
   /**
@@ -17,7 +16,7 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
    */
   public constructor(
     protected details: TDetails,
-    logger?: Logger
+    logger?: Logger,
   ) {
     this.logger = logger ?? getPackageLoggerSync(import.meta);
   }
@@ -59,7 +58,7 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
    * @param cacheDb - A Deno.Kv instance for caching (optional).
    */
   public abstract RemoveFile(
-    filePath: string
+    filePath: string,
   ): Promise<void>;
 
   /**
@@ -77,7 +76,7 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
     stream: ReadableStream<Uint8Array>,
     ttlSeconds?: number,
     headers?: Headers,
-    maxChunkSize?: number
+    maxChunkSize?: number,
   ): Promise<void>;
 
   /**
@@ -86,7 +85,7 @@ export abstract class DFSFileHandler<TDetails = Record<string, unknown>>
    * @returns A filtered record of headers.
    */
   protected extractHeaders(response: Response): Record<string, string> {
-    const excludeHeaders = new Set(['content-type']);
+    const excludeHeaders = new Set(["content-type"]);
     const headers: Record<string, string> = {};
 
     response.headers.forEach((value, key) => {

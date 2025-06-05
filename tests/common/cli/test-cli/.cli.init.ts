@@ -1,4 +1,4 @@
-import { CLIInitFn } from '../../../../src/common/cli/CLIInitFn.ts';
+import { CLIInitFn } from '../../../../src/common/cli/types/CLIInitFn.ts';
 
 export interface SayHello {
   Speak(name: string): string;
