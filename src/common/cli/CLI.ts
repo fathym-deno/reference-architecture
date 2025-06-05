@@ -1,30 +1,34 @@
-import { IoCContainer } from "./.deps.ts";
-import type { CLIConfig } from "./CLIConfig.ts";
-import type { CLIOptions } from "./CLIOptions.ts";
+import { IoCContainer } from './.deps.ts';
+import type { CLIConfig } from './CLIConfig.ts';
+import type { CLIOptions } from './CLIOptions.ts';
 
-import { CLIInvocationParser } from "./CLIInvocationParser.ts";
-import { CLICommandResolver } from "./CLICommandResolver.ts";
-import { CLICommandExecutor } from "./CLICommandExecutor.ts";
-import { CLICommandMatcher } from "./CLICommandMatcher.ts";
+import { CLICommandInvocationParser } from './CLICommandInvocationParser.ts';
+import { CLICommandResolver } from './CLICommandResolver.ts';
+import { CLICommandExecutor } from './CLICommandExecutor.ts';
+import { CLICommandMatcher } from './CLICommandMatcher.ts';
+import { CLIDFSContextManager } from './CLIDFSContextManager.ts';
 
 export class CLI {
+  protected dfsCtxMgr: CLIDFSContextManager;
   protected resolver: CLICommandResolver;
-  protected parser: CLIInvocationParser;
+  protected parser: CLICommandInvocationParser;
 
   constructor(
     options: CLIOptions = {},
-    protected ioc: IoCContainer = new IoCContainer(),
+    protected ioc: IoCContainer = new IoCContainer()
   ) {
+    this.dfsCtxMgr = options.dfsCtxMgr ?? new CLIDFSContextManager(this.ioc);
+    this.parser = options.parser ?? new CLICommandInvocationParser();
     this.resolver = options.resolver ?? new CLICommandResolver();
-    this.parser = options.parser ?? new CLIInvocationParser();
 
     this.ioc.Register(CLICommandResolver, () => this.resolver);
-    this.ioc.Register(CLIInvocationParser, () => this.parser);
+    this.ioc.Register(CLICommandInvocationParser, () => this.parser);
+    this.ioc.Register(CLIDFSContextManager, () => this.dfsCtxMgr);
   }
 
   async RunFromArgs(args: string[]): Promise<void> {
-    const { config, resolvedPath, remainingArgs } = await this.resolver
-      .ResolveConfig(args);
+    const { config, resolvedPath, remainingArgs } =
+      await this.resolver.ResolveConfig(args);
 
     return await this.RunWithConfig(config, remainingArgs, resolvedPath);
   }
@@ -32,19 +36,15 @@ export class CLI {
   public async RunWithConfig(
     config: CLIConfig,
     args: string[],
-    configPath: string,
+    configPath: string
   ): Promise<void> {
     const parsed = await this.parser.ParseInvocation(config, args, configPath);
 
+    await this.initialize(parsed.initPath, parsed.config);
+
     const commandMap = await this.resolver.ResolveCommandMap(
-      parsed.baseCommandDir,
+      parsed.baseCommandDir
     );
-
-    const initFn = parsed.initPath
-      ? await this.resolver.ResolveInitFn(parsed.initPath)
-      : undefined;
-
-    await initFn?.(this.ioc, parsed.config);
 
     const matcher = new CLICommandMatcher(this.resolver);
     const { Command, Flags, Args, Params } = await matcher.Resolve(
@@ -52,17 +52,31 @@ export class CLI {
       commandMap,
       parsed.key,
       parsed.flags,
-      parsed.positional,
+      parsed.positional
     );
 
     const executor = new CLICommandExecutor(this.ioc, this.resolver);
 
     await executor.Execute(parsed.config, Command, {
-      key: parsed.key || "",
+      key: parsed.key || '',
       flags: Flags,
       positional: Args,
       paramsCtor: Params,
       baseTemplatesDir: parsed.baseTemplatesDir,
     });
+  }
+
+  protected async initialize(initPath: string | undefined, config: CLIConfig) {
+    this.dfsCtxMgr.RegisterExecutionDFS();
+
+    if (initPath) {
+      const { initFn, resolvedInitPath } = await this.resolver.ResolveInitFn(
+        initPath
+      );
+
+      this.dfsCtxMgr.RegisterProjectDFS(resolvedInitPath);
+
+      await initFn?.(this.ioc, config);
+    }
   }
 }

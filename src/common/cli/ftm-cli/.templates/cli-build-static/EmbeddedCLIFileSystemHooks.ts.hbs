@@ -44,7 +44,9 @@ export class EmbeddedCLIFileSystemHooks implements CLIFileSystemHooks {
     };
   }
 
-  async LoadInitFn(_path: string): Promise<CLIInitFn | undefined> {
+  async LoadInitFn(
+    initPath: string
+  ): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }> {
     {{#if importInitFn}}
     return embeddedInit;
     {{else}}

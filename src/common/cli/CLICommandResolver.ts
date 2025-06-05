@@ -65,7 +65,7 @@ export class CLICommandResolver {
     return this.hooks.ResolveConfig(args);
   }
 
-  public ResolveInitFn(path: string): Promise<CLIInitFn | undefined> {
+  public ResolveInitFn(path: string): Promise<{ initFn: CLIInitFn | undefined; resolvedInitPath: string }> {
     return this.hooks.LoadInitFn(path);
   }
 

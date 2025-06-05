@@ -1,26 +1,28 @@
 // deno-lint-ignore-file no-explicit-any
-import { dirname, fromFileUrl, IoCContainer, join, resolve } from "../.deps.ts";
+import { dirname, fromFileUrl, IoCContainer, join, resolve } from '../.deps.ts';
 
 import {
   captureLogs,
   CLICommandExecutor,
   CLICommandResolver,
+  CLIInitFn,
   type CLIConfig,
-} from "../.exports.ts";
+} from '../.exports.ts';
 
-import type { CommandRuntime } from "../commands/CommandRuntime.ts";
-import type { CommandModule } from "../commands/CommandModule.ts";
-import type { CommandParams } from "../commands/CommandParams.ts";
-import { CLIInvocationParser } from "../CLIInvocationParser.ts";
+import type { CommandRuntime } from '../commands/CommandRuntime.ts';
+import type { CommandModule } from '../commands/CommandModule.ts';
+import type { CommandParams } from '../commands/CommandParams.ts';
+import { CLICommandInvocationParser } from '../CLICommandInvocationParser.ts';
+import { CLIDFSContextManager } from '../CLIDFSContextManager.ts';
 
 export class CommandIntentRuntime<
   A extends unknown[],
   F extends Record<string, unknown>,
-  P extends CommandParams<A, F>,
+  P extends CommandParams<A, F>
 > {
   protected expectedLogs: string[] = [];
   protected expectedExitCode: number | null = null;
-  protected capturedOutput = "";
+  protected capturedOutput = '';
   protected actualExitCode: number | null = null;
 
   protected runtime: CommandRuntime<P>;
@@ -31,7 +33,7 @@ export class CommandIntentRuntime<
   }
 
   public get Logs(): string[] {
-    return this.capturedOutput.split("\n").filter(Boolean);
+    return this.capturedOutput.split('\n').filter(Boolean);
   }
 
   public get ExitCode(): number | null {
@@ -44,9 +46,20 @@ export class CommandIntentRuntime<
     protected args: A,
     protected flags: F,
     protected commandFileUrl: string,
+    protected initFn?: CLIInitFn
   ) {
     this.ioc = new IoCContainer();
     this.runtime = new module.Command();
+
+    this.ioc.Register(CLICommandResolver, () => new CLICommandResolver());
+    this.ioc.Register(
+      CLICommandInvocationParser,
+      () => new CLICommandInvocationParser()
+    );
+    this.ioc.Register(
+      CLIDFSContextManager,
+      () => new CLIDFSContextManager(this.ioc)
+    );
   }
 
   public ExpectLog(msg: string): this {
@@ -80,27 +93,32 @@ export class CommandIntentRuntime<
 
       try {
         const baseTemplatesDir = await resolveBaseTemplatesDir(
-          this.commandFileUrl,
+          this.commandFileUrl
         );
 
-        this.ioc.Register(CLICommandResolver, () => new CLICommandResolver());
-        this.ioc.Register(CLIInvocationParser, () => new CLIInvocationParser());
-
         const config: CLIConfig = {
-          Name: "TestCLI",
-          Version: "0.0.0",
-          Description: "CLI under test",
-          Tokens: ["test-cli"],
+          Name: 'TestCLI',
+          Version: '0.0.0',
+          Description: 'CLI under test',
+          Tokens: ['test-cli'],
         };
+
+        const dfsCtx = await this.ioc.Resolve(CLIDFSContextManager);
+
+        dfsCtx.RegisterExecutionDFS();
+
+        dfsCtx.RegisterProjectDFS(this.commandFileUrl);
+        
+        await this.initFn?.(this.ioc, config);
 
         const executor = new CLICommandExecutor(
           this.ioc,
-          await this.ioc.Resolve(CLICommandResolver),
+          await this.ioc.Resolve(CLICommandResolver)
         );
 
         this.capturedOutput = await captureLogs(async () => {
           await executor.Execute(config, this.runtime, {
-            key: "test-command",
+            key: 'test-command',
             flags: this.flags,
             positional: this.args as string[],
             paramsCtor: this.module.Params,
@@ -128,14 +146,14 @@ export class CommandIntentRuntime<
         interceptedExitCode !== this.expectedExitCode
       ) {
         throw new Error(
-          `Expected exit code ${this.expectedExitCode}, got ${interceptedExitCode}`,
+          `Expected exit code ${this.expectedExitCode}, got ${interceptedExitCode}`
         );
       }
 
       for (const expected of this.expectedLogs) {
         if (!this.capturedOutput.includes(expected)) {
           throw new Error(
-            `Expected log "${expected}" not found in output:\n${this.capturedOutput}`,
+            `Expected log "${expected}" not found in output:\n${this.capturedOutput}`
           );
         }
       }
@@ -147,7 +165,7 @@ export async function findProjectRoot(startPath: string): Promise<string> {
   let dir = dirname(startPath);
 
   while (true) {
-    const cliConfigPath = join(dir, ".cli.json");
+    const cliConfigPath = join(dir, '.cli.json');
 
     try {
       const stat = await Deno.stat(cliConfigPath);
@@ -166,9 +184,9 @@ export async function findProjectRoot(startPath: string): Promise<string> {
 }
 
 export async function resolveBaseTemplatesDir(
-  commandFileUrl: string,
+  commandFileUrl: string
 ): Promise<string> {
   const commandFilePath = fromFileUrl(commandFileUrl);
   const projectRoot = await findProjectRoot(commandFilePath);
-  return resolve(projectRoot, ".templates");
+  return resolve(projectRoot, '.templates');
 }

@@ -37,4 +37,10 @@ export {
 export { findClosestMatch } from '../matches/.exports.ts';
 export { merge, mergeWithArrays } from '../merge/.exports.ts';
 
-export { exists } from '../path/exists.ts';
+export { exists, existsSync } from '../path/exists.ts';
+
+export {
+  DFSFileHandler,
+  LocalDFSFileHandler,
+  type LocalDFSFileHandlerDetails,
+} from '../dfs/.exports.ts';

@@ -2,7 +2,7 @@ import { dirname, exists, join, parseArgs, resolve } from "./.deps.ts";
 import type { CLIParsedResult } from "./CLIParsedResult.ts";
 import type { CLIConfig } from "./CLIConfig.ts";
 
-export class CLIInvocationParser {
+export class CLICommandInvocationParser {
   public async ParseInvocation(
     config: CLIConfig,
     args: string[],
