@@ -7,14 +7,13 @@ const origin = import.meta.url;
 CommandIntents("Init Command Suite", cmd, origin)
   .Intent("Init with default 'hello' template", (int) =>
     int
-      .Args(["../../../test/hello"])
+      .Args(["./test/hello"])
       .Flags({})
       .ExpectLogs(
         `Project created from "hello" template.`,
         "📂 Initialized at:",
       )
-      .ExpectExit(0),
-  )
+      .ExpectExit(0))
   .Intent("Init with custom 'web' template", (int) =>
     int
       .Args(["../../../test/web"])
@@ -23,8 +22,7 @@ CommandIntents("Init Command Suite", cmd, origin)
         `Project created from "web" template.`,
         "📂 Initialized at:",
       )
-      .ExpectExit(0),
-  )
+      .ExpectExit(0))
   .Intent("Init into current directory with default template", (int) =>
     int
       .Args(["."])
@@ -33,8 +31,7 @@ CommandIntents("Init Command Suite", cmd, origin)
         `Project created from "hello" template.`,
         "📂 Initialized at:",
       )
-      .ExpectExit(0),
-  )
+      .ExpectExit(0))
   .Intent("Init with explicit baseTemplatesDir", (int) =>
     int
       .Args(["../../../test/api"])
@@ -46,6 +43,5 @@ CommandIntents("Init Command Suite", cmd, origin)
         `Project created from "api" template.`,
         "📂 Initialized at:",
       )
-      .ExpectExit(0),
-  )
+      .ExpectExit(0))
   .Run();

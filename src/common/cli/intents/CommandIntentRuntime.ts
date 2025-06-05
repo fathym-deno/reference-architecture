@@ -84,67 +84,67 @@ export class CommandIntentRuntime<
   }
 
   public async Run(): Promise<void> {
-      const originalExit = Deno.exit;
-      let interceptedExitCode: number | null = null;
+    const originalExit = Deno.exit;
+    let interceptedExitCode: number | null = null;
 
-      // Intercept Deno.exit during test
-      (Deno as any).exit = (code: number) => {
-        interceptedExitCode = code;
-        if (code > 0) throw new Error(`Deno.exit(${code}) intercepted`);
+    // Intercept Deno.exit during test
+    (Deno as any).exit = (code: number) => {
+      interceptedExitCode = code;
+      if (code > 0) throw new Error(`Deno.exit(${code}) intercepted`);
+    };
+
+    try {
+      const config: CLIConfig = {
+        Name: "TestCLI",
+        Version: "0.0.0",
+        Description: "CLI under test",
+        Tokens: ["test-cli"],
       };
 
-      try {
-        const config: CLIConfig = {
-          Name: "TestCLI",
-          Version: "0.0.0",
-          Description: "CLI under test",
-          Tokens: ["test-cli"],
-        };
+      const dfsCtx = await this.ioc.Resolve(CLIDFSContextManager);
+      dfsCtx.RegisterExecutionDFS();
+      dfsCtx.RegisterProjectDFS(this.commandFileUrl);
 
-        const dfsCtx = await this.ioc.Resolve(CLIDFSContextManager);
-        dfsCtx.RegisterExecutionDFS();
-        dfsCtx.RegisterProjectDFS(this.commandFileUrl);
+      await this.initFn?.(this.ioc, config);
 
-        await this.initFn?.(this.ioc, config);
+      const executor = new CLICommandExecutor(
+        this.ioc,
+        await this.ioc.Resolve(CLICommandResolver),
+      );
 
-        const executor = new CLICommandExecutor(
-          this.ioc,
-          await this.ioc.Resolve(CLICommandResolver),
-        );
+      const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
+        "project",
+        "./.templates",
+      );
 
-        const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
-          "project",
-          "./.templates",
-        );
-
-        this.capturedOutput = await captureLogs(async () => {
-          await executor.Execute(config, this.runtime, {
-            key: "test-command",
-            flags: this.flags,
-            positional: this.args as string[],
-            paramsCtor: this.module.Params,
-            baseTemplatesDir,
-            commands: undefined,
-          });
-        }, true);
-      } catch (err) {
-        if (
-          interceptedExitCode === null &&
-          err instanceof Error &&
-          /Deno\.exit\(\d+\)/.test(err.message)
-        ) {
-          const match = err.message.match(/\d+/);
-          if (match) interceptedExitCode = parseInt(match[0], 10);
-        } else if (!/Deno\.exit/.test((err as any).message)) {
-          throw err;
-        }
-      } finally {
-        (Deno as any).exit = originalExit;
+      this.capturedOutput = await captureLogs(async () => {
+        await executor.Execute(config, this.runtime, {
+          key: "test-command",
+          flags: this.flags,
+          positional: this.args as string[],
+          paramsCtor: this.module.Params,
+          baseTemplatesDir,
+          commands: undefined,
+        });
+      }, true);
+    } catch (err) {
+      if (
+        interceptedExitCode === null &&
+        err instanceof Error &&
+        /Deno\.exit\(\d+\)/.test(err.message)
+      ) {
+        const match = err.message.match(/\d+/);
+        if (match) interceptedExitCode = parseInt(match[0], 10);
+      } else if (!/Deno\.exit/.test((err as any).message)) {
+        throw err;
       }
+    } finally {
+      (Deno as any).exit = originalExit;
+    }
 
-      this.actualExitCode = interceptedExitCode ?? 0;
+    this.actualExitCode = interceptedExitCode ?? 0;
 
-      this.assert();
+    this.assert();
   }
 
   protected assert(): void {

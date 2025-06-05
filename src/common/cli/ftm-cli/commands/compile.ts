@@ -1,4 +1,4 @@
-import { dirname, join, z } from "../../.deps.ts";
+import { join, z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import BuildCommand from "./build.ts";
@@ -7,16 +7,19 @@ import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 export const CompileArgsSchema = z.tuple([]);
 
 export const CompileFlagsSchema = z.object({
-  entry: z.string().optional().describe(
-    "Entry point file (default: ./.build/cli.ts)",
-  ),
-  config: z.string().optional().describe(
-    "Path to .cli.json (default: alongside entry)",
-  ),
+  entry: z
+    .string()
+    .optional()
+    .describe("Entry point file (default: ./.build/cli.ts)"),
+  config: z
+    .string()
+    .optional()
+    .describe("Path to .cli.json (default: alongside entry)"),
   output: z.string().optional().describe("Output folder (default: ./.dist)"),
-  permissions: z.string().optional().describe(
-    "Deno permissions (default: full access)",
-  ),
+  permissions: z
+    .string()
+    .optional()
+    .describe("Deno permissions (default: full access)"),
 });
 
 export class CompileParams extends CommandParams<
@@ -67,7 +70,7 @@ export default Command("compile", "Compile the CLI into a native binary")
     const { CLIDFS } = Services;
 
     const entryPath = await CLIDFS.ResolvePath(Params.Entry);
-    
+
     const outputDir = await CLIDFS.ResolvePath(Params.OutputDir);
     const permissions = Params.Permissions;
 

@@ -1,13 +1,13 @@
 // CommandIntentsBuilder.ts
-import type { CLIInitFn } from '../types/CLIInitFn.ts';
-import type { CommandParams } from '../commands/CommandParams.ts';
-import type { CommandModule } from '../commands/CommandModule.ts';
-import { CommandIntentBuilder } from './CommandIntentBuilder.ts';
+import type { CLIInitFn } from "../types/CLIInitFn.ts";
+import type { CommandParams } from "../commands/CommandParams.ts";
+import type { CommandModule } from "../commands/CommandModule.ts";
+import { CommandIntentBuilder } from "./CommandIntentBuilder.ts";
 
 export class CommandIntentsBuilder<
   A extends unknown[],
   F extends Record<string, unknown>,
-  P extends CommandParams<A, F>
+  P extends CommandParams<A, F>,
 > {
   protected initFn?: CLIInitFn;
   protected testBuilders: CommandIntentBuilder<A, F, P>[] = [];
@@ -15,7 +15,7 @@ export class CommandIntentsBuilder<
   constructor(
     protected suiteName: string,
     protected command: CommandModule<A, F, P>,
-    protected commandFileUrl: string
+    protected commandFileUrl: string,
   ) {}
 
   public WithInit(init: CLIInitFn): this {
@@ -26,13 +26,13 @@ export class CommandIntentsBuilder<
   public Intent(
     name: string,
     build: (
-      builder: CommandIntentBuilder<A, F, P>
-    ) => CommandIntentBuilder<A, F, P>
+      builder: CommandIntentBuilder<A, F, P>,
+    ) => CommandIntentBuilder<A, F, P>,
   ): this {
     const builder = new CommandIntentBuilder(
       name,
       this.command,
-      this.commandFileUrl
+      this.commandFileUrl,
     );
 
     this.testBuilders.push(build(builder));
@@ -46,7 +46,7 @@ export class CommandIntentsBuilder<
           builder.WithInit(this.initFn);
         }
 
-        builder.Run();
+        await builder.RunStep(t.step);
       }
     });
   }

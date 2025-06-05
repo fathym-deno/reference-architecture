@@ -9,7 +9,7 @@ export function CommandIntents<
   F extends Record<string, unknown>,
   P extends CommandParams<A, F>,
 >(
-    suiteName: string,
+  suiteName: string,
   command: CommandModule<A, F, P> | CommandModuleBuilder<A, F, P>,
   commandFileUrl: string,
 ): CommandIntentsBuilder<A, F, P> {
