@@ -49,20 +49,29 @@ export class LocalDFSFileHandler
       if (!existsSync(fullFilePath)) continue;
 
       try {
-        const file = await Deno.open(fullFilePath, { read: true });
-        const stream = file.readable;
+        // ✅ Read file contents into memory to avoid unclosed handle
+        const bytes = await Deno.readFile(fullFilePath);
 
-        // Try to load headers from `.headers.json`
+        // ✅ Optionally read headers if present
         let headers: Record<string, string> | undefined = undefined;
         const headersPath = `${fullFilePath}.headers.json`;
+
         if (existsSync(headersPath)) {
           try {
             const headerRaw = await Deno.readTextFile(headersPath);
             headers = JSON.parse(headerRaw);
           } catch {
-            // Silently ignore bad headers file
+            // Silently ignore malformed header file
           }
         }
+
+        // ✅ Wrap bytes into a fresh stream
+        const stream = new ReadableStream<Uint8Array>({
+          start(controller) {
+            controller.enqueue(bytes);
+            controller.close();
+          },
+        });
 
         return {
           Path: resolvedPath,

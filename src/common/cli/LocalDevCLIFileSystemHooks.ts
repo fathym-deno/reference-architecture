@@ -1,5 +1,5 @@
 import { exists, join, relative, resolve, toFileUrl, walk } from "./.deps.ts";
-import type { CLICommandEntry } from "./CLICommandEntry.ts";
+import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
 import type { CommandModule } from "./commands/CommandModule.ts";
 import { CommandModuleBuilder } from "./fluent/CommandModuleBuilder.ts";
@@ -7,8 +7,10 @@ import type { TemplateLocator } from "./templates/TemplateLocator.ts";
 import type { CLIFileSystemHooks } from "./CLIFileSystemHooks.ts";
 import type { CLIInitFn } from "./types/CLIInitFn.ts";
 import { FileSystemTemplateLocator } from "./templates/FileSystemTemplateLocator.ts";
+import type { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
 
 export class LocalDevCLIFileSystemHooks implements CLIFileSystemHooks {
+  constructor(protected dfsCtxMgr: CLIDFSContextManager) {}
   public async ResolveCommandEntryPaths(
     baseDir: string,
   ): Promise<Map<string, CLICommandEntry>> {

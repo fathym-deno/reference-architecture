@@ -14,6 +14,7 @@ import type { CommandModule } from "../commands/CommandModule.ts";
 import type { CommandParams } from "../commands/CommandParams.ts";
 import { CLICommandInvocationParser } from "../CLICommandInvocationParser.ts";
 import { CLIDFSContextManager } from "../CLIDFSContextManager.ts";
+import { LocalDevCLIFileSystemHooks } from "../LocalDevCLIFileSystemHooks.ts";
 
 export class CommandIntentRuntime<
   A extends unknown[],
@@ -51,14 +52,16 @@ export class CommandIntentRuntime<
     this.ioc = new IoCContainer();
     this.runtime = new module.Command();
 
-    this.ioc.Register(CLICommandResolver, () => new CLICommandResolver());
+    const dfsCtxMgr = new CLIDFSContextManager(this.ioc);
+
+    this.ioc.Register(CLIDFSContextManager, () => dfsCtxMgr);
     this.ioc.Register(
-      CLICommandInvocationParser,
-      () => new CLICommandInvocationParser(),
+      CLICommandResolver,
+      () => new CLICommandResolver(new LocalDevCLIFileSystemHooks(dfsCtxMgr)),
     );
     this.ioc.Register(
-      CLIDFSContextManager,
-      () => new CLIDFSContextManager(this.ioc),
+      CLICommandInvocationParser,
+      () => new CLICommandInvocationParser(dfsCtxMgr),
     );
   }
 

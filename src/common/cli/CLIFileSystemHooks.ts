@@ -1,4 +1,4 @@
-import type { CLICommandEntry } from "./CLICommandEntry.ts";
+import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLIInitFn } from "./types/CLIInitFn.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
 import type { CommandModule } from "./commands/CommandModule.ts";

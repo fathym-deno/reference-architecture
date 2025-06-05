@@ -12,7 +12,7 @@ import {
   walk,
 } from "../../.deps.ts";
 import type { CommandLog } from "../../commands/CommandLog.ts";
-import type { CLICommandEntry } from "../../CLICommandEntry.ts";
+import type { CLICommandEntry } from "../../types/CLICommandEntry.ts";
 
 export const BuildArgsSchema = z.tuple([]);
 

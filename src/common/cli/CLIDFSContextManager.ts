@@ -16,7 +16,11 @@ export class CLIDFSContextManager {
   // ─── DFS Registration Methods ─────────────────────────────────────────
 
   public RegisterProjectDFS(fileUrlInProject: string): void {
-    const localPath = dirname(fromFileUrl(fileUrlInProject));
+    if (fileUrlInProject.startsWith("file:///")) {
+      fileUrlInProject = fromFileUrl(fileUrlInProject);
+    }
+
+    const localPath = dirname(fileUrlInProject);
     const projectRoot = this.findProjectRoot(localPath);
 
     this.ioc.Register(

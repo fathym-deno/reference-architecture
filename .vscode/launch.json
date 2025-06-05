@@ -30,9 +30,10 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/tests/common/cli/test-cli/.cli.json",
-        "hello"
+        "hello",
+        "me"
       ],
       "console": "integratedTerminal",
       "attachSimplePort": 9229
@@ -64,7 +65,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "init"
       ],
@@ -81,7 +82,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "build"
       ],
@@ -98,7 +99,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "build"
       ],
@@ -115,7 +116,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "build",
         "--config=/src/common/cli/ftm-cli/.cli.json"
@@ -133,7 +134,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/src/common/cli/ftm-cli/.cli.json",
         "compile"
       ],
@@ -182,7 +183,7 @@
         "run",
         "--inspect-brk",
         "-A",
-        "${workspaceFolder}/src/common/cli/cli-runtime.ts",
+        "${workspaceFolder}/scripts/cli-runtime.ts",
         "${workspaceFolder}/test/.cli.json",
         "wave"
       ],

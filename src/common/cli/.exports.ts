@@ -13,14 +13,12 @@ export * from './types/.exports.ts';
 export * from './utils/.exports.ts';
 
 export * from './CLI.ts';
-export * from './CLICommandEntry.ts';
 export * from './CLICommandExecutor.ts';
 export * from './CLICommandInvocationParser.ts';
 export * from './CLICommandMatcher.ts';
 export * from './CLICommandResolver.ts';
 export * from './CLIDFSContextManager.ts';
 export * from './CLIFileSystemHooks.ts';
-export * from './CLISuggestions.ts';
 export * from './LocalDevCLIFileSystemHooks.ts';
 
 export * from './styling/StyleKeys.ts';

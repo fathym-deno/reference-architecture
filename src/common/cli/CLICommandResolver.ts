@@ -1,6 +1,6 @@
 // deno-lint-ignore-file no-explicit-any
+import type { ZodSchema } from "./.deps.ts";
 import type { CLIFileSystemHooks } from "./CLIFileSystemHooks.ts";
-import { LocalDevCLIFileSystemHooks } from "./LocalDevCLIFileSystemHooks.ts";
 import {
   type CLICommandEntry,
   type CLIConfig,
@@ -11,12 +11,10 @@ import {
   CommandRuntime,
 } from "./.exports.ts";
 import type { TemplateLocator } from "./templates/TemplateLocator.ts";
-import type { ZodSchema } from "./.deps.ts";
 
 export class CLICommandResolver {
   constructor(
-    protected readonly hooks: CLIFileSystemHooks =
-      new LocalDevCLIFileSystemHooks(),
+    protected readonly hooks: CLIFileSystemHooks,
   ) {}
 
   public ResolveCommandMap(dir: string): Promise<Map<string, CLICommandEntry>> {

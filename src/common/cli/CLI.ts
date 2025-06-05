@@ -7,6 +7,7 @@ import { CLICommandResolver } from "./CLICommandResolver.ts";
 import { CLICommandExecutor } from "./CLICommandExecutor.ts";
 import { CLICommandMatcher } from "./CLICommandMatcher.ts";
 import { CLIDFSContextManager } from "./CLIDFSContextManager.ts";
+import { LocalDevCLIFileSystemHooks } from "./LocalDevCLIFileSystemHooks.ts";
 
 export class CLI {
   protected dfsCtxMgr: CLIDFSContextManager;
@@ -18,8 +19,10 @@ export class CLI {
     protected ioc: IoCContainer = new IoCContainer(),
   ) {
     this.dfsCtxMgr = options.dfsCtxMgr ?? new CLIDFSContextManager(this.ioc);
-    this.parser = options.parser ?? new CLICommandInvocationParser();
-    this.resolver = options.resolver ?? new CLICommandResolver();
+    this.parser = options.parser ??
+      new CLICommandInvocationParser(this.dfsCtxMgr);
+    this.resolver = options.resolver ??
+      new CLICommandResolver(new LocalDevCLIFileSystemHooks(this.dfsCtxMgr));
 
     this.ioc.Register(CLICommandResolver, () => this.resolver);
     this.ioc.Register(CLICommandInvocationParser, () => this.parser);

@@ -1,4 +1,4 @@
-import type { CLICommandEntry } from "./CLICommandEntry.ts";
+import type { CLICommandEntry } from "./types/CLICommandEntry.ts";
 import type { CLICommandResolver } from "./CLICommandResolver.ts";
 import type { CLIConfig } from "./types/CLIConfig.ts";
 import { CLIHelpBuilder } from "./help/CLIHelpBuilder.ts";

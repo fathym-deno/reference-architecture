@@ -1,4 +1,4 @@
-import { CommandIntent } from "../../testing/CommandIntent.ts";
+import { CommandIntent } from "../../intents/CommandIntent.ts";
 import CompileCommand from "../commands/compile.ts";
 
 export const compileWithToken = CommandIntent(
