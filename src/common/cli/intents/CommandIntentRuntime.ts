@@ -130,7 +130,7 @@ export class CommandIntentRuntime<
 
       const baseTemplatesDir = await this.dfsCtxMgr.ResolvePath(
         "project",
-        "./.templates",
+        "./templates",
       );
 
       this.capturedOutput = await captureLogs(async () => {

@@ -9,22 +9,22 @@ export class EmbeddedTemplateLocator implements TemplateLocator {
 
   public ListFiles(templateName: string): Promise<string[]> {
     const normalized = templateName
-      .replace(/^\.\/\.templates\//, "")
-      .replace(/^\.templates\//, "");
+      .replace(/^\.\/\templates\//, "")
+      .replace(/^\template\//, "");
 
     const prefix = normalized.endsWith("/") ? normalized : `${normalized}/`;
 
     const matchingKeys = Object.keys(this.templates)
       .filter((key) => key.startsWith(prefix) && !key.endsWith("/"))
-      .map((key) => `./.templates/${key}`);
+      .map((key) => `./template/${key}`);
 
     return Promise.resolve(matchingKeys);
   }
 
   public ReadTemplateFile(path: string): Promise<string> {
     const normalized = path
-      .replace(/^\.\/\.templates\//, "")
-      .replace(/^\.templates\//, "");
+      .replace(/^\.\/\template\//, "")
+      .replace(/^\template\//, "");
 
     const contents = this.templates[normalized];
 

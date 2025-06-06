@@ -2,7 +2,7 @@ import { z } from '@fathym/common/third-party/zod';
 import { Command, CommandParams } from '@fathym/common/cli';
 import type { SayHello } from '../.cli.init.ts';
 
-export const HelloFlagsSchema = z.object({
+const HelloFlagsSchema = z.object({
   loud: z.boolean().optional().describe('Shout the greeting'),
   'dry-run': z
     .boolean()
@@ -10,11 +10,11 @@ export const HelloFlagsSchema = z.object({
     .describe('Show the message without printing'),
 });
 
-export const HelloArgsSchema = z.tuple([
+const HelloArgsSchema = z.tuple([
   z.string().optional().describe('Name to greet'),
 ]);
 
-export class HelloCommandParams extends CommandParams<
+class HelloCommandParams extends CommandParams<
   z.infer<typeof HelloArgsSchema>,
   z.infer<typeof HelloFlagsSchema>
 > {

@@ -27,7 +27,7 @@ export class CLICommandInvocationParser {
 
     const baseTemplatesDir = await this.dfs.ResolvePath(
       "project",
-      config.Templates ?? "./.templates",
+      config.Templates ?? "./templates",
     );
 
     // Check if .cli.init.ts exists within the project DFS

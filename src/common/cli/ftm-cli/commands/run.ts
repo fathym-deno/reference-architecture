@@ -4,17 +4,17 @@ import { CommandParams } from "../../commands/CommandParams.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
-import { runDenoCommandWithLogs } from "../../utils/runDenoCommandWithLogs.ts"; // <-- new helper
+import { runCommandWithLogs } from "../../utils/runCommandWithLogs.ts"; // <-- new helper
 
-export const RunArgsSchema = z.tuple([z.string()]).rest(z.string());
+const RunArgsSchema = z.tuple([z.string()]).rest(z.string());
 
-export const RunFlagsSchema = z
+const RunFlagsSchema = z
   .object({
     config: z.string().optional(),
   })
   .passthrough();
 
-export class RunParams extends CommandParams<
+class RunParams extends CommandParams<
   z.infer<typeof RunArgsSchema>,
   z.infer<typeof RunFlagsSchema>
 > {
@@ -77,7 +77,7 @@ export default Command("run", "Run a specific command in a CLI project")
     Log.Info(`🚀 Executing CLI in new process:`);
     Log.Info(`→ deno run -A ${runner} ${cliArgs.join(" ")}`);
 
-    await runDenoCommandWithLogs(
+    await runCommandWithLogs(
       ["run", "-A", runner, ...cliArgs],
       Log,
       { exitOnFail: true },

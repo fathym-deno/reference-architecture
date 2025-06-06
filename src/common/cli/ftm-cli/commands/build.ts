@@ -18,7 +18,7 @@ export const BuildFlagsSchema = z.object({
   templates: z
     .string()
     .optional()
-    .describe("Path to .templates/ folder (default: ./.templates)"),
+    .describe("Path to templates/ folder (default: ./templates)"),
 });
 
 export class BuildParams extends CommandParams<
@@ -26,7 +26,7 @@ export class BuildParams extends CommandParams<
   z.infer<typeof BuildFlagsSchema>
 > {
   get TemplatesDir(): string {
-    return this.Flag("templates") ?? "./.templates";
+    return this.Flag("templates") ?? "./templates";
   }
 
   get ConfigOverride(): string | undefined {
@@ -133,7 +133,7 @@ async function resolveConfigAndOutDir(
 
   const outDir = "./.build";
 
-  const templatesDir = params.TemplatesDir ?? "./.templates";
+  const templatesDir = params.TemplatesDir ?? "./templates";
 
   return { configPath, outDir, configDir, templatesDir };
 }

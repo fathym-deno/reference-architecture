@@ -1,20 +1,22 @@
 import type { CommandLog } from "../commands/CommandLog.ts";
 
-export async function runDenoCommandWithLogs(
-  denoArgs: string[],
+export async function runCommandWithLogs(
+  args: string[],
   log: CommandLog,
   {
+    command = "deno",
     exitOnFail = true,
     stdin = "inherit",
     prefix = "",
   }: {
+    command?: string;
     exitOnFail?: boolean;
     stdin?: "inherit" | "null";
     prefix?: string;
   } = {},
 ): Promise<{ code: number; success: boolean }> {
-  const cmd = new Deno.Command("deno", {
-    args: denoArgs,
+  const cmd = new Deno.Command(command, {
+    args,
     stdin,
     stdout: "piped",
     stderr: "piped",
@@ -30,7 +32,7 @@ export async function runDenoCommandWithLogs(
   if (stderr.trim()) log.Error(`${prefix}${stderr.trim()}`);
 
   if (!success && exitOnFail) {
-    log.Error(`❌ Command failed with exit code ${code}`);
+    log.Error(`❌ ${command} command failed with exit code ${code}`);
     Deno.exit(code);
   }
 

@@ -3,7 +3,7 @@ import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import BuildCommand from "./build.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
-import { runDenoCommandWithLogs } from "../../utils/runDenoCommandWithLogs.ts";
+import { runCommandWithLogs } from "../../utils/runCommandWithLogs.ts";
 
 export const CompileArgsSchema = z.tuple([]);
 
@@ -105,7 +105,7 @@ export default Command("compile", "Compile the CLI into a native binary")
     const { Build } = Commands!;
     await Build([], { config: join(Services.CLIRoot, configInfo.Path) });
 
-    await runDenoCommandWithLogs(
+    await runCommandWithLogs(
       [
         "compile",
         ...permissions,

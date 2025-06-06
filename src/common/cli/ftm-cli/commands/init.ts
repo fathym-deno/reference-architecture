@@ -6,11 +6,11 @@ import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 
 // --- Schemas ---
-export const InitArgsSchema = z.tuple([
+const InitArgsSchema = z.tuple([
   z.string().optional().describe("Project name"),
 ]);
 
-export const InitFlagsSchema = z.object({
+const InitFlagsSchema = z.object({
   template: z
     .string()
     .optional()
@@ -25,7 +25,7 @@ export const InitFlagsSchema = z.object({
 // --- Params Class ---
 
 // --- Params Class ---
-export class InitParams extends CommandParams<
+class InitParams extends CommandParams<
   z.infer<typeof InitArgsSchema>,
   z.infer<typeof InitFlagsSchema>
 > {

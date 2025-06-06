@@ -2,7 +2,7 @@ import { z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
-import { runDenoCommandWithLogs } from "../../utils/runDenoCommandWithLogs.ts";
+import { runCommandWithLogs } from "../../utils/runCommandWithLogs.ts";
 
 export const TestArgsSchema = z.tuple([
   z
@@ -78,7 +78,7 @@ export default Command("test", "Run CLI tests using Deno")
     Log.Info(`🧪 Running tests from: ${testPath}`);
     Log.Info(`➡️  deno test -A ${denoFlags.join(" ")} ${testPath}`);
 
-    await runDenoCommandWithLogs(["test", "-A", ...denoFlags, testPath], Log, {
+    await runCommandWithLogs(["test", "-A", ...denoFlags, testPath], Log, {
       exitOnFail: true,
     });
 

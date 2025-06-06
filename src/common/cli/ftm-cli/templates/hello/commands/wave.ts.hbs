@@ -7,7 +7,7 @@ import {
 } from '@fathym/common/cli';
 
 // 🧩 Define schemas
-export const WaveFlagsSchema = z.object({
+const WaveFlagsSchema = z.object({
   excited: z.boolean().optional().describe('Add extra enthusiasm to the wave'),
   'dry-run': z
     .boolean()
@@ -15,12 +15,12 @@ export const WaveFlagsSchema = z.object({
     .describe('Show the wave without printing it'),
 });
 
-export const WaveArgsSchema = z.tuple([
+const WaveArgsSchema = z.tuple([
   z.string().optional().describe('Name to wave at'),
 ]);
 
 // 🧩 Parameter class
-export class WaveCommandParams extends CommandParams<
+class WaveCommandParams extends CommandParams<
   z.infer<typeof WaveArgsSchema>,
   z.infer<typeof WaveFlagsSchema>
 > {

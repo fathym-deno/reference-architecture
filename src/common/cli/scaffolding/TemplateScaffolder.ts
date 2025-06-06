@@ -23,7 +23,7 @@ export class TemplateScaffolder {
   public async Scaffold(options: TemplateScaffoldOptions): Promise<void> {
     const { templateName, outputDir, context = {} } = options;
 
-    const templatePath = `./.templates/${templateName}`;
+    const templatePath = `./templates/${templateName}`;
 
     const mergedContext = { ...this.baseContext, ...context };
 
