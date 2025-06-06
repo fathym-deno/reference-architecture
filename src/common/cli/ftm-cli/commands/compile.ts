@@ -60,16 +60,21 @@ export default Command("compile", "Compile the CLI into a native binary")
   })
   .Services(async (ctx, ioc) => {
     const dfsCtx = await ioc.Resolve(CLIDFSContextManager);
-    await dfsCtx.RegisterProjectDFS(ctx.Params.Entry, "CLI");
+    const cliRoot = await dfsCtx.RegisterProjectDFS(ctx.Params.Entry, "CLI");
 
     return {
       CLIDFS: await dfsCtx.GetDFS("CLI"),
+      CLIRoot: cliRoot,
     };
   })
   .Run(async ({ Params, Log, Commands, Services }) => {
     const { CLIDFS } = Services;
 
-    const entryPath = await CLIDFS.ResolvePath(Params.Entry);
+    const relativeEntry = Params.Entry.replace(
+      CLIDFS.Root.replace(/^\.\/?/, ""),
+      "",
+    ).replace(/^\.\/?/, "");
+    const entryPath = await CLIDFS.ResolvePath(`./${relativeEntry}`);
 
     const outputDir = await CLIDFS.ResolvePath(Params.OutputDir);
     const permissions = Params.Permissions;
@@ -98,7 +103,7 @@ export default Command("compile", "Compile the CLI into a native binary")
     Log.Info(`- Permissions: ${permissions.join(" ")}`);
 
     const { Build } = Commands!;
-    await Build([], { config: "./.cli.json" });
+    await Build([], { config: join(Services.CLIRoot, configInfo.Path) });
 
     const compile = new Deno.Command("deno", {
       args: [

@@ -17,7 +17,7 @@ export class CLIDFSContextManager {
   public RegisterCustomDFS(
     name: string,
     details: LocalDFSFileHandlerDetails,
-  ): void {
+  ): string {
     this.ioc.Register(
       LocalDFSFileHandler,
       () => new LocalDFSFileHandler(details),
@@ -25,16 +25,18 @@ export class CLIDFSContextManager {
         Name: name,
       },
     );
+
+    return details.FileRoot;
   }
 
-  public RegisterExecutionDFS(cwd: string = Deno.cwd()): void {
-    this.RegisterCustomDFS("execution", { FileRoot: cwd });
+  public RegisterExecutionDFS(cwd: string = Deno.cwd()): string {
+    return this.RegisterCustomDFS("execution", { FileRoot: cwd });
   }
 
   public RegisterProjectDFS(
     fileUrlInProject: string,
     name: string = "project",
-  ): void {
+  ): string {
     if (fileUrlInProject.startsWith("file:///")) {
       fileUrlInProject = fromFileUrl(fileUrlInProject);
     }
@@ -42,12 +44,12 @@ export class CLIDFSContextManager {
     const localPath = dirname(fileUrlInProject);
     const projectRoot = this.findProjectRoot(localPath);
 
-    this.RegisterCustomDFS(name, { FileRoot: projectRoot });
+    return this.RegisterCustomDFS(name, { FileRoot: projectRoot });
   }
 
-  public RegisterUserHomeDFS(): void {
+  public RegisterUserHomeDFS(): string {
     const homeDir = this.getUserHomeDir();
-    this.RegisterCustomDFS("user-home", { FileRoot: homeDir });
+    return this.RegisterCustomDFS("user-home", { FileRoot: homeDir });
   }
 
   // ─── DFS Access Utilities ─────────────────────────────────────────────

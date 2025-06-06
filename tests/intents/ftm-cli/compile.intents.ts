@@ -1,13 +1,23 @@
-import { CommandIntent } from "../../test.deps.ts";
+import { CommandIntents } from "../../test.deps.ts";
 import CompileCommand from "../../../src/common/cli/ftm-cli/commands/compile.ts";
 
-CommandIntent(
-  "Compile works with token config",
+CommandIntents(
+  "Compile Command Suite",
   CompileCommand.Build(),
   import.meta.resolve("../../../src/common/cli/ftm-cli/.cli.json"),
 )
-  .Args([])
-  .Flags({ entry: "./test/.build/cli.ts" })
-  .ExpectLogs("🔧 Compiling", "🎉 All CLI binaries compiled")
-  .ExpectExit(0)
+  .Intent("Compile CLI binary from build output", (int) =>
+    int
+      .Args([])
+      .Flags({
+        entry: "./test/my-cli/.build/cli.ts",
+      })
+      .ExpectLogs(
+        "🔧 Compiling CLI for:",
+        "- Entry: C:\\Fathym\\source\\github\\fathym-deno\\reference-architecture\\test\\my-cli\\.build\\cli.ts",
+        "- Output dir: C:\\Fathym\\source\\github\\fathym-deno\\reference-architecture\\test\\my-cli\\.dist",
+        "✅ Compiled:",
+        "👉 To install, run: `your-cli install --from",
+      )
+      .ExpectExit(0))
   .Run();
