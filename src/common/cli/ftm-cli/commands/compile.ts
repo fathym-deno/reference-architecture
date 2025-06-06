@@ -3,6 +3,7 @@ import { Command } from "../../fluent/Command.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
 import BuildCommand from "./build.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
+import { runDenoCommandWithLogs } from "../../utils/runDenoCommandWithLogs.ts";
 
 export const CompileArgsSchema = z.tuple([]);
 
@@ -75,7 +76,6 @@ export default Command("compile", "Compile the CLI into a native binary")
       "",
     ).replace(/^\.\/?/, "");
     const entryPath = await CLIDFS.ResolvePath(`./${relativeEntry}`);
-
     const outputDir = await CLIDFS.ResolvePath(Params.OutputDir);
     const permissions = Params.Permissions;
 
@@ -105,24 +105,17 @@ export default Command("compile", "Compile the CLI into a native binary")
     const { Build } = Commands!;
     await Build([], { config: join(Services.CLIRoot, configInfo.Path) });
 
-    const compile = new Deno.Command("deno", {
-      args: [
+    await runDenoCommandWithLogs(
+      [
         "compile",
         ...permissions,
         "--output",
         outputBinaryPath,
         entryPath,
       ],
-      stdin: "null",
-      stdout: "inherit",
-      stderr: "inherit",
-    });
-
-    const result = await compile.output();
-    if (!result.success) {
-      Log.Error(`❌ Failed to compile binary for token: ${primaryToken}`);
-      Deno.exit(result.code);
-    }
+      Log,
+      { stdin: "null", exitOnFail: true },
+    );
 
     Log.Success(`✅ Compiled: ${outputBinaryPath}`);
     Log.Info(

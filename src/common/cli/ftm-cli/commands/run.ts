@@ -4,6 +4,7 @@ import { CommandParams } from "../../commands/CommandParams.ts";
 import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
 import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
+import { runDenoCommandWithLogs } from "../../utils/runDenoCommandWithLogs.ts"; // <-- new helper
 
 export const RunArgsSchema = z.tuple([z.string()]).rest(z.string());
 
@@ -71,35 +72,16 @@ export default Command("run", "Run a specific command in a CLI project")
       ...Params.ForwardedFlags,
     ];
 
-    Log.Info(`🚀 Executing CLI in new process:`);
-    Log.Info(`→ deno run -A ${outputFile} ${cliArgs.join(" ")}`);
-
     const runner = await Services.CLIDFS.ResolvePath(outputFile);
 
-    const cmd = new Deno.Command("deno", {
-      args: ["run", "-A", runner, ...cliArgs],
-      stdout: "piped",
-      stderr: "piped",
-      stdin: "inherit",
-    });
+    Log.Info(`🚀 Executing CLI in new process:`);
+    Log.Info(`→ deno run -A ${runner} ${cliArgs.join(" ")}`);
 
-    const proc = cmd.spawn();
-    const { code, success } = await proc.status;
-
-    const stdout = await new Response(proc.stdout).text();
-    const stderr = await new Response(proc.stderr).text();
-
-    if (stdout.trim()) {
-      Log.Info(stdout.trim());
-    }
-    if (stderr.trim()) {
-      Log.Error(stderr.trim());
-    }
-
-    if (!success) {
-      Log.Error(`❌ CLI failed with exit code ${code}`);
-      Deno.exit(code);
-    }
+    await runDenoCommandWithLogs(
+      ["run", "-A", runner, ...cliArgs],
+      Log,
+      { exitOnFail: true },
+    );
 
     Log.Success("🎉 CLI run completed");
   });

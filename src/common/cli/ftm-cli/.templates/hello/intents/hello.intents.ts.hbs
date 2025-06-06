@@ -32,14 +32,14 @@ CommandIntents('Hello Command Suite', cmd, origin)
     int
       .Args(['sandbox'])
       .Flags({ 'dry-run': true })
-      .ExpectLogs('🛑 Dry run: "Hello, sandbox" would have been printed.')
+      .ExpectLogs('🛑 Dry run: "Hello, sandbox!" would have been printed.')
       .ExpectExit(0),
   )
   .Intent('Dry run loud greeting', (int) =>
     int
       .Args(['everyone'])
       .Flags({ 'dry-run': true, loud: true })
-      .ExpectLogs('🛑 Dry run: "HELLO, EVERYONE" would have been printed.')
+      .ExpectLogs('🛑 Dry run: "HELLO, EVERYONE!" would have been printed.')
       .ExpectExit(0),
   )
   .Run();
