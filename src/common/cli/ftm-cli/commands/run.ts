@@ -1,29 +1,24 @@
-import { z } from '../../.deps.ts';
-import { Command } from '../../fluent/Command.ts';
-import { CommandParams } from '../../commands/CommandParams.ts';
-import { CLIDFSContextManager } from '../../CLIDFSContextManager.ts';
-import { CLI } from '../../.exports.ts';
+import { z } from "../../.deps.ts";
+import { Command } from "../../fluent/Command.ts";
+import { CommandParams } from "../../commands/CommandParams.ts";
+import { CLIDFSContextManager } from "../../CLIDFSContextManager.ts";
+import type { TemplateLocator } from "../../templates/TemplateLocator.ts";
+import { TemplateScaffolder } from "../../.exports.ts";
 
-export const RunArgsSchema = z
-  .tuple([z.string()])
-  .rest(z.string())
-  .describe('Arguments to forward to the CLI');
+export const RunArgsSchema = z.tuple([z.string()]).rest(z.string());
 
 export const RunFlagsSchema = z
   .object({
-    config: z
-      .string()
-      .optional()
-      .describe('Path to .cli.json (default: execution context)'),
+    config: z.string().optional(),
   })
-  .passthrough(); // Accept any additional flags
+  .passthrough();
 
 export class RunParams extends CommandParams<
   z.infer<typeof RunArgsSchema>,
   z.infer<typeof RunFlagsSchema>
 > {
   get ConfigPath(): string | undefined {
-    return this.Flag('config');
+    return this.Flag("config");
   }
 
   get ForwardedArgs(): string[] {
@@ -32,12 +27,12 @@ export class RunParams extends CommandParams<
 
   get ForwardedFlags(): string[] {
     return Object.entries(this.Flags)
-      .filter(([key]) => key !== 'config') // Don't forward internal flags
+      .filter(([key]) => key !== "config")
       .map(([key, val]) => `--${key}=${val}`);
   }
 }
 
-export default Command('run', 'Run a specific command in a CLI project')
+export default Command("run", "Run a specific command in a CLI project")
   .Args(RunArgsSchema)
   .Flags(RunFlagsSchema)
   .Params(RunParams)
@@ -45,34 +40,66 @@ export default Command('run', 'Run a specific command in a CLI project')
     const dfsCtx = await ioc.Resolve(CLIDFSContextManager);
 
     if (ctx.Params.ConfigPath) {
-      await dfsCtx.RegisterProjectDFS(ctx.Params.ConfigPath, 'CLI');
+      await dfsCtx.RegisterProjectDFS(ctx.Params.ConfigPath, "CLI");
     }
 
-    const cli = new CLI({});
+    const dfs = ctx.Params.ConfigPath
+      ? await dfsCtx.GetDFS("CLI")
+      : await dfsCtx.GetExecutionDFS();
 
     return {
-      CLI: cli,
-      CLIDFS: ctx.Params.ConfigPath
-        ? await dfsCtx.GetDFS('CLI')
-        : await dfsCtx.GetExecutionDFS(),
+      CLIDFS: dfs,
+      Scaffolder: new TemplateScaffolder(
+        await ioc.Resolve<TemplateLocator>(ioc.Symbol("TemplateLocator")),
+        dfs,
+      ),
     };
   })
   .Run(async ({ Params, Log, Services }) => {
-    const entryPath = await Services.CLIDFS.ResolvePath(`./.cli.json`);
+    const outputFile = "./.temp/cli-runner.ts";
 
-    const cliArgs = [entryPath, ...Params.ForwardedArgs, ...Params.ForwardedFlags];
+    Log.Info(`📦 Scaffolding runner script → ${outputFile}`);
 
-    Log.Info(`🚀 Running CLI`);
-    Log.Info(`→ With args: ${cliArgs.join(' ')}`);
+    await Services.Scaffolder.Scaffold({
+      templateName: "cli-run",
+      outputDir: "./.temp",
+    });
 
-    try {
-      await Services.CLI.RunFromArgs(cliArgs);
-    } catch (e) {
-      const err = e as Error;
+    const cliArgs = [
+      await Services.CLIDFS.ResolvePath("./.cli.json"),
+      ...Params.ForwardedArgs,
+      ...Params.ForwardedFlags,
+    ];
 
-      Log.Error(`❌ Failed to run CLI.\n${err.stack || err.message}`);
-      Deno.exit(1);
+    Log.Info(`🚀 Executing CLI in new process:`);
+    Log.Info(`→ deno run -A ${outputFile} ${cliArgs.join(" ")}`);
+
+    const runner = await Services.CLIDFS.ResolvePath(outputFile);
+
+    const cmd = new Deno.Command("deno", {
+      args: ["run", "-A", runner, ...cliArgs],
+      stdout: "piped",
+      stderr: "piped",
+      stdin: "inherit",
+    });
+
+    const proc = cmd.spawn();
+    const { code, success } = await proc.status;
+
+    const stdout = await new Response(proc.stdout).text();
+    const stderr = await new Response(proc.stderr).text();
+
+    if (stdout.trim()) {
+      Log.Info(stdout.trim());
+    }
+    if (stderr.trim()) {
+      Log.Error(stderr.trim());
     }
 
-    Log.Success('🎉 CLI run completed');
+    if (!success) {
+      Log.Error(`❌ CLI failed with exit code ${code}`);
+      Deno.exit(code);
+    }
+
+    Log.Success("🎉 CLI run completed");
   });
