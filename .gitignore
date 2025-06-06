@@ -6,7 +6,8 @@ coverage/
 lcov/
 target/
 tailwind.config.js
-test/
+
+test/my-cli/
 
 .build/
 .dist/

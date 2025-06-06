@@ -1,1 +1,1 @@
-// import './ftm-cli/.intents.ts';
+import './ftm-cli/.intents.ts';
