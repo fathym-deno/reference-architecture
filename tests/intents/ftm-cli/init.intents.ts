@@ -8,7 +8,7 @@ CommandIntents(
 )
   .Intent("Init with default 'hello' template", (int) =>
     int
-      .Args(["./test/hello"])
+      .Args(["./test/my-cli"])
       .Flags({})
       .ExpectLogs(
         `Project created from "hello" template.`,

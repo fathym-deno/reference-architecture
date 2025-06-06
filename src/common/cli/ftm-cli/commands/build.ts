@@ -1,4 +1,4 @@
-import { dirname, join, pascalCase, z } from "../../.deps.ts";
+import { join, pascalCase, z } from "../../.deps.ts";
 import { Command } from "../../fluent/Command.ts";
 import { TemplateScaffolder } from "../../.exports.ts";
 import { CommandParams } from "../../commands/CommandParams.ts";
@@ -63,7 +63,7 @@ export default Command("build", "Prepare static CLI build folder")
     };
   })
   .Run(async ({ Log, Services }) => {
-    const { configPath, configDir, outDir, templatesDir } = Services.Details;
+    const { configPath, outDir, templatesDir } = Services.Details;
     const { BuildDFS, Scaffolder } = Services;
 
     const embeddedTemplatesPath = await collectTemplates(
@@ -74,17 +74,18 @@ export default Command("build", "Prepare static CLI build folder")
       Log,
     );
 
-    const configInfo = await BuildDFS.GetFileInfo(configPath);
+    const configInfo = await BuildDFS.GetFileInfo(".cli.json");
     if (!configInfo) throw new Error(`❌ Could not read ${configPath}`);
     const configText = await new Response(configInfo.Contents).text();
     const config = JSON.parse(configText);
 
-    const commandsPath = join(configDir, config.Commands ?? "./commands");
+    const commandsDir = config.Commands ?? "./commands";
 
     const { imports, modules, commandEntries } = await collectCommandMetadata(
-      commandsPath,
+      commandsDir,
       BuildDFS,
     );
+
     const embeddedEntriesPath = await writeCommandEntries(
       commandEntries,
       outDir,
@@ -92,8 +93,7 @@ export default Command("build", "Prepare static CLI build folder")
       Log,
     );
 
-    const initScriptPath = join(configDir, ".cli.init.ts");
-    const hasInit = await BuildDFS.GetFileInfo(initScriptPath);
+    const hasInit = await BuildDFS.GetFileInfo(".cli.init.ts");
     const importInit = hasInit ? "../.cli.init.ts" : undefined;
 
     await Scaffolder.Scaffold({
@@ -110,7 +110,7 @@ export default Command("build", "Prepare static CLI build folder")
 
     Log.Info(`🧩 Scaffolder rendered build-static template to ${outDir}`);
     Log.Success(
-      `Build complete! Run \`deno compile\` on .build/cli.ts to finalize.`,
+      `Build complete! Run \`ftm compile\` on .build/cli.ts to finalize.`,
     );
   });
 
@@ -124,17 +124,16 @@ async function resolveConfigAndOutDir(
   templatesDir: string;
 }> {
   const configPath = params.ConfigOverride ?? "./.cli.json";
-  const exists = await dfs.GetFileInfo(configPath);
+  const exists = await dfs.GetFileInfo("./.cli.json");
   if (!exists) {
     throw new Error(`❌ Cannot find .cli.json at: ${configPath}`);
   }
 
-  const configDir = dirname(configPath);
-  const outDir = `./.build`;
-  const templatesDir = (params.TemplatesDir ?? "./.templates").replace(
-    /^\.?\//,
-    "",
-  );
+  const configDir = dfs.Root;
+
+  const outDir = "./.build";
+
+  const templatesDir = params.TemplatesDir ?? "./.templates";
 
   return { configPath, outDir, configDir, templatesDir };
 }
@@ -146,17 +145,16 @@ async function collectTemplates(
   toDFS: DFSFileHandler,
   log: CommandLog,
 ): Promise<string> {
-  const baseDirNormalized = templatesDir.replace(/^\.?\//, "");
   const paths = await fromDFS.LoadAllPaths();
   const templateFiles = paths.filter(
-    (p) => p.startsWith(`./${baseDirNormalized}`) && !p.endsWith("/"),
+    (p) => p.startsWith(templatesDir) && !p.endsWith("/"),
   );
 
   const templates: Record<string, string> = {};
   for (const fullPath of templateFiles) {
     const info = await fromDFS.GetFileInfo(fullPath);
     if (!info) continue;
-    const rel = fullPath.replace(`./${baseDirNormalized}/`, "");
+    const rel = fullPath.replace(`${templatesDir}/`, "");
     templates[rel] = await new Response(info.Contents).text();
   }
 
@@ -168,17 +166,16 @@ async function collectTemplates(
 }
 
 async function collectCommandMetadata(
-  baseDir: string,
+  commandsDir: string,
   dfs: DFSFileHandler,
 ): Promise<{
   imports: { alias: string; path: string }[];
   modules: { key: string; alias: string }[];
   commandEntries: Record<string, CLICommandEntry>;
 }> {
-  const baseDirNormalized = baseDir.replace(/^\.?\//, "");
   const paths = await dfs.LoadAllPaths();
   const entries = paths.filter(
-    (p) => p.startsWith(`./${baseDirNormalized}`) && p.endsWith(".ts"),
+    (p) => p.startsWith(commandsDir) && p.endsWith(".ts"),
   );
 
   const imports = [];
@@ -186,7 +183,7 @@ async function collectCommandMetadata(
   const commandEntries: Record<string, CLICommandEntry> = {};
 
   for (const path of entries) {
-    const rel = path.replace(`./${baseDirNormalized}/`, "").replace(/\\/g, "/");
+    const rel = path.replace(`${commandsDir}/`, "").replace(/\\/g, "/");
     const isMeta = rel.endsWith(".metadata.ts");
     const key = isMeta
       ? rel.replace(/\/\.metadata\.ts$/, "")
