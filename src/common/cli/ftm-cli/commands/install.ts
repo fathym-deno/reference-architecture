@@ -25,8 +25,8 @@ export class InstallParams extends CommandParams<
     return this.Flag("to") ?? "./.bin";
   }
 
-  get ConfigPath(): string {
-    return this.Flag("config") ?? "./.cli.json";
+  get ConfigPath(): string | undefined {
+    return this.Flag("config");
   }
 
   get UseHome(): boolean {
