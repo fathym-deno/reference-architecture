@@ -9,36 +9,6 @@ The preferred approach is the fluent `Command()` builder, which provides a clean
 Here’s a simple command to get started:
 
 ```ts
-// commands/hello.ts
-import { z } from '@fathym/common/third-party/zod';
-import { Command, CommandParams } from '@fathym/common/cli';
-
-const HelloArgsSchema = z.tuple([
-  z.string().optional().describe('Name to greet'),
-]);
-
-const HelloFlagsSchema = z.object({
-  loud: z.boolean().optional().describe('Shout the greeting'),
-  'dry-run': z.boolean().optional().describe('Show the message without printing'),
-});
-
-class HelloParams extends CommandParams<
-  z.infer<typeof HelloArgsSchema>,
-  z.infer<typeof HelloFlagsSchema>
-> {
-  get Name() {
-    return this.Arg(0) ?? 'world';
-  }
-
-  get Loud() {
-    return this.Flag('loud') ?? false;
-  }
-
-  get DryRun() {
-    return this.Flag('dry-run') ?? false;
-  }
-}
-
 export default Command('hello', 'Prints a friendly greeting.')
   .Args(HelloArgsSchema)
   .Flags(HelloFlagsSchema)
@@ -63,10 +33,6 @@ export default Command('hello', 'Prints a friendly greeting.')
 Use `.Commands({})` to define nested subcommands under a shared namespace.
 
 ```ts
-import { Command } from '@fathym/common/cli';
-import Promote from './promote.ts';
-import Diff from './diff.ts';
-
 export default Command('schema', 'Schema-related commands')
   .Commands({
     promote: Promote,
@@ -176,103 +142,114 @@ class MyParams extends CommandParams<
 
 ## Testing Commands with Intents
 
-You can write tests using either the `CommandIntent()` or the full `CommandIntents()` suite for grouped behaviors. These helpers simulate CLI input and validate output with full lifecycle accuracy.
+Fathym CLI provides intent-based testing primitives that simulate full command execution, validate outputs, and assert behavior. You can test individual behaviors with `CommandIntent()`, or define grouped test suites using `CommandIntents()`.
 
-### ✅ Individual Intents
+### ✅ Individual CommandIntent
+
+Use `CommandIntent()` when testing a single behavior inline:
 
 ```ts
 import { CommandIntent } from '@fathym/common/cli';
-import WaveCommand from '../commands/wave.ts';
+import HelloCommand from '../commands/hello.ts';
 
 const origin = import.meta.resolve('../.cli.json');
 
-CommandIntent('waves at default friend', WaveCommand, origin)
-  .Args([undefined])
+CommandIntent('greets by default', HelloCommand, origin)
+  .Args([])
   .Flags({})
-  .ExpectLogs('👋 Waving at friend')
-  .ExpectExit(0)
-  .Run();
-
-CommandIntent('waves at a specific person', WaveCommand, origin)
-  .Args(['me'])
-  .Flags({})
-  .ExpectLogs('👋 Waving at me')
+  .ExpectLogs('👋 Hello, world')
   .ExpectExit(0)
   .Run();
 ```
 
-### 🧪 Test Suites with `CommandIntents()`
+### 🧪 Grouped CommandIntents Suite
+
+Use `CommandIntents()` to organize and execute multiple test cases together:
 
 ```ts
 import { CommandIntents } from '@fathym/common/cli';
 import HelloCommand from '../commands/hello.ts';
-import initFn from '../.cli.init.ts';
 
-const cmd = HelloCommand.Build();
 const origin = import.meta.resolve('../.cli.json');
+const cmd = HelloCommand.Build();
 
 CommandIntents('Hello Command Suite', cmd, origin)
-  .WithInit(initFn)
-  .Intent('Greet default world', (int) =>
-    int
-      .Args([undefined])
-      .Flags({})
-      .ExpectLogs('👋 Hello, world')
-      .ExpectExit(0),
+  .Intent('default greeting', (int) =>
+    int.Args([]).Flags({}).ExpectLogs('👋 Hello, world').ExpectExit(0),
   )
-  .Intent('Greet a specific name', (int) =>
-    int
-      .Args(['me'])
-      .Flags({})
-      .ExpectLogs('👋 Hello, me')
-      .ExpectExit(0),
-  )
-  .Intent('Greet loudly', (int) =>
-    int
-      .Args(['team'])
-      .Flags({ loud: true })
-      .ExpectLogs('👋 HELLO, TEAM')
-      .ExpectExit(0),
-  )
-  .Intent('Dry run greeting', (int) =>
-    int
-      .Args(['sandbox'])
-      .Flags({ 'dry-run': true })
-      .ExpectLogs('🛑 Dry run: "Hello, sandbox!" would have been printed.')
-      .ExpectExit(0),
-  )
-  .Intent('Dry run loud greeting', (int) =>
-    int
-      .Args(['everyone'])
-      .Flags({ 'dry-run': true, loud: true })
-      .ExpectLogs('🛑 Dry run: "HELLO, EVERYONE!" would have been printed.')
-      .ExpectExit(0),
+  .Intent('loud greeting', (int) =>
+    int.Args(['you']).Flags({ loud: true }).ExpectLogs('👋 HELLO, YOU').ExpectExit(0),
   )
   .Run();
 ```
 
-🧠 Each intent validates logs, parameters, and exit codes, and ensures your command behaves predictably with full lifecycle simulation.
+📦 These helpers exercise the full CLI lifecycle — including argument parsing, flag resolution, parameter derivation, service injection, logging, and exit code evaluation — with zero CLI startup.
 
-```ts
-import Hello from '../commands/hello.ts';
-
-export default new CommandIntent(Hello, 'says hello', import.meta.url)
-  .Args(['world'])
-  .Flags({ loud: true })
-  .ExpectLogs('HELLO, WORLD!')
-  .Run();
-```
-
-🧪 Intents validate logs, parameters, and behavior with CI-ready assertions.
+🧠 Add `.WithInit()` if your command depends on runtime-bound services from `.cli.init.ts`.
 
 ## Tips & Best Practices
 
-✅ Use fluent API for clarity and speed
-📁 Isolate each command in its own file
-🎯 Wrap arg/flag logic in a `Params` class
-🧪 Add a `*.intent.ts` test per command
-🪄 Register shared services in `.cli.init.ts`
-📦 Use `.Commands({})` for clean nesting — avoid `if (cmd === ...)`
+Here’s how to build commands that scale with your team and remain easy to maintain over time:
+
+✅ Use the fluent API for clarity and speed — most commands don’t need class inheritance.
+📁 Isolate each command in its own file — they’re composable units, not static scripts.
+🎯 Wrap argument and flag logic in a `Params` class — it simplifies access and behavior.
+🧪 Add an intent test (`*.intent.ts`) for each command — ensure logic works before it’s compiled.
+🪄 Register shared services in `.cli.init.ts` — centralize service wiring, keep command files focused.
+📦 Use `.Commands({})` for clean subcommand nesting — avoid hand-written `switch` or `if/else` chains.
+
+---
+
+### 📌 Full Example: Hello Command
+
+```ts
+import { z } from '@fathym/common/third-party/zod';
+import { Command, CommandParams } from '@fathym/common/cli';
+
+const HelloArgsSchema = z.tuple([
+  z.string().optional().describe('Name to greet'),
+]);
+
+const HelloFlagsSchema = z.object({
+  loud: z.boolean().optional().describe('Shout the greeting'),
+  'dry-run': z.boolean().optional().describe('Show the message without printing'),
+});
+
+class HelloParams extends CommandParams<
+  z.infer<typeof HelloArgsSchema>,
+  z.infer<typeof HelloFlagsSchema>
+> {
+  get Name() {
+    return this.Arg(0) ?? 'world';
+  }
+
+  get Loud() {
+    return this.Flag('loud') ?? false;
+  }
+
+  get DryRun() {
+    return this.Flag('dry-run') ?? false;
+  }
+}
+
+export default Command('hello', 'Prints a friendly greeting.')
+  .Args(HelloArgsSchema)
+  .Flags(HelloFlagsSchema)
+  .Params(HelloParams)
+  .Run(({ Params, Log }) => {
+    const message = Params.Loud
+      ? `HELLO, ${Params.Name.toUpperCase()}!`
+      : `Hello, ${Params.Name}.`;
+
+    if (Params.DryRun) {
+      Log.Info(`🛑 Dry run: "${message}" would have been printed.`);
+    } else {
+      Log.Info(message);
+    }
+  });
+```
+
+This pattern is the foundation: declarative schema, expressive params, clean logic, and lifecycle-ready. Build from here.
 
 ## Related Topics
 

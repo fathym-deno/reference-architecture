@@ -81,13 +81,13 @@ export class LocalDFSFileHandler
       } catch {}
     }
 
-    console.log(
-      `Unable to locate a local file at path ${filePath}${
-        defaultFileName
-          ? `, and no default file was found for ${defaultFileName}.`
-          : "."
-      }`,
-    );
+    // console.log(
+    //   `Unable to locate a local file at path ${filePath}${
+    //     defaultFileName
+    //       ? `, and no default file was found for ${defaultFileName}.`
+    //       : "."
+    //   }`,
+    // );
 
     return undefined;
   }
