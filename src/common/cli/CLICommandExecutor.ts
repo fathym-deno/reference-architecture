@@ -98,9 +98,9 @@ export class CLICommandExecutor {
     opts: CLICommandExecutorOptions,
   ): Promise<CommandContext> {
     const log = {
-      Info: (...data: any[]) => console.info(data),
-      Warn: (...data: any[]) => console.warn(data),
-      Error: (...data: any[]) => console.error(data),
+      Info: (...data: any[]) => console.info(...data),
+      Warn: (...data: any[]) => console.warn(...data),
+      Error: (...data: any[]) => console.error(...data),
       Success: (...args: unknown[]) => console.log("✅", ...args),
     };
 
