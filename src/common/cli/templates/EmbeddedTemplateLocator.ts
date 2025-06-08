@@ -9,8 +9,8 @@ export class EmbeddedTemplateLocator implements TemplateLocator {
 
   public ListFiles(templateName: string): Promise<string[]> {
     const normalized = templateName
-      .replace(/^\.\/\templates\//, "")
-      .replace(/^\template\//, "");
+      .replace(/^.*[\\/](templates|template)[\\/]/, "") // Strip any full path prefix
+      .replace(/^template\//, "");
 
     const prefix = normalized.endsWith("/") ? normalized : `${normalized}/`;
 
@@ -23,8 +23,8 @@ export class EmbeddedTemplateLocator implements TemplateLocator {
 
   public ReadTemplateFile(path: string): Promise<string> {
     const normalized = path
-      .replace(/^\.\/\template\//, "")
-      .replace(/^\template\//, "");
+      .replace(/^\.\/template\//, "")
+      .replace(/^template\//, "");
 
     const contents = this.templates[normalized];
 

@@ -3,13 +3,8 @@ import { Handlebars } from "../../../third-party/.exports.ts";
 import type { TemplateLocator } from "../templates/TemplateLocator.ts";
 
 export interface TemplateScaffoldOptions {
-  /** Used to resolve files within a named template set */
   templateName: string;
-
-  /** Where to write the scaffolded files within the DFS */
   outputDir?: string;
-
-  /** Additional context to merge with base context (optional) */
   context?: Record<string, unknown>;
 }
 
@@ -23,27 +18,28 @@ export class TemplateScaffolder {
   public async Scaffold(options: TemplateScaffoldOptions): Promise<void> {
     const { templateName, outputDir, context = {} } = options;
 
-    const templatePath = `./templates/${templateName}`;
-
     const mergedContext = { ...this.baseContext, ...context };
+    const templateRoot = `./template/${templateName}`.replace(/\\/g, "/");
 
-    const files = await this.locator.ListFiles(templatePath);
+    const files = await this.locator.ListFiles(`./templates/${templateName}`);
 
-    for (const filePath of files) {
-      const relPath = filePath.replace(
-        new RegExp(`^${templatePath}[\\\\/]?`),
+    for (const fullPath of files) {
+      const normalizedFullPath = fullPath.replace(/\\/g, "/");
+
+      const relPath = normalizedFullPath.replace(
+        new RegExp(`^${templateRoot}/?`),
         "",
       );
 
-      const renderedPath = join(
-        outputDir || ".",
-        relPath.replace(/\.hbs$/, ""),
-      );
-      const raw = await this.locator.ReadTemplateFile(filePath);
+      const targetPath = join(outputDir || ".", relPath.replace(/\.hbs$/, ""));
+      const raw = await this.locator.ReadTemplateFile(fullPath);
 
-      const rendered = filePath.endsWith(".hbs")
-        ? Handlebars.compile(raw)(mergedContext)
-        : raw;
+      let rendered: string;
+      if (fullPath.endsWith(".hbs")) {
+        rendered = Handlebars.compile(raw)(mergedContext);
+      } else {
+        rendered = raw;
+      }
 
       const stream = new ReadableStream<Uint8Array>({
         start(controller) {
@@ -52,7 +48,7 @@ export class TemplateScaffolder {
         },
       });
 
-      await this.DFS.WriteFile(renderedPath, stream);
+      await this.DFS.WriteFile(targetPath, stream);
     }
   }
 }
