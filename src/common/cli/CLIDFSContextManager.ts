@@ -36,13 +36,14 @@ export class CLIDFSContextManager {
   public RegisterProjectDFS(
     fileUrlInProject: string,
     name: string = "project",
+    rootFile: string = ".cli.json",
   ): string {
     if (fileUrlInProject.startsWith("file:///")) {
       fileUrlInProject = fromFileUrl(fileUrlInProject);
     }
 
     const localPath = dirname(fileUrlInProject);
-    const projectRoot = this.findProjectRoot(localPath);
+    const projectRoot = this.findProjectRoot(localPath, rootFile);
 
     return this.RegisterCustomDFS(name, { FileRoot: projectRoot });
   }
@@ -88,15 +89,15 @@ export class CLIDFSContextManager {
 
   // ─── Internal Root Discovery ──────────────────────────────────────────
 
-  protected findProjectRoot(startDir: string): string {
+  protected findProjectRoot(startDir: string, rootFile: string): string {
     let current = startDir;
     while (true) {
-      const candidate = join(current, ".cli.json");
+      const candidate = join(current, rootFile);
       if (existsSync(candidate)) return current;
 
       const parent = dirname(current);
       if (parent === current) {
-        throw new Error(`No .cli.json found walking up from: ${startDir}`);
+        throw new Error(`No ${rootFile} found walking up from: ${startDir}`);
       }
       current = parent;
     }
