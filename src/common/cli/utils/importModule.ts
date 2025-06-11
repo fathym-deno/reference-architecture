@@ -6,12 +6,12 @@ import type { CommandLog } from "../commands/CommandLog.ts";
  * Dynamically imports a module from a DFS.
  * If compiled, bundles .ts files to JS via `deno bundle` and loads via Blob URL.
  */
-export async function importModule(
+export async function importModule<T = unknown>(
   log: CommandLog,
   filePath: string,
   rootDFS: DFSFileHandler,
   buildDFS: DFSFileHandler,
-): Promise<unknown> {
+): Promise<T> {
   const isCompiled = !Deno.execPath().endsWith("deno");
 
   if (filePath.endsWith(".ts")) {
@@ -43,13 +43,13 @@ export async function importModule(
         });
       });
 
-      return await import(jsURL);
+      return await import(jsURL) as T;
     }
 
     // In dev, just import directly from file
-    return await import(toFileUrl(filePath).href);
+    return await import(toFileUrl(filePath).href) as T;
   }
 
   // Already a JS file — no bundling needed
-  return await import(toFileUrl(filePath).href);
+  return await import(toFileUrl(filePath).href) as T;
 }
