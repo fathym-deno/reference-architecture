@@ -48,31 +48,18 @@ export async function proxyRequest(
   forceCache?: boolean,
 ): Promise<Response> {
   const originalUrl = new URL(path, base);
-
-  originalUrl.hash = hash || "";
-
-  originalUrl.search = search || "";
+  originalUrl.search = search ?? "";
+  originalUrl.hash = hash ?? "";
 
   const proxyUrl = new URL(`${proxyRoot}${path}`.replace("//", "/"));
 
-  for (const queryParam of originalUrl.searchParams.keys()) {
-    const queryValues = originalUrl.searchParams.getAll(queryParam);
-
-    queryValues.forEach((qv, i) => {
-      if (i === 0) {
-        proxyUrl.searchParams.set(queryParam, qv || "");
-      } else {
-        proxyUrl.searchParams.append(queryParam, qv || "");
-      }
-    });
+  for (const [key, value] of originalUrl.searchParams.entries()) {
+    proxyUrl.searchParams.append(key, value);
   }
+  proxyUrl.hash = originalUrl.hash;
 
-  proxyUrl.hash = originalUrl.hash ?? proxyUrl.hash;
-
-  let reqHeaders = establishHeaders(req.headers, headers || {});
-
+  let reqHeaders = establishHeaders(req.headers, headers ?? {});
   reqHeaders = establishHeaders(reqHeaders, {
-    // 'x-forwarded-for': remoteAddr,
     "x-forwarded-host": originalUrl.host,
     "x-forwarded-proto": originalUrl.protocol,
     "x-eac-forwarded-host": originalUrl.host,
@@ -80,64 +67,101 @@ export async function proxyRequest(
     "x-eac-forwarded-path": originalUrl.pathname,
   });
 
-  const proxyReqOptions = ["body", "method", "redirect", "signal"];
-
-  const reqInit: Record<string, unknown> = proxyReqOptions.reduce((ri, key) => {
-    ri[key] = (req as any)[key];
-
-    return ri;
-  }, {} as Record<string, unknown>);
+  const proxyReqInit: Record<string, unknown> = [
+    "body",
+    "method",
+    "redirect",
+    "signal",
+  ].reduce(
+    (ri, key) => {
+      ri[key] = (req as any)[key];
+      return ri;
+    },
+    {} as Record<string, unknown>,
+  );
 
   const proxyReq = new Request(proxyUrl, {
-    ...reqInit,
+    ...proxyReqInit,
     headers: reqHeaders,
   });
 
   let resp = await fetch(proxyReq, {
-    // method: proxyReq.method,
-    redirect: redirectMode || "manual",
+    redirect: redirectMode ?? "manual",
     credentials: "include",
   });
 
   const redirectLocation = resp.headers.get("location");
 
   if (redirectLocation) {
-    resp = redirectRequest(
+    return redirectRequest(
       redirectLocation,
       resp.status,
       undefined,
       resp.headers,
     );
-  } else if (
+  }
+
+  // 🔁 WebSocket Proxying
+  if (
     resp.status === STATUS_CODE.SwitchingProtocols &&
     resp.headers.get("upgrade") === "websocket"
   ) {
-    const { socket, response } = Deno.upgradeWebSocket(req);
+    const { socket: clientSocket, response } = Deno.upgradeWebSocket(req);
+    const proxySocket = new WebSocket(proxyUrl);
 
-    const wsProxy = new WebSocket(proxyUrl);
+    let proxySocketOpen = false;
+    const pendingMessages: string[] = [];
 
-    wsProxy.addEventListener("open", (_e) => {});
-
-    wsProxy.addEventListener("close", (_e) => {
-      socket.close();
+    proxySocket.addEventListener("open", () => {
+      proxySocketOpen = true;
+      for (const msg of pendingMessages) {
+        proxySocket.send(msg);
+      }
+      pendingMessages.length = 0;
     });
 
-    wsProxy.addEventListener("message", (proxyMsg) => {
-      socket.send(proxyMsg.data);
+    proxySocket.addEventListener("message", (proxyMsg) => {
+      try {
+        clientSocket.send(proxyMsg.data);
+      } catch (err) {
+        console.error(
+          "[proxyRequest] ⚠️ Failed to forward proxy → client:",
+          err,
+        );
+      }
     });
 
-    socket.addEventListener("open", () => {});
-
-    socket.addEventListener("close", (_e) => {
-      wsProxy.close();
+    proxySocket.addEventListener("close", () => {
+      clientSocket.close();
     });
 
-    socket.addEventListener("message", (clientMsg) => {
-      wsProxy.send(clientMsg.data);
+    proxySocket.addEventListener("error", (err) => {
+      console.error("[proxyRequest] ❌ Proxy socket error:", err);
+      clientSocket.close();
     });
 
-    resp = response;
-  } else if (cacheControl) {
+    clientSocket.addEventListener("message", (clientMsg) => {
+      if (proxySocketOpen) {
+        proxySocket.send(clientMsg.data);
+      } else {
+        pendingMessages.push(clientMsg.data);
+      }
+    });
+
+    clientSocket.addEventListener("close", () => {
+      proxySocket.close();
+    });
+
+    clientSocket.addEventListener("error", (err) => {
+      console.error("[proxyRequest] ❌ Client socket error:", err);
+      proxySocket.close();
+    });
+
+    return response;
+  }
+
+  // 🔒 Static caching (if enabled)
+  if (cacheControl) {
     resp = processCacheControlHeaders(resp, cacheControl, forceCache);
   }
 
