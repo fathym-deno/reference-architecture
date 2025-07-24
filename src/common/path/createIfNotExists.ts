@@ -28,7 +28,7 @@ export async function createIfNotExists(path: string): Promise<void> {
   if (dir && !(await exists(dir))) {
     logger.debug(`Ensuring directory ${dir}`);
 
-    Deno.mkdirSync(dir);
+    await Deno.mkdir(dir, { recursive: true });
   }
 }
 
@@ -59,6 +59,6 @@ export function createIfNotExistsSync(path: string): void {
   if (dir && !existsSync(dir)) {
     logger.debug(`Ensuring directory ${dir}`);
 
-    Deno.mkdirSync(dir);
+    Deno.mkdirSync(dir, { recursive: true });
   }
 }

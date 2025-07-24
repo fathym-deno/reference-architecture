@@ -22,7 +22,7 @@ export async function initializeDenoKv(denoKvPath?: string): Promise<Deno.Kv> {
       logger.debug(`Ensuring DenoKV directory ${denoKvDir}`);
 
       try {
-        await Deno.mkdir(denoKvDir);
+        await Deno.mkdir(denoKvDir, { recursive: true });
       } catch (err) {
         logger.warn(`There was an issure ensuring the directory: ${denoKvDir}`);
         logger.warn(err);

@@ -21,11 +21,10 @@ export {
 
 export {
   z,
-  ZodSchema,
+  type ZodSchema,
   ZodType,
-  type ZodTypeDef,
+  zodToJsonSchema,
 } from '../../third-party/zod/.exports.ts';
-export { zodToJsonSchema } from 'npm:zod-to-json-schema@3.24.5';
 
 export {
   writeAll,

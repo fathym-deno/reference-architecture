@@ -59,20 +59,14 @@ export type CommandContextSubset = Omit<
  * Excludes generics like `Params`, `ArgsSchema`, `FlagsSchema`, and `Commands`.
  * Used for help output, runtime metadata, and context debugging.
  */
-export const CommandContextSchema: z.ZodObject<
-  {
-    Config: typeof CLIConfigSchema;
-    GroupMetadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
-    Key: z.ZodString;
-    Log: typeof CommandLogSchema;
-    Metadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
-    Services: z.ZodRecord<z.ZodString, z.ZodUnknown>;
-  },
-  "strip",
-  z.ZodTypeAny,
-  CommandContextSubset,
-  CommandContextSubset
-> = z.object({
+export const CommandContextSchema: z.ZodObject<{
+  Config: typeof CLIConfigSchema;
+  GroupMetadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
+  Key: z.ZodString;
+  Log: typeof CommandLogSchema;
+  Metadata: z.ZodOptional<typeof CommandModuleMetadataSchema>;
+  Services: z.ZodRecord<z.ZodString, z.ZodUnknown>;
+}> = z.object({
   Config: CLIConfigSchema.describe("Parsed CLI configuration (.cli.json)"),
 
   GroupMetadata: CommandModuleMetadataSchema.optional().describe(

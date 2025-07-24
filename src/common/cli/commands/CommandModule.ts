@@ -1,4 +1,4 @@
-import type { ZodType, ZodTypeDef } from "../.deps.ts";
+import type { ZodType } from "../.deps.ts";
 import type { CommandRuntime } from "./CommandRuntime.ts";
 import type {
   CommandParamConstructor,
@@ -45,8 +45,8 @@ export function defineCommandModule<
   P extends CommandParams<A, F>,
   R extends CommandRuntime<P>,
 >(def: {
-  FlagsSchema: ZodType<F, ZodTypeDef, F>;
-  ArgsSchema: ZodType<A, ZodTypeDef, A>;
+  FlagsSchema: ZodType<F, ZodType, F>;
+  ArgsSchema: ZodType<A, ZodType, A>;
   Command: new () => R;
   Params: new (args: A, flags: F) => P;
 }): CommandModule<A, F, P> {
