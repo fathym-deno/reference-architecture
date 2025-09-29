@@ -1,5 +1,4 @@
-import type { WriterSync } from "jsr:@std/io@0.224.6/types";
-import { writeAllSync } from "jsr:@std/io@0.224.6/write-all";
+import { writeAllSync, type WriterSync } from "../.deps.ts";
 
 /**
  * Shows the terminal cursor

@@ -5,6 +5,8 @@ export { z, type ZodSchema } from "../src/third-party/zod/.exports.ts";
 export { zodToJsonSchema } from "npm:zod-to-json-schema@3.24.6";
 
 export * as Colors from "jsr:@std/fmt@1.0.1/colors";
+export { fromFileUrl } from "jsr:@std/path@^1.0.9";
+export { stripColor } from "jsr:@std/fmt@^0.221.0/colors";
 
 export {
   captureLogs,

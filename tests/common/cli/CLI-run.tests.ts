@@ -1,8 +1,12 @@
 // tests/common/cli/cli-exec.test.ts
 
-import { fromFileUrl } from "jsr:@std/path@^1.0.9";
-import { assertMatch, captureLogs, createTestCLI } from "../../test.deps.ts";
-import { stripColor } from "jsr:@std/fmt@^0.221.0/colors";
+import {
+  assertMatch,
+  captureLogs,
+  createTestCLI,
+  fromFileUrl,
+  stripColor,
+} from "../../test.deps.ts";
 
 Deno.test("Test CLI – Execution Coverage", async (t) => {
   const configPath = fromFileUrl(import.meta.resolve("./test-cli/.cli.json"));

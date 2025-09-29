@@ -11,6 +11,7 @@ export {
   toFileUrl,
   isAbsolute,
 } from 'jsr:@std/path@1.0.9';
+export { assert } from "jsr:@std/assert@^0.221.0/assert";
 
 export { pascalCase } from 'jsr:@luca/cases@1.0.0';
 

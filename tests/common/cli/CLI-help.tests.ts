@@ -1,6 +1,10 @@
-import { fromFileUrl } from "jsr:@std/path@^1.0.9";
-import { stripColor } from "jsr:@std/fmt@^0.221.0/colors";
-import { assertMatch, captureLogs, createTestCLI } from "../../test.deps.ts";
+import {
+  assertMatch,
+  captureLogs,
+  createTestCLI,
+  fromFileUrl,
+  stripColor,
+} from "../../test.deps.ts";
 
 Deno.test("Test CLI – Help Coverage", async (t) => {
   const configPath = fromFileUrl(import.meta.resolve("./test-cli/.cli.json"));

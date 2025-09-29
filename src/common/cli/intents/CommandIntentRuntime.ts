@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { IoCContainer } from "../.deps.ts";
+import { assert, IoCContainer } from "../.deps.ts";
 import {
   captureLogs,
   CLICommandExecutor,
@@ -7,8 +7,6 @@ import {
   type CLIConfig,
   type CLIInitFn,
 } from "../.exports.ts";
-
-import { assert } from "jsr:@std/assert@^0.221.0/assert";
 
 import type { CommandRuntime } from "../commands/CommandRuntime.ts";
 import type { CommandModule } from "../commands/CommandModule.ts";
