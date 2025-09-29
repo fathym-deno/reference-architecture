@@ -1,3 +1,4 @@
+import { computeBaseHref } from "./computeBaseHref.ts";
 import type { URLMatch } from "./URLMatch.ts";
 
 export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
@@ -26,7 +27,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
     reqCheckUrl.origin,
   ).href;
 
-  return {
+  const urlMatch = {
     Base: base,
     Hash: reqUrl.hash,
     Path: path,
@@ -61,4 +62,8 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
       );
     },
   };
+
+  urlMatch.Base = computeBaseHref(req, urlMatch);
+
+  return urlMatch;
 }

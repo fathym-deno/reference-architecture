@@ -35,6 +35,7 @@
  */
 
 export * from './buildURLMatch.ts';
+export * from './computeBaseHref.ts';
 export * from './establishHeaders.ts';
 export * from './KnownMethod.ts';
 export * from './processCacheControlHeaders.ts';
