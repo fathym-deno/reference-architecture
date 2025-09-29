@@ -4,6 +4,41 @@ import { establishHeaders } from "./establishHeaders.ts";
 import { processCacheControlHeaders } from "./processCacheControlHeaders.ts";
 import { redirectRequest } from "./redirectRequest.ts";
 
+function normalizeRelativePath(path: string): string {
+  if (!path) {
+    return "/";
+  }
+
+  return path.startsWith("/") ? path : `/${path}`;
+}
+
+function normalizeBasePath(pathname: string): string {
+  if (!pathname || pathname === "/") {
+    return "";
+  }
+
+  return pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+}
+
+function buildClientPath(base: string, relative: string): string {
+  const normalizedBase = normalizeBasePath(base);
+  const normalizedRelative = normalizeRelativePath(relative);
+
+  let clientPath = normalizedRelative === "/"
+    ? normalizedBase
+    : `${normalizedBase}${normalizedRelative}`;
+
+  if (!clientPath) {
+    clientPath = "/";
+  }
+
+  if (!clientPath.startsWith("/")) {
+    clientPath = `/${clientPath}`;
+  }
+
+  return clientPath;
+}
+
 /**
  * Proxies the request to a remote server.
  *
@@ -47,15 +82,20 @@ export async function proxyRequest(
   cacheControl?: Record<string, string>,
   forceCache?: boolean,
 ): Promise<Response> {
-  const originalUrl = new URL(path, base);
+  const baseUrl = new URL(base);
+
+  const clientPath = buildClientPath(baseUrl.pathname, path);
+
+  const originalUrl = new URL(baseUrl.origin);
+  originalUrl.pathname = clientPath;
   originalUrl.search = search ?? "";
   originalUrl.hash = hash ?? "";
 
   const proxyUrl = new URL(`${proxyRoot}${path}`.replace("//", "/"));
 
-  for (const [key, value] of originalUrl.searchParams.entries()) {
+  originalUrl.searchParams.forEach((value, key) => {
     proxyUrl.searchParams.append(key, value);
-  }
+  });
   proxyUrl.hash = originalUrl.hash;
 
   let reqHeaders = establishHeaders(req.headers, headers ?? {});
@@ -63,8 +103,8 @@ export async function proxyRequest(
     "x-forwarded-host": originalUrl.host,
     "x-forwarded-proto": originalUrl.protocol,
     "x-eac-forwarded-host": originalUrl.host,
+    "x-eac-forwarded-path": clientPath,
     "x-eac-forwarded-proto": originalUrl.protocol,
-    "x-eac-forwarded-path": originalUrl.pathname,
   });
 
   const proxyReqInit: Record<string, unknown> = [
@@ -101,7 +141,7 @@ export async function proxyRequest(
     );
   }
 
-  // 🔁 WebSocket Proxying
+  // ?? WebSocket Proxying
   if (
     resp.status === STATUS_CODE.SwitchingProtocols &&
     resp.headers.get("upgrade") === "websocket"
@@ -125,7 +165,7 @@ export async function proxyRequest(
         clientSocket.send(proxyMsg.data);
       } catch (err) {
         console.error(
-          "[proxyRequest] ⚠️ Failed to forward proxy → client:",
+          "[proxyRequest] ?? Failed to forward proxy ? client:",
           err,
         );
       }
@@ -136,7 +176,7 @@ export async function proxyRequest(
     });
 
     proxySocket.addEventListener("error", (err) => {
-      console.error("[proxyRequest] ❌ Proxy socket error:", err);
+      console.error("[proxyRequest] ? Proxy socket error:", err);
       clientSocket.close();
     });
 
@@ -153,14 +193,14 @@ export async function proxyRequest(
     });
 
     clientSocket.addEventListener("error", (err) => {
-      console.error("[proxyRequest] ❌ Client socket error:", err);
+      console.error("[proxyRequest] ? Client socket error:", err);
       proxySocket.close();
     });
 
     return response;
   }
 
-  // 🔒 Static caching (if enabled)
+  // ?? Static caching (if enabled)
   if (cacheControl) {
     resp = processCacheControlHeaders(resp, cacheControl, forceCache);
   }
