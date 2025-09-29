@@ -22,13 +22,17 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
 
   const path = patternResult!.pathname.groups[0] || "";
 
-  const base = new URL(
-    reqCheckUrl.pathname.slice(0, path.length > 0 ? -path.length : undefined),
-    reqCheckUrl.origin,
-  ).href;
+  const base = computeBaseHref(
+    req,
+    new URL(
+      reqCheckUrl.pathname.slice(0, path.length > 0 ? -path.length : undefined),
+      reqCheckUrl.origin,
+    ).href,
+    path,
+  );
 
   const urlMatch = {
-    Base: computeBaseHref(req, base, path),
+    Base: base,
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,
