@@ -31,20 +31,17 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
     path,
   );
 
+  const resolvedUrl = new URL(reqCheckUrl.href);
+  resolvedUrl.hash = reqUrl.hash;
+  resolvedUrl.search = reqUrl.search;
+
   const urlMatch = {
     Base: base,
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,
     SearchParams: reqUrl.searchParams,
-    URL: new URL(
-      {
-        hash: reqUrl.hash,
-        pathname: path,
-        search: reqUrl.search,
-      } as URL,
-      base,
-    ),
+    URL: resolvedUrl,
     FromBase: (path: string | URL) => {
       return new URL(path, base.endsWith("/") ? base : `${base}/`);
     },
