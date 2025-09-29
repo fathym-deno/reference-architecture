@@ -65,9 +65,10 @@ function deriveBasePath(
 
 export function computeBaseHref(
   request: HeadersLike,
-  urlMatch: UrlMatchLike,
+  base: string,
+  path: string,
 ): string {
-  const runtimeBaseUrl = new URL(urlMatch.Base);
+  const runtimeBaseUrl = new URL(base);
   const forwardedProto = normalizeProtocol(
     request.headers.get("x-eac-forwarded-proto") ??
       request.headers.get("x-forwarded-proto") ?? undefined,
@@ -80,7 +81,7 @@ export function computeBaseHref(
     ? new URL(`${forwardedProto}//${forwardedHost}`).origin
     : runtimeBaseUrl.origin;
 
-  const runtimePath = normalizeRuntimePath(urlMatch.Path);
+  const runtimePath = normalizeRuntimePath(path);
   const basePath = deriveBasePath(
     forwardedPath,
     runtimePath,

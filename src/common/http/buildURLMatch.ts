@@ -28,7 +28,7 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
   ).href;
 
   const urlMatch = {
-    Base: base,
+    Base: computeBaseHref(req, base, path),
     Hash: reqUrl.hash,
     Path: path,
     Search: reqUrl.search,
@@ -62,8 +62,6 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
       );
     },
   };
-
-  urlMatch.Base = computeBaseHref(req, urlMatch);
 
   return urlMatch;
 }
