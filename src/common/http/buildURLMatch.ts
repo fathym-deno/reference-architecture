@@ -43,7 +43,11 @@ export function buildURLMatch(pattern: URLPattern, req: Request): URLMatch {
     SearchParams: reqUrl.searchParams,
     URL: resolvedUrl,
     FromBase: (path: string | URL) => {
-      return new URL(path, base.endsWith("/") ? base : `${base}/`);
+      const usableBase = base.endsWith("/") ? base : `${base}/`;
+
+      const usablePath = path.toString().startsWith("/") ? `.${path}` : path;
+
+      return new URL(usablePath, usableBase);
     },
     FromOrigin: (path: string | URL) => {
       const origin = new URL(base).origin;
